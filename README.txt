@@ -1,21 +1,23 @@
-ELEMENT FIRST — PAQUETE COMPLETO
+ELEMENT FIRST — V7 RESPONSIVE
 
-Estructura:
-- index.html                 Página principal
-- manifest.json              Configuración PWA
-- IMAGE-GUIDE.txt            Guía de imágenes
-- img/p1.jpg ... p15.jpg    Imágenes auxiliares del diseño
-- img/productos/             10 fotografías de productos
-  producto-01.jpeg
-  producto-02.jpeg
-  producto-03.jpeg
-  producto-04.jpeg
-  producto-05.jpeg
-  producto-06.jpeg
-  producto-07.jpeg
-  producto-08.jpeg
-  producto-09.jpeg
-  producto-10.jpeg
+Esta versión está preparada para:
+- Celular: 320px a 767px.
+- Tablet/iPad: 768px a 1023px.
+- Laptop/escritorio: 1024px en adelante.
+- Pantallas grandes: 1280px en adelante.
 
-Las fotografías de productos se conservan en sus archivos originales y están ordenadas por nombre.
-La página ya apunta a img/productos/producto-01.jpeg ... producto-10.jpeg.
+Incluye:
+- Navegación inferior optimizada para celular/tablet.
+- Sidebar completo en laptop/escritorio.
+- Catálogo de productos adaptable: 1/2/3/4 columnas según pantalla.
+- Buscadores y selectores cómodos para tocar desde celular.
+- Resúmenes/KPIs adaptables.
+- Tablas con desplazamiento horizontal en pantallas pequeñas para que no se corten.
+- Respeto de safe-area en iPhone/iPad.
+- Corrección de rutas de imágenes con y sin extensión.
+
+Para Vercel:
+1. Descomprime el ZIP.
+2. Sube la carpeta completa como proyecto.
+3. Mantén index.html en la raíz.
+4. Mantén la carpeta img/ junto a index.html.

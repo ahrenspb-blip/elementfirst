@@ -555,6 +555,122 @@ input:focus,select:focus{
 </style>
 
 <link rel="manifest" href="./manifest.json" />
+
+<style id="element-first-responsive-v7">
+/* =========================================================
+   RESPONSIVE V7 — celular, tablet y laptop
+   ========================================================= */
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+button,input,select{max-width:100%}
+img{max-width:100%}
+
+/* Tablas: nunca rompen el ancho de la pantalla */
+.table-responsive{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.page > .bg-white:has(> table),
+.page > .bg-white:has(> div > table){max-width:100%;overflow-x:auto}
+.page table{min-width:680px}
+
+/* Desktop / laptop */
+@media (min-width:1024px){
+  #app-shell > .flex-1{margin-left:16rem!important;width:calc(100% - 16rem);min-width:0}
+  #app-shell main{padding-left:32px!important;padding-right:32px!important}
+  #products-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .premium-card,.kpi-card{min-width:0}
+}
+@media (min-width:1280px){
+  #products-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  #app-shell main{padding-left:40px!important;padding-right:40px!important}
+}
+
+/* Tablet / iPad */
+@media (min-width:768px) and (max-width:1023px){
+  #app-shell > .flex-1{margin-left:0!important;width:100%!important}
+  #app-shell main{padding:20px 20px 96px!important}
+  #products-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .bnav-link{min-height:54px!important}
+  .bnav-link .material-symbols-outlined{font-size:24px!important}
+  #page-title{font-size:20px!important}
+}
+
+/* Celular */
+@media (max-width:767px){
+  #app-shell header{height:60px!important}
+  #app-shell header > div{height:60px!important;padding-left:12px!important;padding-right:12px!important}
+  #page-title{font-size:17px!important;max-width:42vw}
+  #app-shell main{padding:14px 12px 92px!important}
+  .page{width:100%;min-width:0}
+  .page h2{font-size:18px!important}
+  .page h3{font-size:15px!important}
+
+  /* Encabezados de módulos */
+  .page > .flex.items-center.justify-between,
+  .page > .flex.items-center.justify-between.flex-wrap{align-items:flex-start!important;gap:10px!important}
+  .page > .flex.items-center.justify-between > .flex,
+  .page > .flex.items-center.justify-between.flex-wrap > .flex{width:100%!important}
+
+  /* Buscadores y select: cómodos para tocar */
+  #inventory-search,#products-search{font-size:16px!important;min-height:42px}
+  #products-sort,#period-select,#report-period{min-height:42px;font-size:13px!important}
+  #page-products .flex.items-center.gap-2.flex-wrap,
+  #page-inventory .flex.items-center.gap-2.flex-wrap{display:grid!important;grid-template-columns:1fr!important;width:100%!important}
+  #page-products .flex.items-center.gap-2.flex-wrap > *,
+  #page-inventory .flex.items-center.gap-2.flex-wrap > *{width:100%!important}
+
+  /* Resúmenes */
+  #products-summary,#inventory-summary,#reports-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  #products-summary > div,#inventory-summary > div,#reports-kpis > div{padding:12px!important;min-width:0!important}
+  #products-summary .text-2xl,#inventory-summary .text-2xl,#reports-kpis .text-2xl{font-size:20px!important;line-height:1.15}
+
+  /* Catálogo */
+  #products-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  #products-grid > button{min-width:0!important;border-radius:12px!important}
+  #products-grid > button .aspect-\[3\/4\]{aspect-ratio:3/4}
+  #products-grid > button .p-3{padding:10px!important}
+  #products-grid > button .grid.grid-cols-3{gap:5px!important}
+  #products-grid > button .grid.grid-cols-3 p{font-size:10px!important}
+  #products-grid > button .grid.grid-cols-3 .text-sm{font-size:12px!important}
+
+  /* KPI cards del dashboard */
+  .kpi-card{min-height:100px!important;padding:12px!important}
+  .kpi-card .metric-number,.kpi-card .text-xl{font-size:19px!important}
+  #page-dashboard .grid.grid-cols-2.lg\:grid-cols-6{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  #page-dashboard .premium-card.gradient-brand{padding:16px!important}
+  #page-dashboard .premium-card.gradient-brand h2{font-size:24px!important}
+
+  /* Gráficos */
+  .h-72{height:240px!important}
+  canvas{max-width:100%!important}
+
+  /* Tablas: desplazamiento horizontal, no corte */
+  .page table{min-width:650px;font-size:12px!important}
+  .page table th,.page table td{padding:9px!important}
+  .page > .bg-white.overflow-hidden{overflow-x:auto!important}
+
+  /* Fichas / paneles */
+  .premium-card{border-radius:12px!important}
+  .sheet-enter{max-height:92dvh!important;overflow-y:auto!important}
+
+  /* Barra inferior segura para iPhone/iPad */
+  nav.lg\:hidden.fixed.bottom-0{padding-bottom:max(6px,env(safe-area-inset-bottom))!important}
+  nav.lg\:hidden.fixed.bottom-0 > div{padding-bottom:4px!important}
+  .bnav-link{min-height:52px!important;justify-content:center}
+  .bnav-link span:last-child{font-size:9px!important}
+}
+
+/* Celulares muy estrechos */
+@media (max-width:380px){
+  #products-grid{grid-template-columns:1fr!important}
+  #products-summary,#inventory-summary,#reports-kpis{grid-template-columns:1fr 1fr!important}
+  #page-title{max-width:35vw}
+  #products-grid > button .aspect-\[3\/4\]{aspect-ratio:4/5}
+}
+
+/* Touch: evita efectos hover pegados en móvil */
+@media (hover:none){
+  .group:hover img{transform:none!important}
+  .hover\:shadow-card:hover{box-shadow:none!important}
+}
+</style>
 </head>
 <body class="bg-surface text-ink antialiased">
 
