@@ -745,6 +745,67 @@ button,a,input,select{touch-action:manipulation}
 /* prevent accidental horizontal page drift */
 #app-shell,#app-shell *{max-width:100%}
 #app-shell img{max-width:100%}
+
+/* ===== Responsive repair: phone + iPad/tablet ===== */
+/* Desktop remains >= 1180px. Tablets use the same compact bottom navigation as phones. */
+@media (min-width:1024px) and (max-width:1179px){
+  #app-shell > nav{display:none!important}
+  #app-shell > .flex-1{margin-left:0!important;width:100%!important}
+  #app-shell header{height:64px!important;flex-basis:64px!important}
+  #app-shell header>div{height:64px!important;padding:0 18px!important}
+  #app-shell header .hidden.md\:flex{display:none!important}
+  #app-shell main{padding:18px 18px 96px!important;width:100%!important;max-width:none!important}
+  #app-shell main>section.page{max-width:1180px!important;margin:0 auto}
+  nav.lg\:hidden.fixed.bottom-0{display:block!important;height:68px!important;padding:5px 10px max(5px,env(safe-area-inset-bottom))!important;border-radius:0!important;z-index:80!important}
+  nav.lg\:hidden.fixed.bottom-0>div{height:100%!important;padding:0!important;gap:5px!important}
+  .bnav-link{min-height:54px!important;flex:1!important}
+  .bnav-link span:last-child{font-size:10px!important}
+  #sheet-more{z-index:100!important;max-height:78dvh!important;overflow-y:auto!important}
+  #scrim{z-index:90!important}
+}
+
+@media (min-width:1180px){
+  #app-shell > nav{display:flex!important}
+  #app-shell > .flex-1{margin-left:244px!important;width:calc(100% - 244px)!important}
+}
+
+@media (max-width:767px){
+  html,body{width:100%;min-width:0;overflow-x:hidden}
+  #app-shell{width:100%!important;max-width:100%!important;overflow:hidden!important}
+  #app-shell > .flex-1{width:100%!important;max-width:100%!important;margin-left:0!important;min-width:0!important}
+  #app-shell header{height:58px!important;flex-basis:58px!important;min-width:0!important}
+  #app-shell header>div{height:58px!important;padding:0 8px!important;gap:4px!important;min-width:0!important}
+  #app-shell header>div>div:first-child{min-width:0!important;flex:1 1 auto!important}
+  #page-title{font-size:16px!important;max-width:38vw!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  #app-shell header .hidden.md\:flex{display:none!important}
+  #app-shell header .flex.items-center.gap-1\.5{flex:0 0 auto!important;gap:0!important}
+  #app-shell header .flex.items-center.gap-1\.5 > img{display:none!important}
+  #app-shell header .flex.items-center.gap-1\.5 button{width:38px!important;height:38px!important;padding:7px!important}
+  #app-shell main{width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;padding:12px 10px calc(82px + env(safe-area-inset-bottom))!important;overflow-x:hidden!important}
+  #app-shell main>section.page{width:100%!important;max-width:none!important;min-width:0!important}
+  #page-dashboard > .flex:first-child{align-items:flex-start!important}
+  #period-select{max-width:48vw!important}
+  #page-dashboard .premium-card.gradient-brand{width:100%!important;max-width:100%!important;overflow:hidden!important}
+  #page-dashboard .premium-card.gradient-brand .relative.grid{grid-template-columns:1fr!important;gap:14px!important}
+  #page-dashboard .premium-card.gradient-brand .grid.grid-cols-2{grid-template-columns:1fr 1fr!important;min-width:0!important}
+  #page-dashboard .premium-card.gradient-brand .grid.grid-cols-2 > div{min-width:0!important}
+  #page-dashboard .grid.grid-cols-2.lg\:grid-cols-6{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .page .overflow-x-auto{max-width:100%!important}
+  nav.lg\:hidden.fixed.bottom-0{display:block!important;position:fixed!important;left:0!important;right:0!important;bottom:0!important;width:100%!important;height:64px!important;z-index:80!important;padding:5px 7px max(5px,env(safe-area-inset-bottom))!important;border-radius:0!important}
+  nav.lg\:hidden.fixed.bottom-0>div{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;width:100%!important;height:100%!important;padding:0!important;gap:3px!important}
+  .bnav-link{display:flex!important;min-width:0!important;min-height:50px!important;flex:1 1 0!important;align-items:center!important;justify-content:center!important;overflow:hidden!important}
+  .bnav-link span:last-child{font-size:9px!important;line-height:1!important;white-space:nowrap!important}
+  #sheet-more{z-index:100!important;left:0!important;right:0!important;bottom:0!important;width:100%!important;max-height:80dvh!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;padding-bottom:calc(18px + env(safe-area-inset-bottom))!important}
+  #sheet-more .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  #sheet-more .grid>button{min-height:70px!important;border:1px solid var(--ef-line)!important;background:#fff!important}
+  #scrim{z-index:90!important}
+}
+
+/* A visible menu button in the top bar on small screens. */
+#ef-mobile-menu{display:none}
+@media (max-width:767px){
+  #ef-mobile-menu{display:flex!important;width:38px!important;height:38px!important;align-items:center!important;justify-content:center!important;border-radius:11px!important;background:#eef0ff!important;color:#000666!important;flex:0 0 38px!important}
+}
 </style>
 
 </head>
@@ -874,7 +935,8 @@ button,a,input,select{touch-action:manipulation}
           <input id="global-search" class="hidden" />
         </div>
         <div class="flex items-center gap-1.5">
-          <button onclick="openSearchSheet()" class="md:hidden p-2 rounded-full hover:bg-surface-dim text-ink-soft"><span class="material-symbols-outlined">search</span></button>
+          <button onclick="openSearchSheet()" class="md:hidden p-2 rounded-full hover:bg-surface-dim text-ink-soft" aria-label="Buscar"><span class="material-symbols-outlined">search</span></button>
+          <button id="ef-mobile-menu" onclick="openMoreSheet()" aria-label="Abrir menú" title="Menú"><span class="material-symbols-outlined">menu</span></button>
           <button onclick="openSyncSheet()" class="p-2 rounded-full hover:bg-surface-dim text-ink-soft relative">
             <span class="material-symbols-outlined">sync</span>
           </button>
@@ -1300,8 +1362,15 @@ button,a,input,select{touch-action:manipulation}
 <div id="scrim" onclick="closeSheets()" class="fixed inset-0 bg-black/40 z-40 hidden"></div>
 
 <!-- More menu sheet (mobile) -->
-<div id="sheet-more" class="fixed bottom-0 left-0 w-full bg-white rounded-t-2xl z-50 hidden p-4 pb-8 sheet-enter">
-  <div class="w-10 h-1 bg-line rounded-full mx-auto mb-4"></div>
+<div id="sheet-more" class="fixed bottom-0 left-0 w-full bg-white rounded-t-2xl z-[100] hidden p-4 pb-8 sheet-enter max-h-[80dvh] overflow-y-auto">
+  <div class="w-10 h-1 bg-line rounded-full mx-auto mb-3"></div>
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <p class="text-[10px] font-extrabold uppercase tracking-[.18em] text-ink-faint">Navegación</p>
+      <h3 class="text-lg font-extrabold text-primary">Todas las opciones</h3>
+    </div>
+    <button onclick="closeSheets()" class="p-2 rounded-full hover:bg-surface-dim text-ink-soft" aria-label="Cerrar menú"><span class="material-symbols-outlined">close</span></button>
+  </div>
   <div class="grid grid-cols-3 gap-3">
     <button onclick="navTo('products');closeSheets()" class="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-surface-dim"><span class="material-symbols-outlined">checkroom</span><span class="text-xs font-semibold">Productos</span></button>
     <button onclick="navTo('clients');closeSheets()" class="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-surface-dim"><span class="material-symbols-outlined">group</span><span class="text-xs font-semibold">Clientes</span></button>
@@ -1529,7 +1598,13 @@ function closeSheets(){
   ['sheet-more','sheet-filter','sheet-sync','sheet-search','sheet-product','sheet-sale'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden');});
   const scrim=document.getElementById('scrim'); if(scrim)scrim.classList.add('hidden');
 }
-function openMoreSheet(){ closeSheets(); document.getElementById('sheet-more').classList.remove('hidden'); document.getElementById('scrim').classList.remove('hidden'); }
+function openMoreSheet(){
+  closeSheets();
+  const sheet=document.getElementById('sheet-more');
+  const scrim=document.getElementById('scrim');
+  if(sheet) sheet.classList.remove('hidden');
+  if(scrim) scrim.classList.remove('hidden');
+}
 function openSyncSheet(){ closeSheets(); document.getElementById('sheet-sync').classList.remove('hidden'); document.getElementById('scrim').classList.remove('hidden'); }
 function openSearchSheet(){ closeSheets(); document.getElementById('sheet-search').classList.remove('hidden'); renderMobileSearch(''); document.getElementById('mobile-search-input').focus(); }
 function openFilterSheet(ctx){
@@ -1950,8 +2025,8 @@ function renderMobileSearch(q){
       <div><p class="text-sm font-semibold text-ink">${p.name}</p><p class="text-xs text-ink-faint">${p.sku}</p></div>
     </button>`).join('');
 }
-document.getElementById('mobile-search-input').addEventListener('input', e=>renderMobileSearch(e.target.value));
-document.getElementById('global-search').addEventListener('input', e=>{
+document.getElementById('mobile-search-input')?.addEventListener('input', e=>renderMobileSearch(e.target.value));
+document.getElementById('global-search')?.addEventListener('input', e=>{
   const q=e.target.value.trim();
   if(q.length>1){ navTo('products'); const s=document.getElementById('products-search'); s.value=q; renderProducts(); }
 });
@@ -2015,35 +2090,6 @@ async function installElementFirst(){
   deferredInstallPrompt=null;
   document.getElementById('install-app-btn')?.classList.add('hidden');
 }
-</script>
-
-
-<!-- MOBILE MENU BUTTON - visible on phones -->
-<button id="mobileMenuButton"
-        type="button"
-        onclick="openMoreSheet()"
-        aria-label="Abrir menú"
-        style="display:none;position:fixed;right:16px;bottom:78px;width:52px;height:52px;border-radius:50%;z-index:9999;border:0;background:#000666;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.22);align-items:center;justify-content:center;cursor:pointer;">
-  <span class="material-symbols-outlined" style="font-size:27px;">menu</span>
-</button>
-<style>
-@media (max-width: 767px){
-  #mobileMenuButton{
-    display:flex !important;
-  }
-}
-</style>
-<script>
-(function(){
-  function showMobileMenuButton(){
-    var b=document.getElementById('mobileMenuButton');
-    if(b && window.innerWidth <= 767) b.style.display='flex';
-  }
-  window.addEventListener('resize',showMobileMenuButton);
-  window.addEventListener('orientationchange',showMobileMenuButton);
-  document.addEventListener('DOMContentLoaded',showMobileMenuButton);
-  setTimeout(showMobileMenuButton,100);
-})();
 </script>
 
 </body>
