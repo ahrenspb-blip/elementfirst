@@ -1197,7 +1197,7 @@ input:focus,select:focus{
 
 <script>
 /* ======================= IMAGE MAP (base64 injected at build time) ======================= */
-function img(key){ return './img/'+key+'.jpg'; }
+function img(key){ return './img/'+key; }
 
 /* ======================= DATA ======================= */
 const CHANNELS = [
@@ -1214,16 +1214,16 @@ const totalRev = CHANNELS.reduce((a,c)=>a+c.revenue,0);
 CHANNELS.forEach(c=>{ c.share = (c.revenue/totalRev*100); });
 
 const PRODUCTS = [
-  { sku:'EF-JC-NG', name:'Jean Cargo Oversize Negro', model:'Cargo Oversize', category:'Jean', img:'p1', price:189, cost:95, colors:['Negro'], sizes:{28:2,30:5,32:0,34:3,36:1}, sold7:24, sold30:88, lastSale:'hace 2 h', velocity:3.4, updated:'hace 32 s' },
-  { sku:'EF-JR-LB', name:'Jean Recto Light Wash', model:'Recto', category:'Jean', img:'p2', price:159, cost:78, colors:['Azul Claro'], sizes:{28:6,30:8,32:9,34:5,36:2}, sold7:31, sold30:120, lastSale:'hace 40 min', velocity:4.4, updated:'hace 32 s' },
-  { sku:'EF-JB-AZ', name:'Jean Baggy Azul Rasgado', model:'Baggy', category:'Jean', img:'p3', price:175, cost:88, colors:['Azul'], sizes:{28:1,30:3,32:2,34:0,36:0}, sold7:18, sold30:61, lastSale:'hace 1 h', velocity:2.6, updated:'hace 32 s' },
-  { sku:'EF-JG-GR', name:'Jogger Denim Grafiti Gris', model:'Jogger Print', category:'Jean', img:'p4', price:169, cost:82, colors:['Gris'], sizes:{28:4,30:6,32:7,34:4,36:2}, sold7:9, sold30:29, lastSale:'hace 3 días', velocity:1.3, updated:'hace 32 s' },
-  { sku:'EF-JS-GR', name:'Jean Slim Rasgado Gris', model:'Slim', category:'Jean', img:'p5', price:165, cost:80, colors:['Gris'], sizes:{28:0,30:1,32:3,34:2,36:0}, sold7:15, sold30:52, lastSale:'hace 5 h', velocity:2.1, updated:'hace 32 s' },
-  { sku:'EF-JC-TR', name:'Jean Cargo Tribal Negro', model:'Cargo', category:'Jean', img:'p6', price:185, cost:92, colors:['Negro'], sizes:{28:3,30:5,32:6,34:3,36:1}, sold7:12, sold30:44, lastSale:'hace 1 día', velocity:1.7, updated:'hace 32 s' },
-  { sku:'EF-JB-CT', name:'Jean Baggy Bolsillo Contraste', model:'Baggy', category:'Jean', img:'p7', price:179, cost:89, colors:['Azul Claro'], sizes:{28:5,30:7,32:8,34:4,36:2}, sold7:27, sold30:95, lastSale:'hace 25 min', velocity:3.9, updated:'hace 32 s' },
-  { sku:'EF-PC-NG', name:'Pantalón Corduroy Negro', model:'Corduroy', category:'Pantalón', img:'p8', price:155, cost:74, colors:['Negro'], sizes:{28:2,30:2,32:1,34:0,36:0}, sold7:6, sold30:14, lastSale:'hace 12 días', velocity:0.5, updated:'hace 32 s' },
-  { sku:'EF-JR-OS', name:'Jean Recto Denim Oscuro', model:'Recto', category:'Jean', img:'p9', price:159, cost:78, colors:['Denim Oscuro'], sizes:{28:6,30:9,32:10,34:6,36:3}, sold7:21, sold30:79, lastSale:'hace 2 h', velocity:3.0, updated:'hace 32 s' },
-  { sku:'EF-JR-MD', name:'Jean Regular Azul Medio', model:'Regular', category:'Jean', img:'p10', price:149, cost:72, colors:['Azul Medio'], sizes:{28:7,30:9,32:8,34:5,36:2}, sold7:19, sold30:70, lastSale:'hace 4 h', velocity:2.7, updated:'hace 32 s' },
+  { sku:'EF-JC-NG', name:'Jean Cargo Oversize Negro', model:'Cargo Oversize', category:'Jean', img:'productos/producto-01.jpeg', price:189, cost:95, colors:['Negro'], sizes:{28:2,30:5,32:0,34:3,36:1}, sold7:24, sold30:88, lastSale:'hace 2 h', velocity:3.4, updated:'hace 32 s' },
+  { sku:'EF-JR-LB', name:'Jean Recto Light Wash', model:'Recto', category:'Jean', img:'productos/producto-02.jpeg', price:159, cost:78, colors:['Azul Claro'], sizes:{28:6,30:8,32:9,34:5,36:2}, sold7:31, sold30:120, lastSale:'hace 40 min', velocity:4.4, updated:'hace 32 s' },
+  { sku:'EF-JB-AZ', name:'Jean Baggy Azul Rasgado', model:'Baggy', category:'Jean', img:'productos/producto-03.jpeg', price:175, cost:88, colors:['Azul'], sizes:{28:1,30:3,32:2,34:0,36:0}, sold7:18, sold30:61, lastSale:'hace 1 h', velocity:2.6, updated:'hace 32 s' },
+  { sku:'EF-JG-GR', name:'Jogger Denim Grafiti Gris', model:'Jogger Print', category:'Jean', img:'productos/producto-04.jpeg', price:169, cost:82, colors:['Gris'], sizes:{28:4,30:6,32:7,34:4,36:2}, sold7:9, sold30:29, lastSale:'hace 3 días', velocity:1.3, updated:'hace 32 s' },
+  { sku:'EF-JS-GR', name:'Jean Slim Rasgado Gris', model:'Slim', category:'Jean', img:'productos/producto-05.jpeg', price:165, cost:80, colors:['Gris'], sizes:{28:0,30:1,32:3,34:2,36:0}, sold7:15, sold30:52, lastSale:'hace 5 h', velocity:2.1, updated:'hace 32 s' },
+  { sku:'EF-JC-TR', name:'Jean Cargo Tribal Negro', model:'Cargo', category:'Jean', img:'productos/producto-06.jpeg', price:185, cost:92, colors:['Negro'], sizes:{28:3,30:5,32:6,34:3,36:1}, sold7:12, sold30:44, lastSale:'hace 1 día', velocity:1.7, updated:'hace 32 s' },
+  { sku:'EF-JB-CT', name:'Jean Baggy Bolsillo Contraste', model:'Baggy', category:'Jean', img:'productos/producto-07.jpeg', price:179, cost:89, colors:['Azul Claro'], sizes:{28:5,30:7,32:8,34:4,36:2}, sold7:27, sold30:95, lastSale:'hace 25 min', velocity:3.9, updated:'hace 32 s' },
+  { sku:'EF-PC-NG', name:'Pantalón Corduroy Negro', model:'Corduroy', category:'Pantalón', img:'productos/producto-08.jpeg', price:155, cost:74, colors:['Negro'], sizes:{28:2,30:2,32:1,34:0,36:0}, sold7:6, sold30:14, lastSale:'hace 12 días', velocity:0.5, updated:'hace 32 s' },
+  { sku:'EF-JR-OS', name:'Jean Recto Denim Oscuro', model:'Recto', category:'Jean', img:'productos/producto-09.jpeg', price:159, cost:78, colors:['Denim Oscuro'], sizes:{28:6,30:9,32:10,34:6,36:3}, sold7:21, sold30:79, lastSale:'hace 2 h', velocity:3.0, updated:'hace 32 s' },
+  { sku:'EF-JR-MD', name:'Jean Regular Azul Medio', model:'Regular', category:'Jean', img:'productos/producto-10.jpeg', price:149, cost:72, colors:['Azul Medio'], sizes:{28:7,30:9,32:8,34:5,36:2}, sold7:19, sold30:70, lastSale:'hace 4 h', velocity:2.7, updated:'hace 32 s' },
   { sku:'EF-JA-AZ', name:'Jean Acid Wash Azul', model:'Acid Wash', category:'Jean', img:'p11', price:172, cost:86, colors:['Azul'], sizes:{28:0,30:0,32:1,34:0,36:0}, sold7:8, sold30:22, lastSale:'hace 6 días', velocity:1.1, updated:'hace 32 s' },
   { sku:'EF-JB-NG', name:'Jean Baggy Negro Denim', model:'Baggy', category:'Jean', img:'p12', price:175, cost:88, colors:['Negro'], sizes:{28:3,30:4,32:5,34:2,36:1}, sold7:22, sold30:81, lastSale:'hace 1 h', velocity:3.1, updated:'hace 32 s' },
   { sku:'EF-JR-AZ2', name:'Jean Recto Azul Denim', model:'Recto', category:'Jean', img:'p13', price:159, cost:78, colors:['Azul'], sizes:{28:5,30:6,32:7,34:3,36:1}, sold7:14, sold30:48, lastSale:'hace 8 h', velocity:2.0, updated:'hace 32 s' },
@@ -1417,7 +1417,7 @@ function renderTopProducts(){
   document.getElementById('top-products-list').innerHTML = sorted.map((p,i)=>`
     <button onclick="openProductDetail('${p.sku}')" class="w-full flex items-center gap-3 py-2 hover:bg-surface-dim rounded-lg px-1.5 transition-colors text-left">
       <span class="text-xs font-bold text-ink-faint w-4">${i+1}</span>
-      <img src="${img(p.img)}" class="w-10 h-10 rounded object-cover border border-line" />
+      <img src="${img(p.img)}" loading="lazy" decoding="async" class="w-10 h-10 rounded object-cover border border-line" />
       <div class="flex-1 min-w-0">
         <p class="text-sm font-semibold text-ink truncate">${p.name}</p>
         <p class="text-[11px] text-ink-faint">${p.sold7} unid · S/ ${(p.sold7*p.price).toLocaleString('es-PE')}</p>
@@ -1429,7 +1429,7 @@ function renderStaleProducts(){
   const stale = [...PRODUCTS].filter(p=>p.sold7===0 || p.velocity<0.8).sort((a,b)=>a.velocity-b.velocity).slice(0,5);
   document.getElementById('stale-products-list').innerHTML = stale.map(p=>`
     <button onclick="openProductDetail('${p.sku}')" class="w-full flex items-center gap-3 py-2 hover:bg-surface-dim rounded-lg px-1.5 transition-colors text-left">
-      <img src="${img(p.img)}" class="w-10 h-10 rounded object-cover border border-line" />
+      <img src="${img(p.img)}" loading="lazy" decoding="async" class="w-10 h-10 rounded object-cover border border-line" />
       <div class="flex-1 min-w-0">
         <p class="text-sm font-semibold text-ink truncate">${p.name}</p>
         <p class="text-[11px] text-ink-faint">Stock: ${totalStock(p)} · Últ. venta: ${p.lastSale}</p>
@@ -1533,7 +1533,7 @@ function renderSales(){
   const q=(document.getElementById('global-search')?.value||'').trim().toLowerCase();
   const rows=SALES.filter(s=>passesSaleFilters(s) && (!q || [s.id,s.customer,s.product.name,s.sku,s.channel,s.color].some(v=>String(v).toLowerCase().includes(q)))).slice(0,30);
   document.getElementById('sales-table-body').innerHTML=rows.length?rows.map(s=>`<tr class="border-t border-line hover:bg-surface-dim/60 cursor-pointer" onclick="openSaleDetail('${s.id}')"><td class="p-3 text-ink-soft whitespace-nowrap">${s.date}</td><td class="p-3 font-bold text-primary">${s.id}</td><td class="p-3 text-ink">${s.customer}</td><td class="p-3 text-ink">${s.product.name}</td><td class="p-3 text-ink-faint text-xs">${s.sku}<br><span>${s.size} / ${s.color}</span></td><td class="p-3 text-right font-semibold tabular">S/ ${s.total.toFixed(2)}</td><td class="p-3 text-ink-soft">${s.channel}</td><td class="p-3">${statusPill(s.status)}</td></tr>`).join(''):`<tr><td colspan="8" class="p-10 text-center text-ink-faint">No hay ventas que coincidan con los filtros.</td></tr>`;
-  document.getElementById('sales-cards-mobile').innerHTML=rows.map(s=>`<button onclick="openSaleDetail('${s.id}')" class="w-full text-left bg-white border border-line rounded-lg p-3.5 flex gap-3 shadow-card"><img src="${img(s.product.img)}" class="w-14 h-14 rounded object-cover border border-line flex-shrink-0"><div class="flex-1 min-w-0"><div class="flex justify-between items-start"><p class="font-bold text-sm text-primary">${s.id}</p>${statusPill(s.status)}</div><p class="text-sm text-ink truncate">${s.product.name}</p><div class="flex justify-between items-center mt-1"><p class="text-[11px] text-ink-faint">${s.customer} · ${s.channel}</p><p class="text-sm font-bold text-ink tabular">S/ ${s.total.toFixed(2)}</p></div></div></button>`).join('');
+  document.getElementById('sales-cards-mobile').innerHTML=rows.map(s=>`<button onclick="openSaleDetail('${s.id}')" class="w-full text-left bg-white border border-line rounded-lg p-3.5 flex gap-3 shadow-card"><img src="${img(s.product.img)}" loading="lazy" decoding="async" class="w-14 h-14 rounded object-cover border border-line flex-shrink-0"><div class="flex-1 min-w-0"><div class="flex justify-between items-start"><p class="font-bold text-sm text-primary">${s.id}</p>${statusPill(s.status)}</div><p class="text-sm text-ink truncate">${s.product.name}</p><div class="flex justify-between items-center mt-1"><p class="text-[11px] text-ink-faint">${s.customer} · ${s.channel}</p><p class="text-sm font-bold text-ink tabular">S/ ${s.total.toFixed(2)}</p></div></div></button>`).join('');
 }
 function statusPill(status){
   const map = { 'Completada':'ok','Pendiente':'warn','Cancelada':'bad','Devuelta':'bad' };
@@ -1612,7 +1612,7 @@ function renderInventory(){
 }
 function productCard(p){
   const st=stockStatus(p), stock=totalStock(p), margin=Math.round((p.price-p.cost)/p.price*100);
-  return `<button onclick="openProductDetail('${p.sku}')" class="text-left bg-white border border-line rounded-lg overflow-hidden hover:shadow-card hover:border-copper transition-all group"><div class="aspect-[4/3] overflow-hidden bg-surface-dim relative"><img src="${img(p.img)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"><span class="absolute top-2 left-2 text-[10px] font-bold uppercase bg-white/90 px-2 py-0.5 rounded-full">${st.icon} ${st.label}</span></div><div class="p-3"><p class="text-[10px] font-bold text-ink-faint uppercase tracking-wide">${p.sku}</p><p class="font-bold text-ink leading-snug mt-1">${p.name}</p><div class="grid grid-cols-3 gap-2 mt-3"><div><p class="text-[10px] text-ink-faint">7 días</p><p class="text-sm font-bold">${p.sold7} unid.</p></div><div><p class="text-[10px] text-ink-faint">Stock</p><p class="text-sm font-bold">${stock}</p></div><div><p class="text-[10px] text-ink-faint">Margen</p><p class="text-sm font-bold text-ok">${margin}%</p></div></div></div></button>`;
+  return `<button onclick="openProductDetail('${p.sku}')" class="text-left bg-white border border-line rounded-lg overflow-hidden hover:shadow-card hover:border-copper transition-all group"><div class="aspect-[3/4] overflow-hidden bg-surface-dim relative"><img src="${img(p.img)}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"><span class="absolute top-2 left-2 text-[10px] font-bold uppercase bg-white/90 px-2 py-0.5 rounded-full">${st.icon} ${st.label}</span></div><div class="p-3"><p class="text-[10px] font-bold text-ink-faint uppercase tracking-wide">${p.sku}</p><p class="font-bold text-ink leading-snug mt-1">${p.name}</p><div class="grid grid-cols-3 gap-2 mt-3"><div><p class="text-[10px] text-ink-faint">7 días</p><p class="text-sm font-bold">${p.sold7} unid.</p></div><div><p class="text-[10px] text-ink-faint">Stock</p><p class="text-sm font-bold">${stock}</p></div><div><p class="text-[10px] text-ink-faint">Margen</p><p class="text-sm font-bold text-ok">${margin}%</p></div></div></div></button>`;
 }
 function renderProducts(){
   const q=(document.getElementById('products-search')?.value||'').trim().toLowerCase(); const sort=document.getElementById('products-sort')?.value||'sold';
@@ -1644,7 +1644,7 @@ function openProductDetail(sku){
   el.innerHTML = `
     <div class="relative">
       <button onclick="closeSheets()" class="absolute top-3 right-3 z-10 bg-white/90 rounded-full p-1.5 shadow"><span class="material-symbols-outlined">close</span></button>
-      <img src="${img(p.img)}" class="w-full aspect-[3/4] object-cover" />
+      <img src="${img(p.img)}" loading="eager" decoding="async" class="w-full aspect-[3/4] object-cover" />
     </div>
     <div class="p-5 space-y-4">
       <div>

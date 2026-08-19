@@ -1,0 +1,16 @@
+IMAGENES DE PRODUCTOS - ELEMENT FIRST V6
+
+Las 10 fotografías subidas por el usuario están en:
+img/productos/
+
+producto-01.jpeg ... producto-10.jpeg
+
+Se conservan los archivos originales sin recomprimirlos.
+La aplicación los carga directamente y usa object-fit para mantener la fotografía sin deformarla.
+
+Para añadir nuevas fotos:
+1. Copia la foto a img/productos/.
+2. Usa un nombre estable, por ejemplo producto-11.jpeg.
+3. En los datos del producto usa img:'productos/producto-11.jpeg'.
+
+Recomendación: si tienes una versión original de mayor resolución, usa esa versión. Una imagen de 720x1280 no puede recuperar detalle que no existe; no conviene hacerla pasar por una ampliación artificial.
