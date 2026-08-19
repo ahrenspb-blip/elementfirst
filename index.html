@@ -91,9 +91,14 @@
         </div>
       </div>
       <div>
-        <p class="text-xs uppercase tracking-[0.25em] text-white/60 mb-3">Business Management</p>
-        <h1 class="text-4xl font-extrabold leading-tight max-w-md">Datos → Análisis<br/>→ Decisión → Acción</h1>
-        <p class="mt-4 text-white/70 max-w-sm text-sm">El centro de control digital de Element First. Inventario, ventas y canales, en un solo lugar.</p>
+        <p class="text-xs uppercase tracking-[0.25em] text-white/60 mb-3">Business Management OS</p>
+        <h1 class="text-4xl lg:text-5xl font-extrabold leading-[1.05] max-w-lg">Datos que se convierten en <span class="text-white/65">acción.</span></h1>
+        <p class="mt-4 text-white/70 max-w-md text-sm leading-6">La plataforma comercial de Element First para controlar ventas, inventario, clientes y canales desde una sola pantalla.</p>
+        <div class="grid grid-cols-3 gap-2 max-w-md mt-7">
+          <div class="bg-white/10 border border-white/10 rounded-xl p-3"><b class="text-lg">+28%</b><p class="text-[10px] text-white/55 mt-1">Canal líder</p></div>
+          <div class="bg-white/10 border border-white/10 rounded-xl p-3"><b class="text-lg">99.9%</b><p class="text-[10px] text-white/55 mt-1">Disponibilidad</p></div>
+          <div class="bg-white/10 border border-white/10 rounded-xl p-3"><b class="text-lg">10+</b><p class="text-[10px] text-white/55 mt-1">Módulos</p></div>
+        </div>
       </div>
     </div>
   </div>
@@ -140,6 +145,7 @@
       <p class="text-[11px] text-white/50 mt-1 pl-0.5">Denim Intelligence</p>
     </div>
     <div class="flex-1 flex flex-col gap-1 overflow-y-auto no-scrollbar">
+      <div class="nav-section">Visión general</div>
       <button data-nav="dashboard" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
         <span class="material-symbols-outlined text-[20px]">dashboard</span> Dashboard</button>
       <button data-nav="sales" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
@@ -148,12 +154,14 @@
         <span class="material-symbols-outlined text-[20px]">inventory_2</span> Inventario</button>
       <button data-nav="products" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
         <span class="material-symbols-outlined text-[20px]">checkroom</span> Productos</button>
+      <div class="nav-section">Inteligencia comercial</div>
       <button data-nav="clients" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
         <span class="material-symbols-outlined text-[20px]">group</span> Clientes</button>
       <button data-nav="channels" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
         <span class="material-symbols-outlined text-[20px]">hub</span> Canales</button>
       <button data-nav="reports" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
         <span class="material-symbols-outlined text-[20px]">analytics</span> Reportes</button>
+      <div class="nav-section">Control del sistema</div>
       <button data-nav="alerts" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative">
         <span class="material-symbols-outlined text-[20px]">notifications</span> Alertas
         <span id="sidebar-alert-count" class="ml-auto bg-copper text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">6</span></button>
@@ -186,9 +194,12 @@
           </div>
           <h1 id="page-title" class="font-bold text-lg lg:text-2xl text-primary truncate">Dashboard</h1>
         </div>
-        <div class="hidden md:flex items-center gap-2 bg-surface-dim rounded-full px-4 py-2 w-64 mr-3">
-          <span class="material-symbols-outlined text-ink-faint text-[18px]">search</span>
-          <input id="global-search" placeholder="Buscar SKU, producto, color..." class="bg-transparent outline-none text-sm w-full" />
+        <div class="hidden md:flex items-center gap-2 mr-3">
+          <button onclick="openCommandPalette()" class="flex items-center gap-2 bg-surface-dim rounded-full px-4 py-2 w-72 text-left text-sm text-ink-faint hover:bg-slate-100 transition-colors">
+            <span class="material-symbols-outlined text-[18px]">search</span><span class="flex-1">Buscar en Element First...</span><kbd class="text-[10px] bg-white border border-line rounded px-1.5 py-0.5">⌘ K</kbd>
+          </button>
+          <span class="hidden xl:inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide bg-primary-tint text-primary px-3 py-2 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span>Demo comercial</span>
+          <input id="global-search" class="hidden" />
         </div>
         <div class="flex items-center gap-1.5">
           <button onclick="openSearchSheet()" class="md:hidden p-2 rounded-full hover:bg-surface-dim text-ink-soft"><span class="material-symbols-outlined">search</span></button>
@@ -229,6 +240,29 @@
           <button onclick="runSync()" class="text-xs font-bold uppercase tracking-wide text-primary flex items-center gap-1 hover:underline">
             <span class="material-symbols-outlined text-[16px]">sync</span> Sincronizar ahora
           </button>
+        </div>
+
+        <!-- Executive hero -->
+        <div class="premium-card gradient-brand text-white p-5 lg:p-6 overflow-hidden relative">
+          <div class="absolute -right-16 -top-20 w-64 h-64 rounded-full border border-white/10"></div>
+          <div class="absolute right-8 bottom-[-90px] w-48 h-48 rounded-full border border-white/10"></div>
+          <div class="relative grid lg:grid-cols-[1fr_auto] gap-5 items-center">
+            <div>
+              <div class="flex items-center gap-2 mb-2"><span class="text-[10px] font-extrabold uppercase tracking-[.18em] text-white/60">Control ejecutivo</span><span class="px-2 py-0.5 rounded-full bg-white/10 text-[10px] font-bold">EN VIVO</span></div>
+              <h2 class="text-2xl lg:text-3xl font-extrabold tracking-tight">Convierte datos en decisiones.</h2>
+              <p class="text-sm text-white/70 max-w-2xl mt-2">Una sola vista para saber qué vender, qué reponer, qué canal escalar y dónde estás perdiendo margen.</p>
+              <div class="flex flex-wrap gap-2 mt-4">
+                <button onclick="navTo('inventory')" class="quick-action bg-white text-primary rounded-full px-4 py-2 text-xs font-extrabold uppercase">Revisar stock crítico</button>
+                <button onclick="navTo('reports')" class="quick-action bg-white/10 border border-white/15 text-white rounded-full px-4 py-2 text-xs font-extrabold uppercase">Ver rentabilidad</button>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 min-w-[250px]">
+              <div class="bg-white/10 border border-white/10 rounded-xl p-3"><p class="text-[10px] text-white/50 uppercase font-bold">Margen</p><p class="text-xl font-extrabold mt-1">33.0%</p><p class="text-[10px] text-emerald-200 mt-1">▲ 2.4 pts</p></div>
+              <div class="bg-white/10 border border-white/10 rounded-xl p-3"><p class="text-[10px] text-white/50 uppercase font-bold">Conversión</p><p class="text-xl font-extrabold mt-1">4.8%</p><p class="text-[10px] text-emerald-200 mt-1">▲ 0.7 pts</p></div>
+              <div class="bg-white/10 border border-white/10 rounded-xl p-3"><p class="text-[10px] text-white/50 uppercase font-bold">Stock riesgo</p><p class="text-xl font-extrabold mt-1">6 SKUs</p><p class="text-[10px] text-amber-200 mt-1">Acción requerida</p></div>
+              <div class="bg-white/10 border border-white/10 rounded-xl p-3"><p class="text-[10px] text-white/50 uppercase font-bold">Sync</p><p class="text-xl font-extrabold mt-1">99.9%</p><p class="text-[10px] text-emerald-200 mt-1">Operativo</p></div>
+            </div>
+          </div>
         </div>
 
         <!-- KPIs -->
@@ -287,6 +321,30 @@
           </div>
         </div>
 
+        <!-- AI copilot + quick actions -->
+        <div class="grid lg:grid-cols-3 gap-4">
+          <div class="lg:col-span-2 premium-card p-5">
+            <div class="flex items-start justify-between gap-3">
+              <div><span class="eyebrow">Element First Copilot</span><h3 class="font-bold text-lg mt-1">¿Qué debería hacer hoy?</h3><p class="text-xs text-ink-faint mt-1">Recomendaciones generadas a partir de ventas, stock y margen.</p></div>
+              <span class="w-9 h-9 rounded-xl gradient-copper text-white flex items-center justify-center"><span class="material-symbols-outlined">auto_awesome</span></span>
+            </div>
+            <div class="grid sm:grid-cols-3 gap-2 mt-4">
+              <button onclick="navTo('inventory')" class="quick-action border border-line rounded-xl p-3 text-left"><span class="material-symbols-outlined text-warn">inventory_2</span><p class="font-bold text-sm mt-2">Reponer 6 SKUs</p><p class="text-[11px] text-ink-faint mt-1">Evita quiebres en tallas clave.</p></button>
+              <button onclick="navTo('channels')" class="quick-action border border-line rounded-xl p-3 text-left"><span class="material-symbols-outlined text-ok">trending_up</span><p class="font-bold text-sm mt-2">Escalar TikTok</p><p class="text-[11px] text-ink-faint mt-1">+28% de crecimiento semanal.</p></button>
+              <button onclick="navTo('products')" class="quick-action border border-line rounded-xl p-3 text-left"><span class="material-symbols-outlined text-primary">sell</span><p class="font-bold text-sm mt-2">Empujar 3 productos</p><p class="text-[11px] text-ink-faint mt-1">Alta demanda y buen margen.</p></button>
+            </div>
+          </div>
+          <div class="premium-card p-5 gradient-copper text-white">
+            <span class="eyebrow !text-white/60">Acciones rápidas</span>
+            <div class="grid grid-cols-2 gap-2 mt-3">
+              <button onclick="showToast('Nuevo pedido: módulo preparado para integrar POS/ERP')" class="bg-white/10 border border-white/10 rounded-xl p-3 text-left"><span class="material-symbols-outlined">add_shopping_cart</span><p class="text-xs font-bold mt-2">Nuevo pedido</p></button>
+              <button onclick="navTo('products')" class="bg-white/10 border border-white/10 rounded-xl p-3 text-left"><span class="material-symbols-outlined">add_box</span><p class="text-xs font-bold mt-2">Nuevo SKU</p></button>
+              <button onclick="runSync()" class="bg-white/10 border border-white/10 rounded-xl p-3 text-left"><span class="material-symbols-outlined">sync</span><p class="text-xs font-bold mt-2">Sincronizar</p></button>
+              <button onclick="exportReport('Resumen ejecutivo','PDF')" class="bg-white/10 border border-white/10 rounded-xl p-3 text-left"><span class="material-symbols-outlined">picture_as_pdf</span><p class="text-xs font-bold mt-2">Exportar</p></button>
+            </div>
+          </div>
+        </div>
+
         <!-- Smart Summary -->
         <div class="bg-primary rounded-lg p-5 text-white shadow-card">
           <h3 class="font-bold mb-3 flex items-center gap-2"><span class="material-symbols-outlined">auto_awesome</span> Resumen de hoy</h3>
@@ -327,8 +385,10 @@
       <!-- ---------------- SALES ---------------- -->
       <section id="page-sales" class="page fade-in space-y-4">
         <div class="flex items-center justify-between flex-wrap gap-3">
-          <h2 class="text-lg font-bold text-ink hidden lg:block">Ventas</h2>
+          <div><h2 class="text-lg font-bold text-ink hidden lg:block">Ventas</h2><p class="text-xs text-ink-faint hidden lg:block">Seguimiento de pedidos, ingresos y operación omnicanal</p></div>
           <div class="flex items-center gap-2 flex-1 lg:flex-none justify-end">
+            <button onclick="showToast('Exportación de ventas preparada')" class="hidden sm:flex items-center gap-1.5 text-xs font-bold uppercase border border-line rounded-full px-4 py-2 bg-white"><span class="material-symbols-outlined text-[16px]">download</span>Exportar</button>
+            <button onclick="showToast('Nuevo pedido: listo para conectar con tu ERP/POS')" class="hidden sm:flex items-center gap-1.5 text-xs font-bold uppercase bg-primary text-white rounded-full px-4 py-2"><span class="material-symbols-outlined text-[16px]">add</span>Nuevo pedido</button>
             <button onclick="openFilterSheet('sales')" class="flex items-center gap-1.5 text-xs font-bold uppercase border border-line rounded-full px-4 py-2 bg-white"><span class="material-symbols-outlined text-[16px]">filter_list</span>Filtros</button>
           </div>
         </div>
@@ -409,7 +469,13 @@
 
       <!-- ---------------- CLIENTS ---------------- -->
       <section id="page-clients" class="page fade-in space-y-4">
-        <h2 class="text-lg font-bold text-ink">Clientes</h2>
+        <div class="flex items-center justify-between"><div><h2 class="text-lg font-bold text-ink">Clientes</h2><p class="text-sm text-ink-faint">Conoce quién compra, cuánto aporta y por qué canal regresa.</p></div><button onclick="showToast('Segmentación avanzada: próxima integración')" class="text-xs font-bold uppercase bg-primary text-white rounded-full px-4 py-2">Segmentar</button></div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="premium-card p-4"><span class="eyebrow">Clientes activos</span><p class="metric-number text-2xl font-extrabold mt-1">842</p><p class="text-xs text-ok mt-1">▲ 11.8%</p></div>
+          <div class="premium-card p-4"><span class="eyebrow">Recompra</span><p class="metric-number text-2xl font-extrabold mt-1">38.4%</p><p class="text-xs text-ok mt-1">▲ 4.1 pts</p></div>
+          <div class="premium-card p-4"><span class="eyebrow">LTV promedio</span><p class="metric-number text-2xl font-extrabold mt-1">S/ 486</p><p class="text-xs text-ink-faint mt-1">por cliente</p></div>
+          <div class="premium-card p-4"><span class="eyebrow">Nuevos 7d</span><p class="metric-number text-2xl font-extrabold mt-1">126</p><p class="text-xs text-ok mt-1">▲ 18.2%</p></div>
+        </div>
         <div class="bg-white border border-line rounded-lg overflow-hidden shadow-card">
           <table class="w-full text-left text-sm">
             <thead class="bg-surface-dim text-[11px] uppercase font-bold text-ink-faint tracking-wide">
@@ -422,7 +488,7 @@
 
       <!-- ---------------- CHANNELS ---------------- -->
       <section id="page-channels" class="page fade-in space-y-4">
-        <h2 class="text-lg font-bold text-ink">Rendimiento de canales</h2>
+        <div class="flex items-center justify-between"><div><h2 class="text-lg font-bold text-ink">Rendimiento de canales</h2><p class="text-sm text-ink-faint">Compara adquisición, conversión, ticket y crecimiento.</p></div><button onclick="showToast('Vista de atribución omnicanal lista para integrar')" class="text-xs font-bold uppercase border border-line bg-white rounded-full px-4 py-2">Atribución</button></div>
         <div id="channel-ranking" class="grid sm:grid-cols-3 gap-3"></div>
         <div class="bg-white border border-line rounded-lg p-4 lg:p-5 shadow-card">
           <h3 class="font-bold text-ink mb-3">Comparativo de canales</h3>
@@ -445,6 +511,7 @@
           <select id="report-period" class="text-xs font-semibold border border-line rounded-full px-4 py-2 bg-white"><option>Últimos 7 días</option><option>Últimos 30 días</option><option>Este mes</option></select>
         </div>
         <div id="reports-kpis" class="grid grid-cols-2 lg:grid-cols-4 gap-3"></div>
+        <div class="premium-card gradient-brand text-white p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4"><div><span class="eyebrow !text-white/60">Resumen para dirección</span><h3 class="font-bold text-lg mt-1">Tu negocio está creciendo con margen saludable.</h3><p class="text-xs text-white/65 mt-1">Descarga un informe ejecutivo para compartir con gerencia, socios o finanzas.</p></div><button onclick="exportReport('Resumen ejecutivo','PDF')" class="bg-white text-primary rounded-full px-5 py-2.5 text-xs font-extrabold uppercase whitespace-nowrap">Descargar PDF</button></div>
         <div class="grid lg:grid-cols-2 gap-4">
           <div class="bg-white border border-line rounded-lg p-5 shadow-card"><h3 class="font-bold mb-4">Rentabilidad por producto</h3><div id="margin-report" class="space-y-3"></div></div>
           <div class="bg-white border border-line rounded-lg p-5 shadow-card"><h3 class="font-bold mb-4">Distribución de inventario</h3><div id="stock-report" class="space-y-3"></div></div>
@@ -634,6 +701,16 @@
 
 <!-- Sale detail sheet -->
 <div id="sheet-sale" class="fixed inset-0 sm:inset-y-0 sm:right-0 sm:left-auto sm:w-[420px] bg-white z-50 hidden overflow-y-auto sheet-enter"></div>
+
+<!-- Command palette -->
+<div id="command-palette" class="fixed inset-0 z-[70] hidden">
+  <div class="absolute inset-0 bg-slate-950/45 backdrop-blur-sm" onclick="closeCommandPalette()"></div>
+  <div class="relative mx-auto mt-[10vh] w-[min(680px,calc(100%-24px))] bg-white rounded-2xl command-shadow overflow-hidden">
+    <div class="flex items-center gap-3 px-5 py-4 border-b border-line"><span class="material-symbols-outlined text-ink-faint">search</span><input id="command-input" autofocus placeholder="Ir a una sección o buscar un SKU..." class="outline-none text-sm flex-1"/><kbd class="text-[10px] border border-line rounded px-2 py-1">ESC</kbd></div>
+    <div id="command-results" class="p-2 max-h-[55vh] overflow-y-auto"></div>
+    <div class="px-4 py-3 border-t border-line text-[10px] text-ink-faint flex justify-between"><span>↑ ↓ navegar · Enter abrir</span><span>Element First OS</span></div>
+  </div>
+</div>
 
 <!-- Toast -->
 <div id="toast" class="fixed bottom-24 lg:bottom-6 left-1/2 -translate-x-1/2 bg-ink text-white text-sm font-medium px-5 py-3 rounded-full shadow-pop z-[60] hidden"></div>
@@ -1202,6 +1279,25 @@ document.getElementById('global-search').addEventListener('input', e=>{
   const q=e.target.value.trim();
   if(q.length>1){ navTo('products'); const s=document.getElementById('products-search'); s.value=q; renderProducts(); }
 });
+
+/* ======================= COMMAND PALETTE ======================= */
+const COMMANDS = [
+  ['dashboard','Dashboard','dashboard','Vista ejecutiva y KPIs'],['sales','Ventas','payments','Pedidos e ingresos'],['inventory','Inventario','inventory_2','Stock por talla y SKU'],['products','Productos','checkroom','Catálogo y rentabilidad'],['clients','Clientes','group','Clientes y recompra'],['channels','Canales','hub','Rendimiento omnicanal'],['reports','Reportes','analytics','Análisis y exportación'],['alerts','Alertas','notifications','Riesgos y oportunidades'],['sync','Sincronización','sync_alt','Estado del ERP'],['settings','Configuración','settings','Usuarios y parámetros']
+];
+function openCommandPalette(){
+  const p=document.getElementById('command-palette'); if(!p)return; p.classList.remove('hidden');
+  const input=document.getElementById('command-input'); input.value=''; renderCommandResults(''); setTimeout(()=>input.focus(),30);
+}
+function closeCommandPalette(){document.getElementById('command-palette')?.classList.add('hidden');}
+function renderCommandResults(q){
+  const query=(q||'').toLowerCase();
+  const matches=COMMANDS.filter(c=>c[1].toLowerCase().includes(query)||c[3].toLowerCase().includes(query)||c[0].includes(query));
+  const productMatches=PRODUCTS.filter(p=>query && (p.name.toLowerCase().includes(query)||p.sku.toLowerCase().includes(query))).slice(0,4);
+  const html=[...matches.map(c=>`<button onclick="closeCommandPalette();navTo('${c[0]}')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-surface-dim text-left"><span class="w-9 h-9 rounded-lg bg-primary-tint text-primary flex items-center justify-center"><span class="material-symbols-outlined">${c[2]}</span></span><span class="flex-1"><b class="block text-sm">${c[1]}</b><small class="text-[11px] text-ink-faint">${c[3]}</small></span><span class="material-symbols-outlined text-ink-faint">arrow_forward</span></button>`), ...productMatches.map(p=>`<button onclick="closeCommandPalette();openProductDetail('${p.sku}')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-surface-dim text-left"><img src="${img(p.img)}" class="w-9 h-9 rounded-lg object-cover"/><span class="flex-1"><b class="block text-sm">${p.name}</b><small class="text-[11px] text-ink-faint">${p.sku} · S/ ${p.price}</small></span><span class="material-symbols-outlined text-ink-faint">open_in_new</span></button>`)]
+  document.getElementById('command-results').innerHTML=html.join('')||'<div class="p-8 text-center text-sm text-ink-faint">No encontramos resultados.</div>';
+}
+document.addEventListener('keydown',e=>{ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openCommandPalette();} if(e.key==='Escape')closeCommandPalette(); });
+document.getElementById('command-input')?.addEventListener('input',e=>renderCommandResults(e.target.value));
 
 /* ======================= INIT ======================= */
 function initAll(){
