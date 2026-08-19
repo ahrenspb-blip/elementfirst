@@ -54,8 +54,8 @@
   .denim-tex { background-image: repeating-linear-gradient(115deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 5px); }
   .fade-in { animation: fadeIn .35s ease both; }
   @keyframes fadeIn { from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
-  .view { display:none; }
-  .view.active { display:block; }
+  .view { display:none !important; }
+  .view.active { display:block !important; }
   .sheet-enter { animation: sheetUp .28s cubic-bezier(.2,.8,.2,1) both; }
   @keyframes sheetUp { from{ transform:translateY(100%);} to{ transform:translateY(0);} }
   input[type=range]{ accent-color:#000666; }
@@ -668,6 +668,18 @@ const ALERTS = [
 
 /* ======================= STATE ======================= */
 let state = { view:'dashboard', chartMetric:'ingresos', filters:{status:new Set(),color:new Set(),size:new Set(),channel:new Set()}, filterContext:'inventory' };
+
+/* Safety: force correct initial view state regardless of any residual DOM/class state */
+(function enforceInitialView(){
+  var login = document.getElementById('view-login');
+  var shell = document.getElementById('app-shell');
+  if(shell){ shell.classList.remove('active'); }
+  if(login){ login.classList.add('active'); }
+  ['sheet-more','sheet-filter','sheet-sync','sheet-search','sheet-product','sheet-sale','scrim'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.classList.add('hidden');
+  });
+})();
 
 /* ======================= NAV ======================= */
 function navTo(view){
