@@ -68,7 +68,7 @@
 <!-- ======================= LOGIN VIEW ======================= -->
 <div id="view-login" class="view active min-h-screen w-full flex items-stretch">
   <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-primary">
-    <img src="/img/hero.jpg" class="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-luminosity" />
+    <img src="./img/hero.jpg" class="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-luminosity" />
     <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-primary/10"></div>
     <div class="relative z-10 flex flex-col justify-between p-14 text-white w-full">
       <div>
@@ -594,7 +594,7 @@
 
 <script>
 /* ======================= IMAGE MAP (base64 injected at build time) ======================= */
-function img(key){ return '/img/'+key+'.jpg'; }
+function img(key){ return './img/'+key+'.jpg'; }
 
 /* ======================= DATA ======================= */
 const CHANNELS = [
@@ -683,9 +683,11 @@ let state = { view:'dashboard', chartMetric:'ingresos', filters:{status:new Set(
 
 /* ======================= NAV ======================= */
 function navTo(view){
+  const target = document.getElementById('page-' + view);
+  if(!target) return;
   state.view = view;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+view).classList.add('active');
+  target.classList.add('active');
   document.querySelectorAll('[data-nav]').forEach(b=>{
     const on = b.dataset.nav===view;
     b.classList.toggle('bg-white/10', on);
@@ -736,7 +738,13 @@ function openFilterSheet(ctx){
   renderFilterOptions();
   document.getElementById('sheet-filter').classList.remove('hidden'); document.getElementById('scrim').classList.remove('hidden');
 }
-function clearFilters(){ state.filters = {status:new Set(),color:new Set(),size:new Set(),channel:new Set()}; renderFilterOptions(); }
+function clearFilters(){
+  state.filters = {status:new Set(),color:new Set(),size:new Set(),channel:new Set()};
+  renderFilterOptions();
+  renderInventory();
+  renderProducts();
+  renderSales();
+}
 function applyFilters(){ closeSheets(); renderInventory(); renderProducts(); renderSales(); showToast('Filtros aplicados'); }
 
 function chip(label, active, onClick){
@@ -1036,7 +1044,8 @@ function renderInventory(){
 function renderProducts(){
   document.getElementById('products-grid').innerHTML = PRODUCTS.map(productCard).join('');
 }
-document.getElementById('inventory-search').addEventListener('input', renderInventory);
+const inventorySearchEl = document.getElementById('inventory-search');
+if (inventorySearchEl) inventorySearchEl.addEventListener('input', renderInventory);
 
 function stockMatrixHTML(p){
   const sizes = Object.keys(p.sizes);
@@ -1181,8 +1190,10 @@ function renderMobileSearch(q){
       <div><p class="text-sm font-semibold text-ink">${p.name}</p><p class="text-xs text-ink-faint">${p.sku}</p></div>
     </button>`).join('');
 }
-document.getElementById('mobile-search-input').addEventListener('input', e=>renderMobileSearch(e.target.value));
-document.getElementById('global-search').addEventListener('input', e=>{
+const mobileSearchEl = document.getElementById('mobile-search-input');
+if (mobileSearchEl) mobileSearchEl.addEventListener('input', e=>renderMobileSearch(e.target.value));
+const globalSearchEl = document.getElementById('global-search');
+if (globalSearchEl) globalSearchEl.addEventListener('input', e=>{
   const q = e.target.value;
   if(q.length>1){ navTo('inventory'); document.getElementById('inventory-search').value=q; renderInventory(); }
 });
