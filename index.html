@@ -671,6 +671,82 @@ img{max-width:100%}
   .hover\:shadow-card:hover{box-shadow:none!important}
 }
 </style>
+
+<!-- PWA / App shell metadata -->
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Element First">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Element First">
+<meta name="format-detection" content="telephone=no">
+
+
+<style id="element-first-app-shell-v8">
+/* ===== V8: true web-app shell ===== */
+html{height:100%;background:#f5f7fb;overscroll-behavior:none}
+body{min-height:100%;margin:0;background:#f5f7fb;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
+button,a,input,select{touch-action:manipulation}
+#app-shell{min-height:100dvh!important;height:100dvh;overflow:hidden}
+#app-shell > nav{position:fixed!important;left:0!important;top:0!important;bottom:0!important;height:100dvh!important}
+#app-shell > .flex-1{height:100dvh!important;min-height:0!important;overflow:hidden!important}
+#app-shell header{flex:0 0 68px!important;height:68px!important}
+#app-shell header>div{height:68px!important}
+#app-shell main{overflow:auto!important;min-height:0!important;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+#app-shell main::-webkit-scrollbar{width:8px}
+#app-shell main::-webkit-scrollbar-thumb{background:#cbd1df;border-radius:99px}
+/* Desktop: application density, not landing-page spacing */
+@media (min-width:1024px){
+  #app-shell > nav{width:244px!important}
+  #app-shell > .flex-1{margin-left:244px!important}
+  #app-shell main{padding:22px 26px 34px!important}
+  #app-shell main>section.page{max-width:1480px!important}
+  .premium-card,.kpi-card{border-radius:16px!important}
+}
+/* Tablet */
+@media (min-width:768px) and (max-width:1023px){
+  #app-shell main{padding:18px 18px 92px!important}
+}
+/* Phone: compact native-app feel */
+@media (max-width:767px){
+  body{background:#f5f7fb}
+  #app-shell{height:100dvh!important}
+  #app-shell header{height:58px!important;flex-basis:58px!important}
+  #app-shell header>div{height:58px!important;padding:0 12px!important}
+  #page-title{font-size:17px!important;font-weight:800!important}
+  #app-shell main{padding:12px 12px calc(84px + env(safe-area-inset-bottom))!important}
+  #app-shell main>section.page{width:100%!important;max-width:none!important}
+  /* remove desktop-style hero breathing room */
+  #page-dashboard .premium-card.gradient-brand{min-height:0!important;padding:18px!important}
+  #page-dashboard .premium-card.gradient-brand h2{font-size:24px!important}
+  #page-dashboard .premium-card.gradient-brand p.text-sm{font-size:12px!important;line-height:1.45!important}
+  .premium-card{border-radius:14px!important}
+  .kpi-card{border-radius:14px!important}
+  /* mobile bottom navigation behaves like an app tab bar */
+  nav.lg\:hidden.fixed.bottom-0{height:64px!important;padding:5px 8px max(5px,env(safe-area-inset-bottom))!important;border-radius:0!important;background:rgba(255,255,255,.96)!important;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 -8px 30px rgba(15,23,42,.10)!important}
+  nav.lg\:hidden.fixed.bottom-0>div{height:100%!important;padding:0!important;gap:3px!important}
+  .bnav-link{min-height:50px!important;border-radius:12px!important;flex:1!important;gap:1px!important}
+  .bnav-link .material-symbols-outlined{font-size:22px!important}
+  .bnav-link span:last-child{font-size:9px!important;font-weight:700!important}
+  .bnav-link.text-primary{background:#eef0ff!important;color:#000666!important}
+  /* hide decorative/website-like excess on small screens */
+  .hide-on-phone{display:none!important}
+  /* cards are full-width app surfaces */
+  .grid{min-width:0}
+  table{font-size:11px}
+}
+/* Standalone PWA: no browser-page visual cues */
+@media (display-mode:standalone){
+  body{background:#f5f7fb}
+  #app-shell header{padding-top:env(safe-area-inset-top);height:calc(58px + env(safe-area-inset-top))!important}
+  #app-shell header>div{height:58px!important}
+}
+/* prevent accidental horizontal page drift */
+#app-shell,#app-shell *{max-width:100%}
+#app-shell img{max-width:100%}
+</style>
+
 </head>
 <body class="bg-surface text-ink antialiased">
 
@@ -1920,5 +1996,26 @@ document.getElementById('top-sort')?.addEventListener('change', renderTopProduct
 document.getElementById('stale-days')?.addEventListener('change', renderStaleProducts);
 initAll();
 </script>
+
+<script>
+// Element First V8 — PWA registration + install affordance
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferredInstallPrompt = e;
+  const btn = document.getElementById('install-app-btn');
+  if (btn) btn.classList.remove('hidden');
+});
+async function installElementFirst(){
+  if(!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  try{ await deferredInstallPrompt.userChoice; }catch(e){}
+  deferredInstallPrompt=null;
+  document.getElementById('install-app-btn')?.classList.add('hidden');
+}
+</script>
+
 </body>
 </html>

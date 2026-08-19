@@ -1,23 +1,12 @@
-ELEMENT FIRST — V7 RESPONSIVE
+ELEMENT FIRST — V8 APP WEB
 
-Esta versión está preparada para:
-- Celular: 320px a 767px.
-- Tablet/iPad: 768px a 1023px.
-- Laptop/escritorio: 1024px en adelante.
-- Pantallas grandes: 1280px en adelante.
+Esta versión está diseñada como una aplicación web responsive (PWA), no como una página informativa.
 
-Incluye:
-- Navegación inferior optimizada para celular/tablet.
-- Sidebar completo en laptop/escritorio.
-- Catálogo de productos adaptable: 1/2/3/4 columnas según pantalla.
-- Buscadores y selectores cómodos para tocar desde celular.
-- Resúmenes/KPIs adaptables.
-- Tablas con desplazamiento horizontal en pantallas pequeñas para que no se corten.
-- Respeto de safe-area en iPhone/iPad.
-- Corrección de rutas de imágenes con y sin extensión.
+- PC/laptop: sidebar fija + barra superior + área de trabajo desplazable.
+- Tablet: layout intermedio táctil.
+- Celular: app shell de pantalla completa + barra inferior fija.
+- PWA: manifest, iconos, service worker y modo standalone.
+- Mantiene las imágenes y módulos de la versión anterior.
 
-Para Vercel:
-1. Descomprime el ZIP.
-2. Sube la carpeta completa como proyecto.
-3. Mantén index.html en la raíz.
-4. Mantén la carpeta img/ junto a index.html.
+Para usarla en Vercel: sube TODO el contenido de esta carpeta como proyecto.
+En celular, puede instalarse como app desde el navegador cuando el navegador lo permita.
