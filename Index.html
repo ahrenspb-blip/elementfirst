@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="theme-color" content="#0B1220" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Element First — Denim Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: '#000666',
+          'primary-light': '#1a237e',
+          'primary-tint': '#e0e0ff',
+          copper: '#BF360C',
+          'copper-dark': '#8f2807',
+          teal: '#0d5c63',
+          surface: '#f8f9fa',
+          'surface-dim': '#eef0f2',
+          ink: '#191c1d',
+          'ink-soft': '#454652',
+          'ink-faint': '#767683',
+          line: '#e3e4e8',
+          ok: '#2E7D32',
+          'ok-bg': '#E8F5E9',
+          warn: '#FFA000',
+          'warn-bg': '#FFF8E1',
+          bad: '#D32F2F',
+          'bad-bg': '#FFEBEE',
+        },
+        fontFamily: { sans: ['Inter','sans-serif'] },
+        boxShadow: {
+          card: '0 4px 20px rgba(26,35,126,0.06)',
+          pop: '0 12px 36px rgba(26,35,126,0.14)',
+        }
+      }
+    }
+  }
+</script>
+<style>
+  * { font-family: 'Inter', sans-serif; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0,'wght' 450,'GRAD' 0,'opsz' 24; vertical-align:middle; }
+  .msf { font-variation-settings: 'FILL' 1,'wght' 450,'GRAD' 0,'opsz' 24; }
+  ::-webkit-scrollbar{ width:6px; height:6px; }
+  ::-webkit-scrollbar-thumb{ background:#c7c9e0; border-radius:99px; }
+  .no-scrollbar::-webkit-scrollbar{ display:none; }
+  .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none; }
+  .tabular { font-variant-numeric: tabular-nums; }
+  .denim-tex { background-image: repeating-linear-gradient(115deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 5px); }
+  .fade-in { animation: fadeIn .35s ease both; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+  .view { display:none !important; }
+  .view.active#view-login { display:flex !important; }
+  .view.active#app-shell { display:flex !important; }
+  .page { display:none; }
+  .page.active { display:block; }
+  #app-shell > .flex-1 { min-width:0; }
+  @media (max-width: 1023px){
+    #view-login { min-height:100dvh; }
+    #view-login > .flex-1 { min-height:100dvh; }
+    #app-shell { flex-direction:column; }
+  }
+  @media (min-width:1024px){
+    #view-login > .hidden.lg\:flex { width:50%; }
+    #view-login > .flex-1 { width:50%; }
+  }
+  .sheet-enter { animation: sheetUp .28s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes sheetUp { from{ transform:translateY(100%);} to{ transform:translateY(0);} }
+  input[type=range]{ accent-color:#000666; }
+  .skeleton{ background:linear-gradient(90deg,#eef0f2 25%,#e6e8ec 37%,#eef0f2 63%); background-size:400% 100%; animation:sk 1.4s ease infinite; }
+  @keyframes sk{ 0%{background-position:100% 50%} 100%{background-position:0 50%} }
+</style>
+
+<link rel="manifest" href="./manifest.json" />
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Element First">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Element First">
+<meta name="format-detection" content="telephone=no">
+
+<style id="element-first-ui">
+/* =========================================================
+   ELEMENT FIRST — sistema visual único y responsive
+   (Reemplaza las 5 capas de CSS previas que se pisaban entre
+   sí — v4, v5, v7, v8 y el "parche de reparación" — que eran
+   la causa de los problemas de visualización en tablet/celular.
+   Un solo set de breakpoints: 640 / 768 / 1024, alineado con
+   las clases Tailwind sm:/md:/lg: que ya usa el HTML.)
+   ========================================================= */
+:root{
+  --ef-bg:#F6F8FC;
+  --ef-ink:#0B1220;
+  --ef-line:#E6EAF0;
+  --ef-blue:#2563EB;
+  --ef-green:#10B981;
+  --ef-coral:#F97316;
+  --sidebar-w:256px;
+}
+html,body{width:100%;max-width:100%;overflow-x:hidden;height:100%;background:var(--ef-bg);overscroll-behavior:none}
+body{min-height:100%;margin:0;letter-spacing:-.012em;color:var(--ef-ink);-webkit-tap-highlight-color:transparent}
+body,*{font-family:'Manrope','Inter',sans-serif!important}
+.material-symbols-outlined{font-family:'Material Symbols Outlined'!important}
+button,a,input,select{touch-action:manipulation}
+button,input,select{max-width:100%}
+img{max-width:100%}
+
+/* ---------- App shell ---------- */
+#app-shell{min-height:100dvh!important;height:100dvh;overflow:hidden;background:linear-gradient(180deg,#F8FAFD 0%,#F4F7FB 100%)}
+#app-shell > .flex-1{height:100dvh!important;min-height:0!important;overflow:hidden!important;background:transparent;margin-left:0}
+#app-shell main{overflow:auto!important;min-height:0!important;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;max-width:1540px}
+#app-shell main::-webkit-scrollbar{width:8px}
+#app-shell main::-webkit-scrollbar-thumb{background:#cbd1df;border-radius:99px}
+#app-shell main>section.page{width:100%}
+
+/* Sidebar (desktop only, >=1024px, matches Tailwind's lg: used in the markup) */
+#app-shell > nav{
+  position:fixed!important;left:0;top:0;bottom:0;height:100dvh;
+  width:var(--sidebar-w)!important;padding:18px 12px 14px!important;
+  background:
+    radial-gradient(circle at 20% 5%,rgba(37,99,235,.28),transparent 28%),
+    radial-gradient(circle at 90% 85%,rgba(124,58,237,.18),transparent 30%),
+    linear-gradient(180deg,#0A1222 0%,#0B1328 55%,#0A1020 100%)!important;
+  border-right:1px solid rgba(255,255,255,.08);
+  box-shadow:14px 0 40px rgba(15,23,42,.12);
+}
+#app-shell > nav > div:first-child{padding:7px 10px!important;margin-bottom:26px!important}
+#app-shell > nav > div:first-child .w-8{
+  width:40px!important;height:40px!important;border-radius:12px!important;
+  background:linear-gradient(135deg,#F97316,#FB7185)!important;
+  box-shadow:0 10px 25px rgba(249,115,22,.26);
+}
+.nav-section{color:#6F7C92!important;font-size:9px!important;letter-spacing:.16em!important;margin:18px 10px 7px!important}
+.nav-link{min-height:43px!important;padding:0 12px!important;border-radius:12px!important;color:#AAB4C7!important;transition:all .18s ease}
+.nav-link:hover{color:#fff!important;background:rgba(255,255,255,.065)}
+.nav-link.bg-white\/15{
+  color:#fff!important;
+  background:linear-gradient(90deg,rgba(37,99,235,.32),rgba(79,70,229,.20))!important;
+  box-shadow:inset 3px 0 0 #60A5FA,0 8px 20px rgba(2,6,23,.14);
+}
+#sidebar-alert-count{background:linear-gradient(135deg,#F97316,#EF4444)!important;box-shadow:0 5px 15px rgba(239,68,68,.22)}
+#app-shell > nav .border-t{border-color:rgba(255,255,255,.08)!important}
+
+/* Topbar */
+#app-shell header{flex:0 0 68px!important;height:68px!important;background:rgba(255,255,255,.9);border-bottom:1px solid var(--ef-line);backdrop-filter:blur(18px)}
+#app-shell header>div{height:68px!important}
+#page-title{color:var(--ef-ink)!important;font-weight:800!important;letter-spacing:-.04em!important}
+#app-shell header button[onclick="openCommandPalette()"]{background:#F1F4F8!important;border:1px solid #E7EBF0!important;height:44px!important;border-radius:14px!important}
+#app-shell header .bg-primary-tint{background:#EEF4FF!important;color:#2563EB!important}
+#app-shell header .bg-primary-tint .bg-primary{background:#2563EB!important}
+
+/* Cards / tables */
+.premium-card,.bg-white.border.border-line.rounded-lg,.bg-white.border.border-line.rounded-xl{
+  border-radius:18px!important;border:1px solid rgba(226,231,239,.92)!important;box-shadow:0 8px 28px rgba(15,23,42,.045)!important;
+}
+.premium-card:hover{box-shadow:0 14px 36px rgba(15,23,42,.075)!important}
+table thead{background:#F8FAFC!important}
+table th{font-size:10px!important;text-transform:uppercase!important;letter-spacing:.08em!important;color:#7B8798!important}
+table tbody tr{border-color:#EEF1F5!important}
+table tbody tr:hover{background:#F8FAFF!important}
+/* Tablas: cualquier tabla dentro de una tarjeta debe poder desplazarse
+   horizontalmente en vez de recortarse (bug corregido: Ventas, Clientes
+   y Canales usaban overflow-hidden en el contenedor, lo que recortaba
+   columnas en pantallas medianas en vez de permitir scroll). */
+.page .bg-white.overflow-hidden{overflow-x:auto!important;overflow-y:hidden}
+.page table{min-width:680px}
+
+/* Executive hero */
+.gradient-brand,#page-dashboard .premium-card.gradient-brand{
+  position:relative!important;overflow:hidden!important;min-height:238px;
+  background:
+    radial-gradient(circle at 88% 15%,rgba(6,182,212,.42),transparent 25%),
+    radial-gradient(circle at 65% 120%,rgba(124,58,237,.38),transparent 35%),
+    radial-gradient(circle at 0% 80%,rgba(37,99,235,.30),transparent 30%),
+    linear-gradient(135deg,#0A1222 0%,#111D43 45%,#1E2D68 100%)!important;
+  box-shadow:0 24px 55px rgba(15,23,42,.18)!important;border:1px solid rgba(255,255,255,.10)!important;padding:28px!important;
+}
+#page-dashboard .premium-card.gradient-brand h2{font-size:32px!important;line-height:1.08!important;letter-spacing:-.04em!important}
+#page-dashboard .premium-card.gradient-brand p.text-sm{color:rgba(255,255,255,.72)!important;line-height:1.6!important}
+#page-dashboard .premium-card.gradient-brand .grid.grid-cols-2 > div{
+  background:rgba(255,255,255,.075)!important;border:1px solid rgba(255,255,255,.13)!important;border-radius:14px!important;backdrop-filter:blur(10px);
+}
+.gradient-copper{background:radial-gradient(circle at 90% 0%,rgba(255,185,126,.26),transparent 35%),linear-gradient(135deg,#b83b0b,#dc5618 60%,#e96a27)!important}
+
+/* KPI cards */
+.kpi-card{background:#fff!important;border-radius:15px!important;border:1px solid var(--ef-line)!important;box-shadow:0 4px 16px rgba(16,24,40,.035)!important;padding:17px!important;min-height:118px}
+.kpi-card:hover{transform:translateY(-2px);border-color:#C9D7F4!important;box-shadow:0 12px 26px rgba(37,99,235,.09)!important}
+.kpi-card .text-xl{font-size:23px!important;letter-spacing:-.035em}
+.kpi-card p:first-child{color:#7B8798!important;font-size:10px!important;letter-spacing:.08em!important}
+
+/* Status strip */
+#page-dashboard .flex.items-center.justify-between.bg-white.border.border-line{border-radius:14px!important;padding:12px 16px!important;box-shadow:0 4px 16px rgba(16,24,40,.04)!important}
+#page-dashboard .flex.items-center.justify-between.bg-white.border.border-line button{height:34px;padding:0 12px;border-radius:9px;background:#F0F5FF;color:#2563EB}
+
+/* Accent utility */
+.text-primary{color:#2563EB!important}
+.bg-primary{background:#2563EB!important}
+.text-copper{color:#F97316!important}
+.bg-copper{background:#F97316!important}
+.text-ok{color:#059669!important}
+.bg-ok{background:#10B981!important}
+
+/* Forms */
+input,select{outline:none;font-family:inherit}
+input:focus,select:focus{border-color:#7C9FF5!important;box-shadow:0 0 0 4px rgba(37,99,235,.10)!important}
+
+/* Login */
+#view-login{background:#f5f7fb!important}
+#view-login > .hidden.lg\:flex{background:#070b63!important}
+#view-login > .hidden.lg\:flex .absolute.inset-0.bg-gradient-to-t{background:linear-gradient(135deg,rgba(5,8,82,.90),rgba(14,22,125,.62),rgba(217,75,18,.16))!important}
+#view-login form input{border-bottom:1px solid #dfe3ea!important}
+#view-login form button[type=submit]{border-radius:12px!important;background:linear-gradient(135deg,#080c70,#171da1)!important}
+
+/* Toast */
+#toast{border-radius:12px!important;box-shadow:0 18px 40px rgba(16,24,40,.18)!important}
+
+/* Bottom mobile nav (hidden on desktop via Tailwind's lg:hidden) */
+.bnav-link{transition:all .2s ease}
+.bnav-link.text-primary{background:#eef0ff!important;border-radius:12px;color:#000666!important}
+
+/* prevent accidental horizontal page drift */
+#app-shell,#app-shell *{max-width:100%}
+
+/* =========================================================
+   BREAKPOINTS — un solo punto de corte por tamaño de pantalla
+   ========================================================= */
+
+/* Desktop / laptop: >=1024px (mismo breakpoint que Tailwind lg:) */
+@media (min-width:1024px){
+  #app-shell > .flex-1{margin-left:var(--sidebar-w)!important;width:calc(100% - var(--sidebar-w));min-width:0}
+  #app-shell main{padding:22px 32px 34px!important}
+  #products-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media (min-width:1280px){
+  #products-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  #app-shell main{padding-left:40px!important;padding-right:40px!important}
+}
+
+/* Tablet: 768–1023px (sidebar oculto, misma navegación inferior que celular) */
+@media (min-width:768px) and (max-width:1023px){
+  #app-shell > .flex-1{margin-left:0!important;width:100%!important}
+  #app-shell main{padding:20px 20px 96px!important}
+  #products-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .bnav-link{min-height:54px!important}
+  .bnav-link .material-symbols-outlined{font-size:24px!important}
+  #page-title{font-size:20px!important}
+}
+
+/* Cualquier ancho por debajo de desktop: sidebar oculto, contenido a ancho completo */
+@media (max-width:1023px){
+  #app-shell > nav{display:none!important}
+  #app-shell > .flex-1{margin-left:0!important;width:100%!important}
+  #app-shell header{height:64px!important;flex-basis:64px!important}
+}
+
+/* Celular: <768px */
+@media (max-width:767px){
+  #app-shell header{height:58px!important;flex-basis:58px!important}
+  #app-shell header>div{height:58px!important;padding:0 12px!important}
+  #page-title{font-size:17px!important;font-weight:800!important;max-width:42vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #app-shell header .hidden.md\:flex{display:none!important}
+  #app-shell main{padding:12px 12px calc(84px + env(safe-area-inset-bottom))!important;width:100%!important;max-width:100%!important}
+  #app-shell main>section.page{width:100%!important;max-width:none!important}
+  .page h2{font-size:18px!important}
+  .page h3{font-size:15px!important}
+
+  /* Encabezados de módulos */
+  .page > .flex.items-center.justify-between,
+  .page > .flex.items-center.justify-between.flex-wrap{align-items:flex-start!important;gap:10px!important}
+  .page > .flex.items-center.justify-between > .flex,
+  .page > .flex.items-center.justify-between.flex-wrap > .flex{width:100%!important}
+
+  /* Buscadores y selects: cómodos para tocar (16px evita zoom automático en iOS) */
+  #inventory-search,#products-search{font-size:16px!important;min-height:42px}
+  #products-sort,#period-select,#report-period{min-height:42px;font-size:13px!important}
+  #page-products .flex.items-center.gap-2.flex-wrap,
+  #page-inventory .flex.items-center.gap-2.flex-wrap{display:grid!important;grid-template-columns:1fr!important;width:100%!important}
+  #page-products .flex.items-center.gap-2.flex-wrap > *,
+  #page-inventory .flex.items-center.gap-2.flex-wrap > *{width:100%!important}
+
+  /* Resúmenes */
+  #products-summary,#inventory-summary,#reports-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  #products-summary > div,#inventory-summary > div,#reports-kpis > div{padding:12px!important;min-width:0!important}
+  #products-summary .text-2xl,#inventory-summary .text-2xl,#reports-kpis .text-2xl{font-size:20px!important;line-height:1.15}
+
+  /* Catálogo */
+  #products-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  #products-grid > button{min-width:0!important;border-radius:12px!important}
+  #products-grid > button .p-3{padding:10px!important}
+
+  /* Dashboard */
+  .premium-card.gradient-brand{min-height:0!important;padding:18px!important}
+  .premium-card.gradient-brand h2{font-size:24px!important}
+  .premium-card.gradient-brand p.text-sm{font-size:12px!important;line-height:1.45!important}
+  .premium-card.gradient-brand .relative.grid{grid-template-columns:1fr!important;gap:14px!important}
+  .kpi-card{min-height:100px!important;padding:12px!important;border-radius:14px!important}
+  .kpi-card .text-xl{font-size:19px!important}
+  #page-dashboard .grid.grid-cols-2.lg\:grid-cols-6{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+
+  /* Gráficos */
+  .h-72{height:240px!important}
+  canvas{max-width:100%!important}
+
+  /* Tablas: siempre con scroll horizontal, nunca recortadas */
+  .page table{min-width:650px;font-size:12px!important}
+  .page table th,.page table td{padding:9px!important}
+
+  /* Fichas / paneles */
+  .premium-card{border-radius:12px!important}
+  .sheet-enter{max-height:92dvh!important;overflow-y:auto!important}
+
+  /* Barra inferior tipo app, con zona segura para iPhone */
+  nav.lg\:hidden.fixed.bottom-0{
+    height:64px!important;padding:5px 8px max(5px,env(safe-area-inset-bottom))!important;border-radius:0!important;
+    background:rgba(255,255,255,.96)!important;backdrop-filter:blur(18px);box-shadow:0 -8px 30px rgba(15,23,42,.10)!important;
+  }
+  nav.lg\:hidden.fixed.bottom-0>div{height:100%!important;padding:0!important;gap:3px!important}
+  .bnav-link{min-height:50px!important;border-radius:12px!important;flex:1!important;justify-content:center}
+  .bnav-link .material-symbols-outlined{font-size:22px!important}
+  .bnav-link span:last-child{font-size:9px!important;font-weight:700!important;white-space:nowrap}
+
+  /* Sheets a pantalla completa en celular */
+  #sheet-more{z-index:100!important;max-height:80dvh!important;overflow-y:auto!important;padding-bottom:calc(18px + env(safe-area-inset-bottom))!important}
+  #sheet-more .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+}
+
+/* Celulares muy estrechos */
+@media (max-width:380px){
+  #products-grid{grid-template-columns:1fr!important}
+  #products-summary,#inventory-summary,#reports-kpis{grid-template-columns:1fr 1fr!important}
+  #page-title{max-width:35vw}
+}
+
+/* Touch: evita efectos hover pegados en móvil */
+@media (hover:none){
+  .group:hover img{transform:none!important}
+  .hover\:shadow-card:hover{box-shadow:none!important}
+}
+
+/* Standalone PWA */
+@media (display-mode:standalone){
+  #app-shell header{padding-top:env(safe-area-inset-top);height:calc(58px + env(safe-area-inset-top))!important}
+}
+
+@media(prefers-reduced-motion:no-preference){
+  .premium-card,.kpi-card,.nav-link{transition:transform .2s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease!important}
+}
+</style>
+
+</head>
+<body class="bg-surface text-ink antialiased">
+
+<!-- ======================= LOGIN VIEW ======================= -->
+<div id="view-login" class="view active min-h-screen w-full flex items-stretch">
+  <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-primary">
+    <img src="./img/hero.jpg" class="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-luminosity" />
+    <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-primary/10"></div>
+    <div class="relative z-10 flex flex-col justify-between p-14 text-white w-full">
+      <div>
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded bg-copper flex items-center justify-center font-black text-sm">EF</div>
+          <span class="font-black tracking-widest text-lg uppercase">Element First</span>
+        </div>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-[0.25em] text-white/60 mb-3">Business Management OS</p>
+        <h1 class="text-4xl lg:text-5xl font-extrabold leading-[1.05] max-w-lg">Datos que se convierten en <span class="text-white/65">acción.</span></h1>
+        <p class="mt-4 text-white/70 max-w-md text-sm leading-6">La plataforma comercial de Element First para controlar ventas, inventario, clientes y canales desde una sola pantalla.</p>
+        <div class="grid grid-cols-3 gap-2 max-w-md mt-7">
+          <div class="bg-white/10 border border-white/10 rounded-xl p-3"><b class="text-lg">+28%</b><p class="text-[10px] text-white/55 mt-1">Canal líder</p></div>
+          <div class="bg-white/10 border border-white/10 rounded-xl p-3"><b class="text-lg">99.9%</b><p class="text-[10px] text-white/55 mt-1">Disponibilidad</p></div>
+          <div class="bg-white/10 border border-white/10 rounded-xl p-3"><b class="text-lg">10+</b><p class="text-[10px] text-white/55 mt-1">Módulos</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex-1 flex items-center justify-center p-6">
+    <div class="w-full max-w-sm">
+      <div class="lg:hidden flex items-center gap-2 mb-10 justify-center">
+        <div class="w-9 h-9 rounded bg-primary flex items-center justify-center font-black text-sm text-white">EF</div>
+        <span class="font-black tracking-widest text-lg uppercase text-primary">Element First</span>
+      </div>
+      <p class="text-xs uppercase tracking-[0.2em] text-ink-faint mb-1 text-center lg:text-left">Business Management</p>
+      <h2 class="text-2xl font-bold text-ink mb-8 text-center lg:text-left">Inicia sesión</h2>
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label class="text-xs font-semibold uppercase tracking-wide text-ink-soft">Correo electrónico</label>
+          <input type="email" value="admin@elementfirst.pe" class="mt-1 w-full border-b-2 border-line focus:border-primary outline-none py-2.5 text-sm bg-transparent transition-colors" />
+        </div>
+        <div>
+          <label class="text-xs font-semibold uppercase tracking-wide text-ink-soft">Contraseña</label>
+          <input type="password" value="••••••••••" class="mt-1 w-full border-b-2 border-line focus:border-primary outline-none py-2.5 text-sm bg-transparent transition-colors" />
+        </div>
+        <div class="flex items-center justify-between pt-1 text-xs">
+          <label class="flex items-center gap-2 text-ink-soft"><input type="checkbox" checked class="rounded accent-primary" /> Recordarme</label>
+          <a href="#" onclick="event.preventDefault();showToast('Solicita el restablecimiento al administrador')" class="text-primary font-semibold hover:underline">¿Olvidaste tu contraseña?</a>
+        </div>
+        <button type="submit" class="w-full bg-primary text-white font-bold uppercase tracking-widest text-xs py-3.5 rounded hover:bg-primary-light transition-colors mt-2">Iniciar sesión</button>
+      </form>
+      <p class="text-center text-[11px] text-ink-faint mt-8 flex items-center justify-center gap-1.5">
+        <span class="material-symbols-outlined text-sm">lock</span> Conexión segura · Element First © 2026
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= APP SHELL ======================= -->
+<div id="app-shell" class="view min-h-screen lg:flex">
+
+  <!-- Desktop Sidebar -->
+  <nav class="hidden lg:flex flex-col fixed left-0 top-0 h-full w-64 bg-primary text-white p-5 gap-1 z-40">
+    <div class="mb-8 px-2">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded bg-copper flex items-center justify-center font-black text-xs">EF</div>
+        <span class="font-black tracking-widest text-base uppercase">Element First</span>
+      </div>
+      <p class="text-[11px] text-white/50 mt-1 pl-0.5">Denim Intelligence</p>
+    </div>
+    <div class="flex-1 flex flex-col gap-1 overflow-y-auto no-scrollbar">
+      <div class="nav-section">Visión general</div>
+      <button data-nav="dashboard" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+        <span class="material-symbols-outlined text-[20px]">dashboard</span> Dashboard</button>
+      <button data-nav="sales" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+        <span class="material-symbols-outlined text-[20px]">payments</span> Ventas</button>
+      <button data-nav="inventory" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+        <span class="material-symbols-outlined text-[20px]">inventory_2</span> Inventario</button>
+      <button data-nav="products" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+        <span class="material-symbols-outlined text-[20px]">checkroom</span> Productos</button>
+      <div class="nav-section">Inteligencia comercial</div>
+      <button data-nav="clients" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+        <span class="material-symbols-outlined text-[20px]">group</span> Clientes</button>
+      <button data-nav="channels" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+        <span class="material-symbols-outlined text-[20px]">hub</span> Canales</button>
+      <button data-nav="reports" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+        <span class="material-symbols-outlined text-[20px]">analytics</span> Reportes</button>
+      <div class="nav-section">Control del sistema</div>
+      <button data-nav="alerts" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative">
+        <span class="material-symbols-outlined text-[20px]">notifications</span> Alertas
+        <span id="sidebar-alert-count" class="ml-auto bg-copper text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">6</span></button>
+      <button data-nav="sync" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+        <span class="material-symbols-outlined text-[20px]">sync_alt</span> Sincronización</button>
+      <button data-nav="settings" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+        <span class="material-symbols-outlined text-[20px]">settings</span> Configuración</button>
+    </div>
+    <div class="border-t border-white/10 pt-4 mt-2 px-1">
+      <div class="flex items-center gap-2 text-[11px] text-white/60">
+        <span class="w-2 h-2 rounded-full bg-green-400"></span> ERP conectado
+      </div>
+      <div class="flex items-center gap-2 mt-3">
+        <img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22%2523000666%22/%3E%3Ctext%20x%3D%2232%22%20y%3D%2240%22%20font-family%3D%22Inter%2Csans-serif%22%20font-size%3D%2224%22%20font-weight%3D%22700%22%20fill%3D%22white%22%20text-anchor%3D%22middle%22%3EAB%3C/text%3E%3C/svg%3E" class="w-8 h-8 rounded-full object-cover" />
+        <div class="leading-tight">
+          <p class="text-xs font-semibold">Administrador</p>
+          <p class="text-[10px] text-white/50">Administrador</p>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="flex-1 lg:ml-64 min-h-screen flex flex-col">
+    <!-- Top bar -->
+    <header class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-line">
+      <div class="flex items-center justify-between px-4 lg:px-8 h-16">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
+          <div class="lg:hidden flex items-center gap-1.5">
+            <div class="w-7 h-7 rounded bg-primary flex items-center justify-center font-black text-[10px] text-white">EF</div>
+          </div>
+          <h1 id="page-title" class="font-bold text-lg lg:text-2xl text-primary truncate">Dashboard</h1>
+        </div>
+        <div class="hidden md:flex items-center gap-2 mr-3">
+          <button onclick="openCommandPalette()" class="flex items-center gap-2 bg-surface-dim rounded-full px-4 py-2 w-72 text-left text-sm text-ink-faint hover:bg-slate-100 transition-colors">
+            <span class="material-symbols-outlined text-[18px]">search</span><span class="flex-1">Buscar en Element First...</span><kbd class="text-[10px] bg-white border border-line rounded px-1.5 py-0.5">⌘ K</kbd>
+          </button>
+          <span class="hidden xl:inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide bg-primary-tint text-primary px-3 py-2 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span>LIVE · ELEMENT FIRST</span>
+          <input id="global-search" class="hidden" />
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button onclick="openSearchSheet()" class="md:hidden p-2 rounded-full hover:bg-surface-dim text-ink-soft" aria-label="Buscar"><span class="material-symbols-outlined">search</span></button>
+          <button id="ef-mobile-menu" onclick="openMoreSheet()" aria-label="Abrir menú" title="Menú"><span class="material-symbols-outlined">menu</span></button>
+          <button onclick="openSyncSheet()" class="p-2 rounded-full hover:bg-surface-dim text-ink-soft relative">
+            <span class="material-symbols-outlined">sync</span>
+          </button>
+          <button onclick="navTo('alerts')" class="p-2 rounded-full hover:bg-surface-dim text-ink-soft relative">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-copper"></span>
+          </button>
+          <img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22%2523000666%22/%3E%3Ctext%20x%3D%2232%22%20y%3D%2240%22%20font-family%3D%22Inter%2Csans-serif%22%20font-size%3D%2224%22%20font-weight%3D%22700%22%20fill%3D%22white%22%20text-anchor%3D%22middle%22%3EAB%3C/text%3E%3C/svg%3E" class="w-8 h-8 rounded-full object-cover ml-1 border border-line" />
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 px-3 sm:px-4 lg:px-8 py-5 pb-24 lg:pb-10 max-w-[1500px] w-full mx-auto">
+
+      <!-- ---------------- DASHBOARD ---------------- -->
+      <section id="page-dashboard" class="page fade-in space-y-5">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <p class="text-ink font-semibold text-lg">Buenos días 👋</p>
+            <p class="text-ink-faint text-sm">Resumen de Element First</p>
+          </div>
+          <select id="period-select" class="text-xs font-semibold uppercase tracking-wide border border-line rounded-full px-4 py-2 bg-white outline-none">
+            <option>Hoy</option><option>Ayer</option><option selected>Últimos 7 días</option>
+            <option>Últimos 30 días</option><option>Este mes</option><option>Mes anterior</option><option>Personalizado</option>
+          </select>
+        </div>
+
+        <!-- ERP status strip -->
+        <div class="flex items-center justify-between bg-white border border-line rounded-lg px-4 py-3 shadow-card">
+          <div class="flex items-center gap-2 text-sm">
+            <span class="w-2 h-2 rounded-full bg-ok animate-pulse"></span>
+            <span class="font-semibold text-ink">ERP conectado</span>
+            <span class="text-ink-faint hidden sm:inline">· Última sincronización: hace <span id="sync-seconds">32</span> s</span>
+          </div>
+          <button onclick="runSync()" class="text-xs font-bold uppercase tracking-wide text-primary flex items-center gap-1 hover:underline">
+            <span class="material-symbols-outlined text-[16px]">sync</span> Sincronizar ahora
+          </button>
+        </div>
+
+        <!-- Executive hero -->
+        <div class="premium-card gradient-brand text-white p-5 lg:p-6 overflow-hidden relative">
+          <div class="absolute -right-16 -top-20 w-64 h-64 rounded-full border border-white/10"></div>
+          <div class="absolute right-8 bottom-[-90px] w-48 h-48 rounded-full border border-white/10"></div>
+          <div class="relative grid lg:grid-cols-[1fr_auto] gap-5 items-center">
+            <div>
+              <div class="flex items-center gap-2 mb-2"><span class="text-[10px] font-extrabold uppercase tracking-[.18em] text-white/60">Control ejecutivo</span><span class="px-2 py-0.5 rounded-full bg-white/10 text-[10px] font-bold">EN VIVO</span></div>
+              <h2 class="text-2xl lg:text-3xl font-extrabold tracking-tight">Convierte datos en decisiones.</h2>
+              <p class="text-sm text-white/70 max-w-2xl mt-2">Una sola vista para saber qué vender, qué reponer, qué canal escalar y dónde estás perdiendo margen.</p>
+              <div class="flex flex-wrap gap-2 mt-4">
+                <button onclick="navTo('inventory')" class="quick-action bg-white text-primary rounded-full px-4 py-2 text-xs font-extrabold uppercase">Revisar stock crítico</button>
+                <button onclick="navTo('reports')" class="quick-action bg-white/10 border border-white/15 text-white rounded-full px-4 py-2 text-xs font-extrabold uppercase">Ver rentabilidad</button>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 min-w-[250px]">
+              <div class="bg-white/10 border border-white/10 rounded-xl p-3"><p class="text-[10px] text-white/50 uppercase font-bold">Margen</p><p class="text-xl font-extrabold mt-1">33.0%</p><p class="text-[10px] text-emerald-200 mt-1">▲ 2.4 pts</p></div>
+              <div class="bg-white/10 border border-white/10 rounded-xl p-3"><p class="text-[10px] text-white/50 uppercase font-bold">Conversión</p><p class="text-xl font-extrabold mt-1">4.8%</p><p class="text-[10px] text-emerald-200 mt-1">▲ 0.7 pts</p></div>
+              <div class="bg-white/10 border border-white/10 rounded-xl p-3"><p class="text-[10px] text-white/50 uppercase font-bold">Stock riesgo</p><p class="text-xl font-extrabold mt-1">6 SKUs</p><p class="text-[10px] text-amber-200 mt-1">Acción requerida</p></div>
+              <div class="bg-white/10 border border-white/10 rounded-xl p-3"><p class="text-[10px] text-white/50 uppercase font-bold">Sync</p><p class="text-xl font-extrabold mt-1">99.9%</p><p class="text-[10px] text-emerald-200 mt-1">Operativo</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="grid grid-cols-2 lg:grid-cols-6 gap-3">
+          <button onclick="navTo('sales')" class="kpi-card text-left bg-white border border-line rounded-lg p-4 hover:border-copper hover:shadow-card transition-all">
+            <p class="text-[11px] font-semibold uppercase tracking-wide text-ink-faint">Ventas de hoy</p>
+            <p class="text-xl font-extrabold text-ink mt-1 tabular">S/ 4,250</p>
+            <p class="text-xs font-semibold text-ok mt-1">▲ +12.4%</p>
+          </button>
+          <button onclick="navTo('sales')" class="kpi-card text-left bg-white border border-line rounded-lg p-4 hover:border-copper hover:shadow-card transition-all">
+            <p class="text-[11px] font-semibold uppercase tracking-wide text-ink-faint">Ventas del mes</p>
+            <p class="text-xl font-extrabold text-ink mt-1 tabular">S/ 128,450</p>
+            <p class="text-xs font-semibold text-ok mt-1">▲ +8.7%</p>
+          </button>
+          <button onclick="navTo('sales')" class="kpi-card text-left bg-white border border-line rounded-lg p-4 hover:border-copper hover:shadow-card transition-all">
+            <p class="text-[11px] font-semibold uppercase tracking-wide text-ink-faint">Pedidos</p>
+            <p class="text-xl font-extrabold text-ink mt-1 tabular">1,248</p>
+            <p class="text-xs font-semibold text-ok mt-1">▲ +10.2%</p>
+          </button>
+          <button onclick="navTo('inventory')" class="kpi-card text-left bg-white border border-line rounded-lg p-4 hover:border-copper hover:shadow-card transition-all">
+            <p class="text-[11px] font-semibold uppercase tracking-wide text-ink-faint">Unidades vendidas</p>
+            <p class="text-xl font-extrabold text-ink mt-1 tabular">3,428</p>
+            <p class="text-xs font-semibold text-ink-faint mt-1">7 días</p>
+          </button>
+          <button onclick="navTo('reports')" class="kpi-card text-left bg-white border border-line rounded-lg p-4 hover:border-copper hover:shadow-card transition-all">
+            <p class="text-[11px] font-semibold uppercase tracking-wide text-ink-faint">Ticket promedio</p>
+            <p class="text-xl font-extrabold text-ink mt-1 tabular">S/ 103.20</p>
+            <p class="text-xs font-semibold text-ink-faint mt-1">7 días</p>
+          </button>
+          <button onclick="navTo('reports')" class="kpi-card text-left bg-white border border-line rounded-lg p-4 hover:border-copper hover:shadow-card transition-all">
+            <p class="text-[11px] font-semibold uppercase tracking-wide text-ink-faint">Utilidad estimada</p>
+            <p class="text-xl font-extrabold text-ink mt-1 tabular">S/ 42,380</p>
+            <p class="text-xs font-semibold text-ok mt-1">Margen 33%</p>
+          </button>
+        </div>
+
+        <!-- Chart + Channels -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div class="lg:col-span-2 bg-white border border-line rounded-lg p-4 lg:p-5 shadow-card">
+            <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
+              <h3 class="font-bold text-ink">Evolución de ventas</h3>
+              <div class="flex items-center gap-1 bg-surface-dim rounded-full p-1 text-xs font-semibold">
+                <button class="chart-metric-btn px-3 py-1 rounded-full bg-primary text-white" data-metric="ingresos">Ingresos</button>
+                <button class="chart-metric-btn px-3 py-1 rounded-full text-ink-soft" data-metric="pedidos">Pedidos</button>
+                <button class="chart-metric-btn px-3 py-1 rounded-full text-ink-soft" data-metric="unidades">Unidades</button>
+              </div>
+            </div>
+            <div class="h-64"><canvas id="salesChart"></canvas></div>
+          </div>
+          <div class="bg-white border border-line rounded-lg p-4 lg:p-5 shadow-card flex flex-col">
+            <h3 class="font-bold text-ink mb-1">¿De dónde vienen tus ventas?</h3>
+            <p class="text-xs text-ink-faint mb-3">Participación últimos 7 días</p>
+            <div class="h-40 mb-2"><canvas id="channelDonut"></canvas></div>
+            <div id="channel-mini-list" class="space-y-2 mt-1 flex-1"></div>
+            <button onclick="navTo('channels')" class="text-xs font-bold text-primary uppercase tracking-wide mt-3 hover:underline text-left">Ver rendimiento de canales →</button>
+          </div>
+        </div>
+
+        <!-- AI copilot + quick actions -->
+        <div class="grid lg:grid-cols-3 gap-4">
+          <div class="lg:col-span-2 premium-card p-5">
+            <div class="flex items-start justify-between gap-3">
+              <div><span class="eyebrow">Element First Copilot</span><h3 class="font-bold text-lg mt-1">¿Qué debería hacer hoy?</h3><p class="text-xs text-ink-faint mt-1">Recomendaciones generadas a partir de ventas, stock y margen.</p></div>
+              <span class="w-9 h-9 rounded-xl gradient-copper text-white flex items-center justify-center"><span class="material-symbols-outlined">auto_awesome</span></span>
+            </div>
+            <div class="grid sm:grid-cols-3 gap-2 mt-4">
+              <button onclick="navTo('inventory')" class="quick-action border border-line rounded-xl p-3 text-left"><span class="material-symbols-outlined text-warn">inventory_2</span><p class="font-bold text-sm mt-2">Reponer 6 SKUs</p><p class="text-[11px] text-ink-faint mt-1">Evita quiebres en tallas clave.</p></button>
+              <button onclick="navTo('channels')" class="quick-action border border-line rounded-xl p-3 text-left"><span class="material-symbols-outlined text-ok">trending_up</span><p class="font-bold text-sm mt-2">Escalar TikTok</p><p class="text-[11px] text-ink-faint mt-1">+28% de crecimiento semanal.</p></button>
+              <button onclick="navTo('products')" class="quick-action border border-line rounded-xl p-3 text-left"><span class="material-symbols-outlined text-primary">sell</span><p class="font-bold text-sm mt-2">Empujar 3 productos</p><p class="text-[11px] text-ink-faint mt-1">Alta demanda y buen margen.</p></button>
+            </div>
+          </div>
+          <div class="premium-card p-5 gradient-copper text-white">
+            <span class="eyebrow !text-white/60">Acciones rápidas</span>
+            <div class="grid grid-cols-2 gap-2 mt-3">
+              <button onclick="showToast('Nuevo pedido: módulo preparado para integrar POS/ERP')" class="bg-white/10 border border-white/10 rounded-xl p-3 text-left"><span class="material-symbols-outlined">add_shopping_cart</span><p class="text-xs font-bold mt-2">Nuevo pedido</p></button>
+              <button onclick="navTo('products')" class="bg-white/10 border border-white/10 rounded-xl p-3 text-left"><span class="material-symbols-outlined">add_box</span><p class="text-xs font-bold mt-2">Nuevo SKU</p></button>
+              <button onclick="runSync()" class="bg-white/10 border border-white/10 rounded-xl p-3 text-left"><span class="material-symbols-outlined">sync</span><p class="text-xs font-bold mt-2">Sincronizar</p></button>
+              <button onclick="exportReport('Resumen ejecutivo','PDF')" class="bg-white/10 border border-white/10 rounded-xl p-3 text-left"><span class="material-symbols-outlined">picture_as_pdf</span><p class="text-xs font-bold mt-2">Exportar</p></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Smart Summary -->
+        <div class="bg-primary rounded-lg p-5 text-white shadow-card">
+          <h3 class="font-bold mb-3 flex items-center gap-2"><span class="material-symbols-outlined">auto_awesome</span> Resumen de hoy</h3>
+          <div id="smart-summary" class="grid sm:grid-cols-2 gap-2 text-sm"></div>
+        </div>
+
+        <!-- Opportunities -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-bold text-ink">Oportunidades</h3>
+          </div>
+          <div id="opportunities-list" class="grid sm:grid-cols-2 gap-3"></div>
+        </div>
+
+        <!-- Top products + no movement -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="bg-white border border-line rounded-lg p-4 lg:p-5 shadow-card">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-ink">Productos más vendidos</h3>
+              <select id="top-sort" class="text-[11px] font-semibold uppercase border border-line rounded-full px-2.5 py-1">
+                <option value="unidades">Unidades</option><option value="ingresos">Ingresos</option><option value="margen">Margen</option>
+              </select>
+            </div>
+            <div id="top-products-list" class="space-y-1"></div>
+          </div>
+          <div class="bg-white border border-line rounded-lg p-4 lg:p-5 shadow-card">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-ink">Productos sin movimiento</h3>
+              <select id="stale-days" class="text-[11px] font-semibold uppercase border border-line rounded-full px-2.5 py-1">
+                <option>7 días</option><option>15 días</option><option selected>30 días</option><option>60 días</option><option>90 días</option>
+              </select>
+            </div>
+            <div id="stale-products-list" class="space-y-1"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------- SALES ---------------- -->
+      <section id="page-sales" class="page fade-in space-y-4">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div><h2 class="text-lg font-bold text-ink hidden lg:block">Ventas</h2><p class="text-xs text-ink-faint hidden lg:block">Seguimiento de pedidos, ingresos y operación omnicanal</p></div>
+          <div class="flex items-center gap-2 flex-1 lg:flex-none justify-end">
+            <button onclick="showToast('Exportación de ventas preparada')" class="hidden sm:flex items-center gap-1.5 text-xs font-bold uppercase border border-line rounded-full px-4 py-2 bg-white"><span class="material-symbols-outlined text-[16px]">download</span>Exportar</button>
+            <button onclick="showToast('Nuevo pedido: listo para conectar con tu ERP/POS')" class="hidden sm:flex items-center gap-1.5 text-xs font-bold uppercase bg-primary text-white rounded-full px-4 py-2"><span class="material-symbols-outlined text-[16px]">add</span>Nuevo pedido</button>
+            <button onclick="openFilterSheet('sales')" class="flex items-center gap-1.5 text-xs font-bold uppercase border border-line rounded-full px-4 py-2 bg-white"><span class="material-symbols-outlined text-[16px]">filter_list</span>Filtros</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-3">
+          <div class="bg-white border border-line rounded-lg p-3 text-center">
+            <p class="text-[10px] uppercase font-semibold text-ink-faint">Completadas</p>
+            <p class="font-bold text-ok text-lg">1,102</p>
+          </div>
+          <div class="bg-white border border-line rounded-lg p-3 text-center">
+            <p class="text-[10px] uppercase font-semibold text-ink-faint">Pendientes</p>
+            <p class="font-bold text-warn text-lg">94</p>
+          </div>
+          <div class="bg-white border border-line rounded-lg p-3 text-center">
+            <p class="text-[10px] uppercase font-semibold text-ink-faint">Devueltas</p>
+            <p class="font-bold text-bad text-lg">18</p>
+          </div>
+        </div>
+        <!-- mobile cards -->
+        <div id="sales-cards-mobile" class="space-y-2 lg:hidden"></div>
+        <!-- desktop table (con scroll horizontal en vez de recorte) -->
+        <div class="hidden lg:block bg-white border border-line rounded-lg overflow-x-auto shadow-card">
+          <table class="w-full text-left text-sm min-w-[900px]">
+            <thead class="bg-surface-dim text-[11px] uppercase font-bold text-ink-faint tracking-wide">
+              <tr>
+                <th class="p-3">Fecha</th><th class="p-3">Pedido</th><th class="p-3">Cliente</th><th class="p-3">Producto</th>
+                <th class="p-3">SKU / Var</th><th class="p-3 text-right">Total</th><th class="p-3">Canal</th><th class="p-3">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="sales-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ---------------- INVENTORY ---------------- -->
+      <section id="page-inventory" class="page fade-in space-y-4">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div><h2 class="text-lg font-bold text-ink">Inventario</h2><p class="text-sm text-ink-faint">Control de existencias por SKU y talla</p></div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <div class="flex items-center gap-2 bg-white border border-line rounded-full px-3 py-2 w-full sm:w-64">
+              <span class="material-symbols-outlined text-ink-faint text-[18px]">search</span>
+              <input id="inventory-search" placeholder="Buscar SKU, modelo, color..." class="bg-transparent outline-none text-sm w-full" />
+            </div>
+            <button onclick="openFilterSheet('inventory')" class="flex items-center gap-1.5 text-xs font-bold uppercase border border-line rounded-full px-4 py-2 bg-white"><span class="material-symbols-outlined text-[16px]">filter_list</span>Filtros</button>
+          </div>
+        </div>
+        <div id="inventory-filter-chips" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+        <div id="inventory-summary" class="grid grid-cols-2 lg:grid-cols-4 gap-3"></div>
+        <div class="bg-white border border-line rounded-lg overflow-hidden shadow-card">
+          <div class="px-4 py-3 border-b border-line flex items-center justify-between"><h3 class="font-bold">Existencias por producto</h3><span class="text-xs text-ink-faint">Actualizado en tiempo real</span></div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm min-w-[820px]">
+              <thead class="bg-surface-dim text-[11px] uppercase font-bold text-ink-faint tracking-wide">
+                <tr><th class="p-3">Producto</th><th class="p-3">SKU</th><th class="p-3 text-center">28</th><th class="p-3 text-center">30</th><th class="p-3 text-center">32</th><th class="p-3 text-center">34</th><th class="p-3 text-center">36</th><th class="p-3 text-right">Total</th><th class="p-3">Estado</th></tr>
+              </thead>
+              <tbody id="inventory-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------- PRODUCTS ---------------- -->
+      <section id="page-products" class="page fade-in space-y-4">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div><h2 class="text-lg font-bold text-ink">Productos</h2><p class="text-sm text-ink-faint">Catálogo, rendimiento y rentabilidad por SKU</p></div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <div class="flex items-center gap-2 bg-white border border-line rounded-full px-3 py-2 w-full sm:w-64">
+              <span class="material-symbols-outlined text-ink-faint text-[18px]">search</span>
+              <input id="products-search" placeholder="Buscar producto o SKU..." class="bg-transparent outline-none text-sm w-full" />
+            </div>
+            <select id="products-sort" class="text-xs font-semibold border border-line rounded-full px-3 py-2 bg-white outline-none">
+              <option value="sold">Más vendidos</option><option value="revenue">Mayor ingreso</option><option value="margin">Mayor margen</option><option value="stock">Mayor stock</option>
+            </select>
+          </div>
+        </div>
+        <div id="products-summary" class="grid grid-cols-2 lg:grid-cols-4 gap-3"></div>
+        <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+      </section>
+
+      <!-- ---------------- CLIENTS ---------------- -->
+      <section id="page-clients" class="page fade-in space-y-4">
+        <div class="flex items-center justify-between"><div><h2 class="text-lg font-bold text-ink">Clientes</h2><p class="text-sm text-ink-faint">Conoce quién compra, cuánto aporta y por qué canal regresa.</p></div><button onclick="showToast('Segmentación avanzada: próxima integración')" class="text-xs font-bold uppercase bg-primary text-white rounded-full px-4 py-2">Segmentar</button></div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="premium-card p-4"><span class="eyebrow">Clientes activos</span><p class="metric-number text-2xl font-extrabold mt-1">842</p><p class="text-xs text-ok mt-1">▲ 11.8%</p></div>
+          <div class="premium-card p-4"><span class="eyebrow">Recompra</span><p class="metric-number text-2xl font-extrabold mt-1">38.4%</p><p class="text-xs text-ok mt-1">▲ 4.1 pts</p></div>
+          <div class="premium-card p-4"><span class="eyebrow">LTV promedio</span><p class="metric-number text-2xl font-extrabold mt-1">S/ 486</p><p class="text-xs text-ink-faint mt-1">por cliente</p></div>
+          <div class="premium-card p-4"><span class="eyebrow">Nuevos 7d</span><p class="metric-number text-2xl font-extrabold mt-1">126</p><p class="text-xs text-ok mt-1">▲ 18.2%</p></div>
+        </div>
+        <div class="bg-white border border-line rounded-lg overflow-x-auto shadow-card">
+          <table class="w-full text-left text-sm min-w-[680px]">
+            <thead class="bg-surface-dim text-[11px] uppercase font-bold text-ink-faint tracking-wide">
+              <tr><th class="p-3">Cliente</th><th class="p-3 hidden sm:table-cell">Teléfono</th><th class="p-3">Pedidos</th><th class="p-3 text-right">Total comprado</th><th class="p-3 hidden md:table-cell">Canal preferido</th><th class="p-3 hidden md:table-cell">Última compra</th></tr>
+            </thead>
+            <tbody id="clients-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ---------------- CHANNELS ---------------- -->
+      <section id="page-channels" class="page fade-in space-y-4">
+        <div class="flex items-center justify-between"><div><h2 class="text-lg font-bold text-ink">Rendimiento de canales</h2><p class="text-sm text-ink-faint">Compara adquisición, conversión, ticket y crecimiento.</p></div><button onclick="showToast('Vista de atribución omnicanal lista para integrar')" class="text-xs font-bold uppercase border border-line bg-white rounded-full px-4 py-2">Atribución</button></div>
+        <div id="channel-ranking" class="grid sm:grid-cols-3 gap-3"></div>
+        <div class="bg-white border border-line rounded-lg p-4 lg:p-5 shadow-card">
+          <h3 class="font-bold text-ink mb-3">Comparativo de canales</h3>
+          <div class="h-72"><canvas id="channelBarChart"></canvas></div>
+        </div>
+        <div class="bg-white border border-line rounded-lg overflow-x-auto shadow-card">
+          <table class="w-full text-left text-sm min-w-[760px]">
+            <thead class="bg-surface-dim text-[11px] uppercase font-bold text-ink-faint tracking-wide">
+              <tr><th class="p-3">Canal</th><th class="p-3 text-right">Pedidos</th><th class="p-3 text-right">Unidades</th><th class="p-3 text-right">Ingresos</th><th class="p-3 text-right">Ticket prom.</th><th class="p-3 text-right">Participación</th><th class="p-3 text-right">Crecimiento</th></tr>
+            </thead>
+            <tbody id="channels-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ---------------- REPORTS ---------------- -->
+      <section id="page-reports" class="page fade-in space-y-4">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div><h2 class="text-lg font-bold text-ink">Reportes y análisis</h2><p class="text-sm text-ink-faint">Indicadores para tomar decisiones comerciales</p></div>
+          <select id="report-period" class="text-xs font-semibold border border-line rounded-full px-4 py-2 bg-white"><option>Últimos 7 días</option><option>Últimos 30 días</option><option>Este mes</option></select>
+        </div>
+        <div id="reports-kpis" class="grid grid-cols-2 lg:grid-cols-4 gap-3"></div>
+        <div class="premium-card gradient-brand text-white p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4"><div><span class="eyebrow !text-white/60">Resumen para dirección</span><h3 class="font-bold text-lg mt-1">Tu negocio está creciendo con margen saludable.</h3><p class="text-xs text-white/65 mt-1">Descarga un informe ejecutivo para compartir con gerencia, socios o finanzas.</p></div><button onclick="exportReport('Resumen ejecutivo','PDF')" class="bg-white text-primary rounded-full px-5 py-2.5 text-xs font-extrabold uppercase whitespace-nowrap">Descargar PDF</button></div>
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="bg-white border border-line rounded-lg p-5 shadow-card"><h3 class="font-bold mb-4">Rentabilidad por producto</h3><div id="margin-report" class="space-y-3"></div></div>
+          <div class="bg-white border border-line rounded-lg p-5 shadow-card"><h3 class="font-bold mb-4">Distribución de inventario</h3><div id="stock-report" class="space-y-3"></div></div>
+        </div>
+        <div class="bg-white border border-line rounded-lg overflow-hidden shadow-card">
+          <div class="p-4 border-b border-line flex items-center justify-between"><div><h3 class="font-bold">Centro de exportación</h3><p class="text-xs text-ink-faint">Genera el informe correspondiente sin salir de la aplicación.</p></div><span class="material-symbols-outlined text-primary">download</span></div>
+          <div id="reports-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 p-4"></div>
+        </div>
+      </section>
+
+      <!-- ---------------- ALERTS ---------------- -->
+      <section id="page-alerts" class="page fade-in space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-bold text-ink">Centro de alertas</h2>
+          <span id="alerts-count-badge" class="text-xs font-bold bg-copper text-white rounded-full px-2.5 py-1">6 pendientes</span>
+        </div>
+        <div id="alerts-list" class="space-y-2"></div>
+      </section>
+
+      <!-- ---------------- ERP SYNC ---------------- -->
+      <section id="page-sync" class="page fade-in space-y-4">
+        <h2 class="text-lg font-bold text-ink">Sincronización con ERP</h2>
+        <div class="bg-white border border-line rounded-lg p-5 shadow-card">
+          <div class="flex items-center gap-3 mb-1">
+            <span class="w-2.5 h-2.5 rounded-full bg-ok animate-pulse"></span>
+            <p class="font-bold text-ink">ERP conectado</p>
+          </div>
+          <p class="text-sm text-ink-faint">Última sincronización exitosa: hace <span id="sync-seconds-2">32</span> segundos</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
+            <div class="bg-surface-dim rounded-lg p-3 text-center"><p class="text-[10px] uppercase font-semibold text-ink-faint">Registros hoy</p><p class="font-bold text-lg text-ink">2,481</p></div>
+            <div class="bg-surface-dim rounded-lg p-3 text-center"><p class="text-[10px] uppercase font-semibold text-ink-faint">Errores</p><p class="font-bold text-lg text-ok">0</p></div>
+            <div class="bg-surface-dim rounded-lg p-3 text-center"><p class="text-[10px] uppercase font-semibold text-ink-faint">Latencia</p><p class="font-bold text-lg text-ink">1.2s</p></div>
+            <div class="bg-surface-dim rounded-lg p-3 text-center"><p class="text-[10px] uppercase font-semibold text-ink-faint">Agente</p><p class="font-bold text-lg text-ink">v2.4.1</p></div>
+          </div>
+          <button onclick="runSync()" class="w-full mt-5 bg-copper text-white font-bold uppercase tracking-wide text-xs py-3 rounded hover:bg-copper-dark transition-colors flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">sync</span> Sincronizar ahora
+          </button>
+        </div>
+        <div class="bg-white border border-line rounded-lg p-5 shadow-card">
+          <h3 class="font-bold text-ink mb-3">Arquitectura</h3>
+          <div class="flex flex-col sm:flex-row items-center gap-2 text-xs font-semibold text-ink-soft text-center">
+            <div class="bg-surface-dim rounded-lg px-3 py-2 w-full sm:w-auto">ERP local</div>
+            <span class="material-symbols-outlined text-ink-faint rotate-90 sm:rotate-0">arrow_forward</span>
+            <div class="bg-surface-dim rounded-lg px-3 py-2 w-full sm:w-auto">Agente Element First</div>
+            <span class="material-symbols-outlined text-ink-faint rotate-90 sm:rotate-0">arrow_forward</span>
+            <div class="bg-surface-dim rounded-lg px-3 py-2 w-full sm:w-auto">Conexión segura</div>
+            <span class="material-symbols-outlined text-ink-faint rotate-90 sm:rotate-0">arrow_forward</span>
+            <div class="bg-surface-dim rounded-lg px-3 py-2 w-full sm:w-auto">Servidor / API</div>
+            <span class="material-symbols-outlined text-ink-faint rotate-90 sm:rotate-0">arrow_forward</span>
+            <div class="bg-primary text-white rounded-lg px-3 py-2 w-full sm:w-auto">App web</div>
+          </div>
+          <p class="text-xs text-ink-faint mt-4">El ERP permanece en la computadora local del negocio. El agente consulta productos, stock, precios y ventas, y sincroniza de forma segura sin exponer el ERP a Internet.</p>
+        </div>
+        <div class="bg-white border border-line rounded-lg p-5 shadow-card">
+          <h3 class="font-bold text-ink mb-3">Historial de sincronización</h3>
+          <div id="sync-history" class="space-y-2 text-sm"></div>
+        </div>
+      </section>
+
+      <!-- ---------------- SETTINGS ---------------- -->
+      <section id="page-settings" class="page fade-in space-y-4">
+        <h2 class="text-lg font-bold text-ink">Configuración</h2>
+        <div class="bg-white border border-line rounded-lg p-5 shadow-card space-y-4">
+          <div class="flex items-center gap-4">
+            <img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22%2523000666%22/%3E%3Ctext%20x%3D%2232%22%20y%3D%2240%22%20font-family%3D%22Inter%2Csans-serif%22%20font-size%3D%2224%22%20font-weight%3D%22700%22%20fill%3D%22white%22%20text-anchor%3D%22middle%22%3EAB%3C/text%3E%3C/svg%3E" class="w-16 h-16 rounded-full object-cover border border-line" />
+            <div>
+              <p class="font-bold text-ink">Element First S.A.C.</p>
+              <p class="text-xs text-ink-faint">RUC 20601234567 · Lima, Perú</p>
+            </div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-3 pt-2">
+            <div class="border border-line rounded-lg p-3">
+              <p class="text-xs font-bold uppercase text-ink-faint mb-2">Roles</p>
+              <p class="text-sm text-ink">Administrador · Gerente · Consulta</p>
+            </div>
+            <div class="border border-line rounded-lg p-3">
+              <p class="text-xs font-bold uppercase text-ink-faint mb-2">Stock mínimo</p>
+              <p class="text-sm text-ink">5 unidades por SKU</p>
+            </div>
+            <div class="border border-line rounded-lg p-3">
+              <p class="text-xs font-bold uppercase text-ink-faint mb-2">Canales activos</p>
+              <p class="text-sm text-ink">TikTok, Instagram, WhatsApp, Facebook, Web, Tienda física, Marketplace</p>
+            </div>
+            <div class="border border-line rounded-lg p-3">
+              <p class="text-xs font-bold uppercase text-ink-faint mb-2">Moneda</p>
+              <p class="text-sm text-ink">Soles peruanos (S/)</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="lg:hidden fixed bottom-0 left-0 w-full z-40 bg-white border-t border-line shadow-pop rounded-t-2xl">
+    <div class="grid grid-cols-5 px-1 py-2">
+      <button data-nav="dashboard" class="bnav-link flex flex-col items-center gap-0.5 py-1 rounded-lg">
+        <span class="material-symbols-outlined text-[22px]">home</span><span class="text-[10px] font-semibold">Inicio</span></button>
+      <button data-nav="sales" class="bnav-link flex flex-col items-center gap-0.5 py-1 rounded-lg">
+        <span class="material-symbols-outlined text-[22px]">payments</span><span class="text-[10px] font-semibold">Ventas</span></button>
+      <button data-nav="inventory" class="bnav-link flex flex-col items-center gap-0.5 py-1 rounded-lg">
+        <span class="material-symbols-outlined text-[22px]">inventory_2</span><span class="text-[10px] font-semibold">Stock</span></button>
+      <button data-nav="alerts" class="bnav-link flex flex-col items-center gap-0.5 py-1 rounded-lg relative">
+        <span class="material-symbols-outlined text-[22px]">notifications</span><span class="text-[10px] font-semibold">Alertas</span>
+        <span class="absolute top-0.5 right-6 w-2 h-2 rounded-full bg-copper"></span></button>
+      <button onclick="openMoreSheet()" class="flex flex-col items-center gap-0.5 py-1 rounded-lg text-ink-soft">
+        <span class="material-symbols-outlined text-[22px]">more_horiz</span><span class="text-[10px] font-semibold">Más</span></button>
+    </div>
+  </nav>
+</div>
+
+<!-- ======================= BOTTOM SHEETS / MODALS ======================= -->
+<div id="scrim" onclick="closeSheets()" class="fixed inset-0 bg-black/40 z-40 hidden"></div>
+
+<!-- More menu sheet (mobile) -->
+<div id="sheet-more" class="fixed bottom-0 left-0 w-full bg-white rounded-t-2xl z-[100] hidden p-4 pb-8 sheet-enter max-h-[80dvh] overflow-y-auto">
+  <div class="w-10 h-1 bg-line rounded-full mx-auto mb-3"></div>
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <p class="text-[10px] font-extrabold uppercase tracking-[.18em] text-ink-faint">Navegación</p>
+      <h3 class="text-lg font-extrabold text-primary">Todas las opciones</h3>
+    </div>
+    <button onclick="closeSheets()" class="p-2 rounded-full hover:bg-surface-dim text-ink-soft" aria-label="Cerrar menú"><span class="material-symbols-outlined">close</span></button>
+  </div>
+  <div class="grid grid-cols-3 gap-3">
+    <button onclick="navTo('products');closeSheets()" class="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-surface-dim"><span class="material-symbols-outlined">checkroom</span><span class="text-xs font-semibold">Productos</span></button>
+    <button onclick="navTo('clients');closeSheets()" class="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-surface-dim"><span class="material-symbols-outlined">group</span><span class="text-xs font-semibold">Clientes</span></button>
+    <button onclick="navTo('channels');closeSheets()" class="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-surface-dim"><span class="material-symbols-outlined">hub</span><span class="text-xs font-semibold">Canales</span></button>
+    <button onclick="navTo('reports');closeSheets()" class="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-surface-dim"><span class="material-symbols-outlined">analytics</span><span class="text-xs font-semibold">Reportes</span></button>
+    <button onclick="navTo('sync');closeSheets()" class="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-surface-dim"><span class="material-symbols-outlined">sync_alt</span><span class="text-xs font-semibold">Sincronización</span></button>
+    <button onclick="navTo('settings');closeSheets()" class="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-surface-dim"><span class="material-symbols-outlined">settings</span><span class="text-xs font-semibold">Configuración</span></button>
+  </div>
+</div>
+
+<!-- Filter sheet -->
+<div id="sheet-filter" class="fixed bottom-0 left-0 w-full sm:w-[380px] sm:right-4 sm:left-auto bg-white rounded-t-2xl sm:rounded-2xl z-50 hidden p-5 pb-8 sheet-enter max-h-[80vh] overflow-y-auto">
+  <div class="w-10 h-1 bg-line rounded-full mx-auto mb-4 sm:hidden"></div>
+  <div class="flex items-center justify-between mb-4">
+    <h3 class="font-bold text-ink">Filtros</h3>
+    <button onclick="closeSheets()" class="text-ink-faint"><span class="material-symbols-outlined">close</span></button>
+  </div>
+  <div class="space-y-4">
+    <div>
+      <p class="text-xs font-bold uppercase text-ink-faint mb-2">Estado</p>
+      <div class="flex flex-wrap gap-2" id="filter-status"></div>
+    </div>
+    <div>
+      <p class="text-xs font-bold uppercase text-ink-faint mb-2">Color</p>
+      <div class="flex flex-wrap gap-2" id="filter-color"></div>
+    </div>
+    <div>
+      <p class="text-xs font-bold uppercase text-ink-faint mb-2">Talla</p>
+      <div class="flex flex-wrap gap-2" id="filter-size"></div>
+    </div>
+    <div>
+      <p class="text-xs font-bold uppercase text-ink-faint mb-2">Canal</p>
+      <div class="flex flex-wrap gap-2" id="filter-channel"></div>
+    </div>
+  </div>
+  <div class="flex gap-2 mt-6">
+    <button onclick="clearFilters()" class="flex-1 border border-line rounded-full py-2.5 text-xs font-bold uppercase">Limpiar</button>
+    <button onclick="applyFilters()" class="flex-1 bg-primary text-white rounded-full py-2.5 text-xs font-bold uppercase">Aplicar</button>
+  </div>
+</div>
+
+<!-- Sync sheet -->
+<div id="sheet-sync" class="fixed bottom-0 left-0 w-full sm:w-[380px] sm:right-4 sm:left-auto bg-white rounded-t-2xl sm:rounded-2xl z-50 hidden p-5 pb-8 sheet-enter">
+  <div class="w-10 h-1 bg-line rounded-full mx-auto mb-4 sm:hidden"></div>
+  <div class="flex items-center gap-2 mb-1">
+    <span class="w-2.5 h-2.5 rounded-full bg-ok animate-pulse"></span>
+    <h3 class="font-bold text-ink">ERP conectado</h3>
+  </div>
+  <p class="text-xs text-ink-faint mb-4">Última sincronización: hace <span id="sync-seconds-3">32</span> s</p>
+  <button onclick="runSync()" class="w-full bg-copper text-white font-bold uppercase tracking-wide text-xs py-3 rounded flex items-center justify-center gap-2">
+    <span class="material-symbols-outlined text-[18px]">sync</span> Sincronizar ahora
+  </button>
+</div>
+
+<!-- Search sheet (mobile) -->
+<div id="sheet-search" class="fixed inset-0 bg-white z-50 hidden p-4">
+  <div class="flex items-center gap-2 mb-4">
+    <div class="flex items-center gap-2 bg-surface-dim rounded-full px-4 py-2.5 flex-1">
+      <span class="material-symbols-outlined text-ink-faint text-[18px]">search</span>
+      <input id="mobile-search-input" placeholder="Buscar SKU, producto, color, talla..." class="bg-transparent outline-none text-sm w-full" />
+    </div>
+    <button onclick="closeSheets()" class="text-sm font-semibold text-primary">Cancelar</button>
+  </div>
+  <div id="mobile-search-results" class="space-y-2"></div>
+</div>
+
+<!-- Product detail sheet -->
+<div id="sheet-product" class="fixed inset-0 sm:inset-y-0 sm:right-0 sm:left-auto sm:w-[440px] bg-white z-50 hidden overflow-y-auto sheet-enter"></div>
+
+<!-- Sale detail sheet -->
+<div id="sheet-sale" class="fixed inset-0 sm:inset-y-0 sm:right-0 sm:left-auto sm:w-[420px] bg-white z-50 hidden overflow-y-auto sheet-enter"></div>
+
+<!-- Command palette -->
+<div id="command-palette" class="fixed inset-0 z-[70] hidden">
+  <div class="absolute inset-0 bg-slate-950/45 backdrop-blur-sm" onclick="closeCommandPalette()"></div>
+  <div class="relative mx-auto mt-[10vh] w-[min(680px,calc(100%-24px))] bg-white rounded-2xl command-shadow overflow-hidden">
+    <div class="flex items-center gap-3 px-5 py-4 border-b border-line"><span class="material-symbols-outlined text-ink-faint">search</span><input id="command-input" autofocus placeholder="Ir a una sección o buscar un SKU..." class="outline-none text-sm flex-1"/><kbd class="text-[10px] border border-line rounded px-2 py-1">ESC</kbd></div>
+    <div id="command-results" class="p-2 max-h-[55vh] overflow-y-auto"></div>
+    <div class="px-4 py-3 border-t border-line text-[10px] text-ink-faint flex justify-between"><span>↑ ↓ navegar · Enter abrir</span><span>Element First OS</span></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-24 lg:bottom-6 left-1/2 -translate-x-1/2 bg-ink text-white text-sm font-medium px-5 py-3 rounded-full shadow-pop z-[60] hidden"></div>
+
+<script>
+/* ======================= IMAGE MAP (base64 injected at build time) ======================= */
+function img(key){
+  if(!key) return '';
+  const path = String(key);
+  return './img/' + path + (/\.[a-z0-9]+$/i.test(path) ? '' : '.jpg');
+}
+
+/* ======================= DATA ======================= */
+const CHANNELS = [
+  { name:'TikTok', icon:'▶', orders:238, units:612, revenue:32450, growth:28, color:'#000000' },
+  { name:'Instagram', icon:'◎', orders:196, units:498, revenue:27180, growth:14, color:'#C13584' },
+  { name:'WhatsApp', icon:'●', orders:172, units:401, revenue:19870, growth:6, color:'#25D366' },
+  { name:'Página web', icon:'◆', orders:141, units:355, revenue:21230, growth:19, color:'#000666' },
+  { name:'Tienda física', icon:'■', orders:98, units:240, revenue:14980, growth:-3, color:'#BF360C' },
+  { name:'Facebook', icon:'f', orders:64, units:150, revenue:8420, growth:-8, color:'#1877F2' },
+  { name:'Marketplace', icon:'▣', orders:39, units:88, revenue:4680, growth:11, color:'#FFA000' },
+];
+CHANNELS.forEach(c=>{ c.avgTicket = c.revenue/c.orders; });
+const totalRev = CHANNELS.reduce((a,c)=>a+c.revenue,0);
+CHANNELS.forEach(c=>{ c.share = (c.revenue/totalRev*100); });
+
+const PRODUCTS = [
+  { sku:'EF-JC-NG', name:'Jean Cargo Oversize Negro', model:'Cargo Oversize', category:'Jean', img:'productos/producto-01.jpeg', price:189, cost:95, colors:['Negro'], sizes:{28:2,30:5,32:0,34:3,36:1}, sold7:24, sold30:88, lastSale:'hace 2 h', velocity:3.4, updated:'hace 32 s' },
+  { sku:'EF-JR-LB', name:'Jean Recto Light Wash', model:'Recto', category:'Jean', img:'productos/producto-02.jpeg', price:159, cost:78, colors:['Azul Claro'], sizes:{28:6,30:8,32:9,34:5,36:2}, sold7:31, sold30:120, lastSale:'hace 40 min', velocity:4.4, updated:'hace 32 s' },
+  { sku:'EF-JB-AZ', name:'Jean Baggy Azul Rasgado', model:'Baggy', category:'Jean', img:'productos/producto-03.jpeg', price:175, cost:88, colors:['Azul'], sizes:{28:1,30:3,32:2,34:0,36:0}, sold7:18, sold30:61, lastSale:'hace 1 h', velocity:2.6, updated:'hace 32 s' },
+  { sku:'EF-JG-GR', name:'Jogger Denim Grafiti Gris', model:'Jogger Print', category:'Jean', img:'productos/producto-04.jpeg', price:169, cost:82, colors:['Gris'], sizes:{28:4,30:6,32:7,34:4,36:2}, sold7:9, sold30:29, lastSale:'hace 3 días', velocity:1.3, updated:'hace 32 s' },
+  { sku:'EF-JS-GR', name:'Jean Slim Rasgado Gris', model:'Slim', category:'Jean', img:'productos/producto-05.jpeg', price:165, cost:80, colors:['Gris'], sizes:{28:0,30:1,32:3,34:2,36:0}, sold7:15, sold30:52, lastSale:'hace 5 h', velocity:2.1, updated:'hace 32 s' },
+  { sku:'EF-JC-TR', name:'Jean Cargo Tribal Negro', model:'Cargo', category:'Jean', img:'productos/producto-06.jpeg', price:185, cost:92, colors:['Negro'], sizes:{28:3,30:5,32:6,34:3,36:1}, sold7:12, sold30:44, lastSale:'hace 1 día', velocity:1.7, updated:'hace 32 s' },
+  { sku:'EF-JB-CT', name:'Jean Baggy Bolsillo Contraste', model:'Baggy', category:'Jean', img:'productos/producto-07.jpeg', price:179, cost:89, colors:['Azul Claro'], sizes:{28:5,30:7,32:8,34:4,36:2}, sold7:27, sold30:95, lastSale:'hace 25 min', velocity:3.9, updated:'hace 32 s' },
+  { sku:'EF-PC-NG', name:'Pantalón Corduroy Negro', model:'Corduroy', category:'Pantalón', img:'productos/producto-08.jpeg', price:155, cost:74, colors:['Negro'], sizes:{28:2,30:2,32:1,34:0,36:0}, sold7:6, sold30:14, lastSale:'hace 12 días', velocity:0.5, updated:'hace 32 s' },
+  { sku:'EF-JR-OS', name:'Jean Recto Denim Oscuro', model:'Recto', category:'Jean', img:'productos/producto-09.jpeg', price:159, cost:78, colors:['Denim Oscuro'], sizes:{28:6,30:9,32:10,34:6,36:3}, sold7:21, sold30:79, lastSale:'hace 2 h', velocity:3.0, updated:'hace 32 s' },
+  { sku:'EF-JR-MD', name:'Jean Regular Azul Medio', model:'Regular', category:'Jean', img:'productos/producto-10.jpeg', price:149, cost:72, colors:['Azul Medio'], sizes:{28:7,30:9,32:8,34:5,36:2}, sold7:19, sold30:70, lastSale:'hace 4 h', velocity:2.7, updated:'hace 32 s' },
+  { sku:'EF-JA-AZ', name:'Jean Acid Wash Azul', model:'Acid Wash', category:'Jean', img:'p11', price:172, cost:86, colors:['Azul'], sizes:{28:0,30:0,32:1,34:0,36:0}, sold7:8, sold30:22, lastSale:'hace 6 días', velocity:1.1, updated:'hace 32 s' },
+  { sku:'EF-JB-NG', name:'Jean Baggy Negro Denim', model:'Baggy', category:'Jean', img:'p12', price:175, cost:88, colors:['Negro'], sizes:{28:3,30:4,32:5,34:2,36:1}, sold7:22, sold30:81, lastSale:'hace 1 h', velocity:3.1, updated:'hace 32 s' },
+  { sku:'EF-JR-AZ2', name:'Jean Recto Azul Denim', model:'Recto', category:'Jean', img:'p13', price:159, cost:78, colors:['Azul'], sizes:{28:5,30:6,32:7,34:3,36:1}, sold7:14, sold30:48, lastSale:'hace 8 h', velocity:2.0, updated:'hace 32 s' },
+  { sku:'EF-JS-GO', name:'Jean Slim Rasgado Gris Oscuro', model:'Slim', category:'Jean', img:'p14', price:165, cost:80, colors:['Gris Oscuro'], sizes:{28:2,30:3,32:0,34:1,36:0}, sold7:16, sold30:58, lastSale:'hace 3 h', velocity:2.3, updated:'hace 32 s' },
+  { sku:'EF-JW-PM', name:'Jean Wide Leg Parche Manifiesto', model:'Wide Leg', category:'Jean', img:'p15', price:182, cost:91, colors:['Azul Claro'], sizes:{28:4,30:5,32:6,34:3,36:1}, sold7:11, sold30:37, lastSale:'hace 2 días', velocity:1.6, updated:'hace 32 s' },
+];
+
+function stockStatus(p){
+  const total = Object.values(p.sizes).reduce((a,b)=>a+b,0);
+  if(total===0) return {label:'Agotado', color:'bad', icon:'🔴'};
+  const daysLeft = total / Math.max(p.velocity,0.1);
+  if(total<=4 && daysLeft<=3) return {label:'Riesgo', color:'warn', icon:'⚠️'};
+  if(total<=6) return {label:'Stock bajo', color:'warn', icon:'🟠'};
+  return {label:'Disponible', color:'ok', icon:'🟢'};
+}
+function totalStock(p){ return Object.values(p.sizes).reduce((a,b)=>a+b,0); }
+
+const CUSTOMERS = ['Maria Rossi','Carlos Silva','Ana Gómez','Jorge Pinto','Lucía Fernández','Diego Ramos','Valentina Cruz','Andrés Paredes','Camila Torres','Rodrigo Vega','Fiorella Chávez','Bruno Salinas'];
+const STATUSES = [{k:'Completada',c:'ok'},{k:'Pendiente',c:'warn'},{k:'Cancelada',c:'bad'},{k:'Devuelta',c:'bad'}];
+function rand(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+function pick(arr){ return arr[rand(0,arr.length-1)]; }
+
+const SALES = [];
+for(let i=0;i<48;i++){
+  const p = pick(PRODUCTS);
+  const size = pick(Object.keys(p.sizes));
+  const ch = pick(CHANNELS);
+  const qty = rand(1,2);
+  const st = i<3 ? STATUSES[0] : (Math.random()<0.75?STATUSES[0]:pick(STATUSES));
+  SALES.push({
+    id:'ORD-'+(8200-i), date: i<8? `hace ${rand(1,11)*10} min` : `${rand(10,25)} Oct, ${rand(8,20)}:${rand(0,5)}0`,
+    customer: pick(CUSTOMERS), product:p, sku:p.sku+'-'+size, size, color:p.colors[0], qty,
+    total: p.price*qty, channel: ch.name, status: st.k, statusColor: st.c
+  });
+}
+
+const ALERTS = [
+  { type:'Stock crítico', icon:'⚠️', color:'warn', title:'6 productos con stock crítico', desc:'Revisa tallas con 0-2 unidades antes que se agoten.' },
+  { type:'Riesgo de agotamiento', icon:'🔴', color:'bad', title:'Jean Cargo Oversize Negro — Talla 32 agotada', desc:'0 unidades disponibles. Velocidad de venta: 3.4/día.' },
+  { type:'Alta demanda', icon:'🔥', color:'ok', title:'Jean Baggy Bolsillo Contraste en alta demanda', desc:'27 unidades vendidas en los últimos 7 días.' },
+  { type:'Sin movimiento', icon:'📦', color:'ink-soft', title:'Pantalón Corduroy Negro sin ventas hace 12 días', desc:'S/ 1,085 en inventario inmovilizado.' },
+  { type:'Canal en crecimiento', icon:'📈', color:'ok', title:'TikTok aumentó sus ventas 28%', desc:'Mejor canal de la semana por segunda vez consecutiva.' },
+  { type:'Sincronización', icon:'🔵', color:'primary', title:'Última sincronización con ERP hace 32 segundos', desc:'2,481 registros sincronizados sin errores.' },
+];
+
+/* ======================= STATE ======================= */
+let state = { view:'dashboard', chartMetric:'ingresos', filters:{status:new Set(),color:new Set(),size:new Set(),channel:new Set()}, filterContext:'inventory' };
+
+/* Safety: force correct initial view state regardless of any residual DOM/class state */
+(function enforceInitialView(){
+  var login = document.getElementById('view-login');
+  var shell = document.getElementById('app-shell');
+  if(shell){ shell.classList.remove('active'); }
+  if(login){ login.classList.add('active'); }
+  ['sheet-more','sheet-filter','sheet-sync','sheet-search','sheet-product','sheet-sale','scrim'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.classList.add('hidden');
+  });
+})();
+
+/* ======================= NAV ======================= */
+function navTo(view){
+  const target=document.getElementById('page-'+view);
+  if(!target){ console.warn('Vista no encontrada:',view); return; }
+  state.view = view;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  target.classList.add('active');
+  document.querySelectorAll('[data-nav]').forEach(b=>{
+    const on = b.dataset.nav===view;
+    b.classList.toggle('bg-white/10', on);
+  });
+  document.querySelectorAll('.nav-link').forEach(b=>{
+    const on = b.dataset.nav===view;
+    b.classList.toggle('bg-white/15', on);
+    b.classList.toggle('text-white', on);
+    if(!on){ b.classList.add('text-white/70'); }
+  });
+  document.querySelectorAll('.bnav-link').forEach(b=>{
+    const on = b.dataset.nav===view;
+    b.classList.toggle('text-primary', on);
+    b.classList.toggle('text-ink-soft', !on);
+  });
+  const titles = { dashboard:'Dashboard', sales:'Ventas', inventory:'Inventario', products:'Productos', clients:'Clientes', channels:'Canales', reports:'Reportes', alerts:'Alertas', sync:'Sincronización', settings:'Configuración' };
+  document.getElementById('page-title').textContent = titles[view] || view;
+  window.scrollTo({top:0, behavior:'instant'});
+  closeSheets();
+}
+document.querySelectorAll('[data-nav]').forEach(b=> b.addEventListener('click', ()=>navTo(b.dataset.nav)));
+
+document.getElementById('login-form').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  document.getElementById('view-login').classList.remove('active');
+  document.getElementById('app-shell').classList.add('active');
+  navTo('dashboard');
+  showToast('Bienvenido de nuevo, Ahrens 👋');
+});
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.remove('hidden');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=>t.classList.add('hidden'), 2600);
+}
+
+/* ======================= SHEETS ======================= */
+function closeSheets(){
+  ['sheet-more','sheet-filter','sheet-sync','sheet-search','sheet-product','sheet-sale'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden');});
+  const scrim=document.getElementById('scrim'); if(scrim)scrim.classList.add('hidden');
+}
+function openMoreSheet(){
+  closeSheets();
+  const sheet=document.getElementById('sheet-more');
+  const scrim=document.getElementById('scrim');
+  if(sheet) sheet.classList.remove('hidden');
+  if(scrim) scrim.classList.remove('hidden');
+}
+function openSyncSheet(){ closeSheets(); document.getElementById('sheet-sync').classList.remove('hidden'); document.getElementById('scrim').classList.remove('hidden'); }
+function openSearchSheet(){ closeSheets(); document.getElementById('sheet-search').classList.remove('hidden'); renderMobileSearch(''); document.getElementById('mobile-search-input').focus(); }
+function openFilterSheet(ctx){
+  state.filterContext = ctx; closeSheets();
+  renderFilterOptions();
+  document.getElementById('sheet-filter').classList.remove('hidden'); document.getElementById('scrim').classList.remove('hidden');
+}
+function clearFilters(){ state.filters = {status:new Set(),color:new Set(),size:new Set(),channel:new Set()}; renderFilterOptions(); }
+function applyFilters(){ closeSheets(); renderInventory(); renderSales(); showToast('Filtros aplicados'); }
+function chip(label, active, onClick){
+  const b = document.createElement('button');
+  b.className = 'text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ' + (active? 'bg-primary text-white border-primary':'bg-white text-ink-soft border-line');
+  b.textContent = label; b.onclick = onClick; return b;
+}
+function renderFilterOptions(){
+  const statusEl = document.getElementById('filter-status'); statusEl.innerHTML='';
+  ['Disponible','Stock bajo','Riesgo','Agotado'].forEach(s=>statusEl.appendChild(chip(s,state.filters.status.has(s),()=>{toggleSet(state.filters.status,s);renderFilterOptions();})));
+  const colorEl = document.getElementById('filter-color'); colorEl.innerHTML='';
+  [...new Set(PRODUCTS.map(p=>p.colors[0]))].forEach(c=>colorEl.appendChild(chip(c,state.filters.color.has(c),()=>{toggleSet(state.filters.color,c);renderFilterOptions();})));
+  const sizeEl = document.getElementById('filter-size'); sizeEl.innerHTML='';
+  ['28','30','32','34','36'].forEach(s=>sizeEl.appendChild(chip(s,state.filters.size.has(s),()=>{toggleSet(state.filters.size,s);renderFilterOptions();})));
+  const chEl = document.getElementById('filter-channel'); chEl.innerHTML='';
+  CHANNELS.forEach(c=>chEl.appendChild(chip(c.name,state.filters.channel.has(c.name),()=>{toggleSet(state.filters.channel,c.name);renderFilterOptions();})));
+}
+function toggleSet(set,val){ set.has(val)?set.delete(val):set.add(val); }
+function passesFilters(p){
+  const f=state.filters;
+  if(f.status.size && !f.status.has(stockStatus(p).label)) return false;
+  if(f.color.size && !f.color.has(p.colors[0])) return false;
+  if(f.size.size && ![...f.size].some(s=>Number(p.sizes[s]||0)>0)) return false;
+  return true;
+}
+function passesSaleFilters(s){
+  const f=state.filters;
+  if(f.status.size && !f.status.has(s.status)) return false;
+  if(f.channel.size && !f.channel.has(s.channel)) return false;
+  if(f.color.size && !f.color.has(s.color)) return false;
+  if(f.size.size && !f.size.has(String(s.size))) return false;
+  return true;
+}
+
+/* ======================= RENDER: KPIS / SUMMARY / OPPORTUNITIES ======================= */
+function renderSmartSummary(){
+  const el = document.getElementById('smart-summary');
+  const items = [
+    'Las ventas aumentaron <b>12%</b> respecto al periodo anterior.',
+    '<b>TikTok</b> es el canal con mayor crecimiento (+28%).',
+    '<b>6 productos</b> tienen stock crítico.',
+    '<b>Jean Baggy Bolsillo Contraste</b> es el producto más vendido.',
+    'El ERP está correctamente sincronizado.',
+    'Ticket promedio subió a <b>S/ 103.20</b>.'
+  ];
+  el.innerHTML = items.map(t=>`<div class="flex items-start gap-2"><span class="text-white/60 mt-0.5">•</span><p class="text-white/90">${t}</p></div>`).join('');
+}
+
+function renderOpportunities(){
+  const el = document.getElementById('opportunities-list');
+  const opps = [
+    {icon:'🔥', tag:'Alta demanda', color:'ok', text:`<b>Jean Baggy Bolsillo Contraste</b> vendió 27 unidades en los últimos 7 días.`},
+    {icon:'⚠️', tag:'Riesgo de agotamiento', color:'warn', text:`Quedan 3 unidades de <b>Jean Cargo Oversize Negro</b> y el promedio de venta es 3.4/día.`},
+    {icon:'📦', tag:'Inventario inmovilizado', color:'ink-soft', text:`<b>Pantalón Corduroy Negro</b> mantiene S/ 1,085 en inventario sin ventas hace 12 días.`},
+    {icon:'📈', tag:'Canal en crecimiento', color:'ok', text:`<b>TikTok</b> aumentó sus ventas 28% esta semana.`},
+  ];
+  el.innerHTML = opps.map(o=>`
+    <div class="bg-white border border-line rounded-lg p-4 flex gap-3 shadow-card">
+      <span class="text-xl">${o.icon}</span>
+      <div>
+        <p class="text-[10px] font-bold uppercase tracking-wide text-${o.color}">${o.tag}</p>
+        <p class="text-sm text-ink mt-0.5">${o.text}</p>
+      </div>
+    </div>`).join('');
+}
+
+function renderTopProducts(){
+  const sort = document.getElementById('top-sort').value;
+  const sorted = [...PRODUCTS].sort((a,b)=>{
+    if(sort==='unidades') return b.sold7-a.sold7;
+    if(sort==='ingresos') return (b.sold7*b.price)-(a.sold7*a.price);
+    return ((b.price-b.cost)*b.sold7)-((a.price-a.cost)*a.sold7);
+  }).slice(0,5);
+  document.getElementById('top-products-list').innerHTML = sorted.map((p,i)=>`
+    <button onclick="openProductDetail('${p.sku}')" class="w-full flex items-center gap-3 py-2 hover:bg-surface-dim rounded-lg px-1.5 transition-colors text-left">
+      <span class="text-xs font-bold text-ink-faint w-4">${i+1}</span>
+      <img src="${img(p.img)}" loading="lazy" decoding="async" class="w-10 h-10 rounded object-cover border border-line" />
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-semibold text-ink truncate">${p.name}</p>
+        <p class="text-[11px] text-ink-faint">${p.sold7} unid · S/ ${(p.sold7*p.price).toLocaleString('es-PE')}</p>
+      </div>
+      <span class="text-xs font-bold text-ok">▲</span>
+    </button>`).join('');
+}
+function renderStaleProducts(){
+  const stale = [...PRODUCTS].filter(p=>p.sold7===0 || p.velocity<0.8).sort((a,b)=>a.velocity-b.velocity).slice(0,5);
+  document.getElementById('stale-products-list').innerHTML = stale.map(p=>`
+    <button onclick="openProductDetail('${p.sku}')" class="w-full flex items-center gap-3 py-2 hover:bg-surface-dim rounded-lg px-1.5 transition-colors text-left">
+      <img src="${img(p.img)}" loading="lazy" decoding="async" class="w-10 h-10 rounded object-cover border border-line" />
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-semibold text-ink truncate">${p.name}</p>
+        <p class="text-[11px] text-ink-faint">Stock: ${totalStock(p)} · Últ. venta: ${p.lastSale}</p>
+      </div>
+      <span class="text-[11px] font-bold text-ink-faint tabular">S/ ${(totalStock(p)*p.cost).toLocaleString('es-PE')}</span>
+    </button>`).join('');
+}
+document.getElementById('top-sort').addEventListener('change', renderTopProducts);
+document.getElementById('stale-days').addEventListener('change', renderStaleProducts);
+
+/* ======================= CHARTS ======================= */
+let salesChart, channelDonut, channelBarChart;
+function buildSeries(metric){
+  const labels = []; const cur=[]; const prev=[];
+  const days=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  for(let i=0;i<7;i++){
+    labels.push(days[i]);
+    const base = metric==='ingresos'? rand(12000,22000) : metric==='pedidos'? rand(120,220) : rand(300,600);
+    cur.push(base);
+    prev.push(Math.round(base*rand(75,95)/100));
+  }
+  return {labels,cur,prev};
+}
+function renderSalesChart(){
+  const {labels,cur,prev} = buildSeries(state.chartMetric);
+  const ctx = document.getElementById('salesChart');
+  if(salesChart) salesChart.destroy();
+  salesChart = new Chart(ctx, {
+    type:'line',
+    data:{ labels, datasets:[
+      { label:'Periodo actual', data:cur, borderColor:'#000666', backgroundColor:'rgba(0,6,102,0.08)', fill:true, tension:.35, pointRadius:3 },
+      { label:'Periodo anterior', data:prev, borderColor:'#c6c5d4', borderDash:[5,4], fill:false, tension:.35, pointRadius:0 }
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:true, position:'bottom', labels:{ boxWidth:10, font:{size:11} } } },
+      scales:{ y:{ grid:{color:'#eef0f2'}, ticks:{font:{size:10}} }, x:{ grid:{display:false}, ticks:{font:{size:10}} } }
+    }
+  });
+}
+document.querySelectorAll('.chart-metric-btn').forEach(b=>b.addEventListener('click', ()=>{
+  state.chartMetric = b.dataset.metric;
+  document.querySelectorAll('.chart-metric-btn').forEach(x=>{ x.classList.remove('bg-primary','text-white'); x.classList.add('text-ink-soft'); });
+  b.classList.add('bg-primary','text-white'); b.classList.remove('text-ink-soft');
+  renderSalesChart();
+}));
+
+function renderChannelDonut(){
+  const ctx = document.getElementById('channelDonut');
+  if(channelDonut) channelDonut.destroy();
+  channelDonut = new Chart(ctx, { type:'doughnut',
+    data:{ labels:CHANNELS.map(c=>c.name), datasets:[{ data:CHANNELS.map(c=>c.revenue), backgroundColor:CHANNELS.map(c=>c.color), borderWidth:2, borderColor:'#fff' }] },
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'68%', plugins:{ legend:{display:false} } }
+  });
+  const list = document.getElementById('channel-mini-list');
+  list.innerHTML = [...CHANNELS].sort((a,b)=>b.revenue-a.revenue).slice(0,4).map(c=>`
+    <div class="flex items-center justify-between text-xs">
+      <span class="flex items-center gap-1.5 text-ink-soft"><span class="w-2 h-2 rounded-full" style="background:${c.color}"></span>${c.name}</span>
+      <span class="font-bold text-ink tabular">${c.share.toFixed(1)}%</span>
+    </div>`).join('');
+}
+function renderChannelBarChart(){
+  const ctx = document.getElementById('channelBarChart');
+  if(channelBarChart) channelBarChart.destroy();
+  channelBarChart = new Chart(ctx, { type:'bar',
+    data:{ labels:CHANNELS.map(c=>c.name), datasets:[
+      { label:'Ingresos (S/)', data:CHANNELS.map(c=>c.revenue), backgroundColor:'#000666', borderRadius:4 },
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ y:{ grid:{color:'#eef0f2'} }, x:{ grid:{display:false}, ticks:{font:{size:10}} } } }
+  });
+}
+
+/* ======================= RENDER: CHANNELS PAGE ======================= */
+function renderChannelsPage(){
+  const ranked = [...CHANNELS].sort((a,b)=>b.revenue-a.revenue);
+  const medals = ['🥇','🥈','🥉'];
+  document.getElementById('channel-ranking').innerHTML = ranked.slice(0,3).map((c,i)=>`
+    <div class="bg-white border border-line rounded-lg p-4 shadow-card hover:border-copper transition-all">
+      <div class="flex justify-between items-start mb-3">
+        <div><p class="text-[11px] font-semibold uppercase text-ink-faint">Rendimiento</p><h3 class="text-lg font-extrabold text-ink">${medals[i]} ${c.name}</h3></div>
+        <span class="material-symbols-outlined ${c.growth>=0?'text-ok':'text-bad'}">${c.growth>=0?'trending_up':'trending_down'}</span>
+      </div>
+      <div class="text-sm text-ink-soft flex justify-between"><span>Crecimiento</span><span class="font-bold ${c.growth>=0?'text-ok':'text-bad'}">${c.growth>0?'+':''}${c.growth}%</span></div>
+      <div class="text-sm text-ink-soft flex justify-between mt-1"><span>Ticket promedio</span><span class="font-bold text-ink tabular">S/ ${c.avgTicket.toFixed(2)}</span></div>
+    </div>`).join('');
+  document.getElementById('channels-table-body').innerHTML = ranked.map(c=>`
+    <tr class="border-t border-line hover:bg-surface-dim/60">
+      <td class="p-3 font-semibold text-ink">${c.name}</td>
+      <td class="p-3 text-right tabular">${c.orders}</td>
+      <td class="p-3 text-right tabular">${c.units}</td>
+      <td class="p-3 text-right tabular font-semibold">S/ ${c.revenue.toLocaleString('es-PE')}</td>
+      <td class="p-3 text-right tabular">S/ ${c.avgTicket.toFixed(2)}</td>
+      <td class="p-3 text-right tabular">${c.share.toFixed(1)}%</td>
+      <td class="p-3 text-right font-bold ${c.growth>=0?'text-ok':'text-bad'}">${c.growth>0?'+':''}${c.growth}%</td>
+    </tr>`).join('');
+  renderChannelBarChart();
+}
+
+/* ======================= RENDER: SALES PAGE ======================= */
+function renderSales(){
+  const q=(document.getElementById('global-search')?.value||'').trim().toLowerCase();
+  const rows=SALES.filter(s=>passesSaleFilters(s) && (!q || [s.id,s.customer,s.product.name,s.sku,s.channel,s.color].some(v=>String(v).toLowerCase().includes(q)))).slice(0,30);
+  document.getElementById('sales-table-body').innerHTML=rows.length?rows.map(s=>`<tr class="border-t border-line hover:bg-surface-dim/60 cursor-pointer" onclick="openSaleDetail('${s.id}')"><td class="p-3 text-ink-soft whitespace-nowrap">${s.date}</td><td class="p-3 font-bold text-primary">${s.id}</td><td class="p-3 text-ink">${s.customer}</td><td class="p-3 text-ink">${s.product.name}</td><td class="p-3 text-ink-faint text-xs">${s.sku}<br><span>${s.size} / ${s.color}</span></td><td class="p-3 text-right font-semibold tabular">S/ ${s.total.toFixed(2)}</td><td class="p-3 text-ink-soft">${s.channel}</td><td class="p-3">${statusPill(s.status)}</td></tr>`).join(''):`<tr><td colspan="8" class="p-10 text-center text-ink-faint">No hay ventas que coincidan con los filtros.</td></tr>`;
+  document.getElementById('sales-cards-mobile').innerHTML=rows.map(s=>`<button onclick="openSaleDetail('${s.id}')" class="w-full text-left bg-white border border-line rounded-lg p-3.5 flex gap-3 shadow-card"><img src="${img(s.product.img)}" loading="lazy" decoding="async" class="w-14 h-14 rounded object-cover border border-line flex-shrink-0"><div class="flex-1 min-w-0"><div class="flex justify-between items-start"><p class="font-bold text-sm text-primary">${s.id}</p>${statusPill(s.status)}</div><p class="text-sm text-ink truncate">${s.product.name}</p><div class="flex justify-between items-center mt-1"><p class="text-[11px] text-ink-faint">${s.customer} · ${s.channel}</p><p class="text-sm font-bold text-ink tabular">S/ ${s.total.toFixed(2)}</p></div></div></button>`).join('');
+}
+function statusPill(status){
+  const map = { 'Completada':'ok','Pendiente':'warn','Cancelada':'bad','Devuelta':'bad' };
+  const c = map[status];
+  return `<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-${c} bg-${c}-bg px-2 py-0.5 rounded-full whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-${c}"></span>${status}</span>`;
+}
+function openSaleDetail(id){
+  const s = SALES.find(x=>x.id===id); if(!s) return;
+  const el = document.getElementById('sheet-sale');
+  el.innerHTML = `
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-6">
+        <div><p class="text-xs text-ink-faint">Pedido</p><h3 class="font-bold text-lg text-primary">${s.id}</h3></div>
+        <button onclick="closeSheets()" class="text-ink-faint"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div class="flex items-center justify-between mb-4">
+        ${statusPill(s.status)}
+        <span class="text-xs text-ink-faint">${s.date}</span>
+      </div>
+      <div class="border-t border-line pt-4 mb-4">
+        <p class="text-xs font-bold uppercase text-ink-faint mb-1">Cliente</p>
+        <p class="font-semibold text-ink">${s.customer}</p>
+        <p class="text-xs text-ink-faint">Canal de origen: <b class="text-ink">${s.channel}</b></p>
+      </div>
+      <div class="border-t border-line pt-4">
+        <p class="text-xs font-bold uppercase text-ink-faint mb-3">Artículos</p>
+        <div class="flex gap-3 border-b border-line pb-4">
+          <img src="${img(s.product.img)}" class="w-16 h-16 rounded object-cover border border-line" />
+          <div class="flex-1">
+            <p class="font-semibold text-sm text-ink">${s.product.name}</p>
+            <p class="text-[11px] text-ink-faint mt-0.5">SKU: ${s.sku}</p>
+            <p class="text-[11px] text-ink-faint">Talla ${s.size} · ${s.color}</p>
+            <div class="flex justify-between mt-1.5 text-sm"><span class="text-ink-faint">Cant: ${s.qty}</span><span class="font-semibold tabular">S/ ${s.total.toFixed(2)}</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="pt-4">
+        <div class="flex justify-between text-sm mb-1"><span class="text-ink-faint">Subtotal</span><span class="tabular">S/ ${s.total.toFixed(2)}</span></div>
+        <div class="flex justify-between text-sm mb-3"><span class="text-ink-faint">Envío</span><span class="tabular">S/ 0.00</span></div>
+        <div class="flex justify-between items-center pt-3 border-t border-line"><span class="font-bold text-ink">Total</span><span class="font-extrabold text-primary text-lg tabular">S/ ${s.total.toFixed(2)}</span></div>
+      </div>
+    </div>`;
+  el.classList.remove('hidden'); document.getElementById('scrim').classList.remove('hidden');
+}
+
+/* ======================= RENDER: INVENTORY / PRODUCTS GRID ======================= */
+function renderInventory(){
+  const q=(document.getElementById('inventory-search')?.value||'').trim().toLowerCase();
+  const list=PRODUCTS.filter(p=>passesFilters(p) && (!q || [p.name,p.sku,p.colors[0],p.model].some(v=>String(v).toLowerCase().includes(q))));
+  const totalUnits=PRODUCTS.reduce((a,p)=>a+totalStock(p),0), low=PRODUCTS.filter(p=>['Stock bajo','Riesgo','Agotado'].includes(stockStatus(p).label)).length, atRisk=PRODUCTS.filter(p=>['Riesgo','Agotado'].includes(stockStatus(p).label)).length;
+  document.getElementById('inventory-summary').innerHTML=`<div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Unidades en stock</p><p class="text-2xl font-extrabold mt-1">${totalUnits}</p><p class="text-xs text-ink-faint">15 SKUs</p></div><div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Stock bajo</p><p class="text-2xl font-extrabold text-warn mt-1">${low}</p><p class="text-xs text-ink-faint">requieren revisión</p></div><div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Riesgo / agotado</p><p class="text-2xl font-extrabold text-bad mt-1">${atRisk}</p><p class="text-xs text-ink-faint">acción prioritaria</p></div><div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Valor inventario</p><p class="text-2xl font-extrabold mt-1">S/ ${PRODUCTS.reduce((a,p)=>a+totalStock(p)*p.cost,0).toLocaleString('es-PE')}</p><p class="text-xs text-ink-faint">a costo</p></div>`;
+  document.getElementById('inventory-table-body').innerHTML=list.length?list.map(p=>{const st=stockStatus(p),t=totalStock(p);return `<tr class="border-t border-line hover:bg-surface-dim/60 cursor-pointer" onclick="openProductDetail('${p.sku}')"><td class="p-3 font-semibold">${p.name}</td><td class="p-3 text-xs text-ink-faint">${p.sku}</td>${['28','30','32','34','36'].map(s=>`<td class="p-3 text-center tabular ${p.sizes[s]===0?'text-bad font-bold':p.sizes[s]<=2?'text-warn font-bold':''}">${p.sizes[s]}</td>`).join('')}<td class="p-3 text-right font-bold tabular">${t}</td><td class="p-3">${statusPill(st.label)}</td></tr>`}).join(''):`<tr><td colspan="9" class="p-10 text-center text-ink-faint">No hay productos que coincidan con la búsqueda o filtros.</td></tr>`;
+  const chipsEl=document.getElementById('inventory-filter-chips'); const active=[...state.filters.status,...state.filters.color,...state.filters.size]; chipsEl.innerHTML=active.map(v=>`<span class="text-xs font-semibold bg-primary-tint text-primary px-3 py-1 rounded-full whitespace-nowrap">${v}</span>`).join('');
+}
+function productCard(p){
+  const st=stockStatus(p), stock=totalStock(p), margin=Math.round((p.price-p.cost)/p.price*100);
+  return `<button onclick="openProductDetail('${p.sku}')" class="text-left bg-white border border-line rounded-lg overflow-hidden hover:shadow-card hover:border-copper transition-all group"><div class="aspect-[3/4] overflow-hidden bg-surface-dim relative"><img src="${img(p.img)}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"><span class="absolute top-2 left-2 text-[10px] font-bold uppercase bg-white/90 px-2 py-0.5 rounded-full">${st.icon} ${st.label}</span></div><div class="p-3"><p class="text-[10px] font-bold text-ink-faint uppercase tracking-wide">${p.sku}</p><p class="font-bold text-ink leading-snug mt-1">${p.name}</p><div class="grid grid-cols-3 gap-2 mt-3"><div><p class="text-[10px] text-ink-faint">7 días</p><p class="text-sm font-bold">${p.sold7} unid.</p></div><div><p class="text-[10px] text-ink-faint">Stock</p><p class="text-sm font-bold">${stock}</p></div><div><p class="text-[10px] text-ink-faint">Margen</p><p class="text-sm font-bold text-ok">${margin}%</p></div></div></div></button>`;
+}
+function renderProducts(){
+  const q=(document.getElementById('products-search')?.value||'').trim().toLowerCase(); const sort=document.getElementById('products-sort')?.value||'sold';
+  const list=PRODUCTS.filter(p=>!q||p.name.toLowerCase().includes(q)||p.sku.toLowerCase().includes(q)).sort((a,b)=>sort==='revenue'?b.sold7*b.price-a.sold7*a.price:sort==='margin'?((b.price-b.cost)/b.price)-((a.price-a.cost)/a.price):sort==='stock'?totalStock(b)-totalStock(a):b.sold7-a.sold7);
+  const revenue=list.reduce((a,p)=>a+p.sold7*p.price,0), units=list.reduce((a,p)=>a+p.sold7,0), avgMargin=list.length?Math.round(list.reduce((a,p)=>a+(p.price-p.cost)/p.price*100,0)/list.length):0;
+  document.getElementById('products-summary').innerHTML=`<div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">SKUs activos</p><p class="text-2xl font-extrabold mt-1">${list.length}</p></div><div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Unidades vendidas</p><p class="text-2xl font-extrabold mt-1">${units}</p><p class="text-xs text-ok">últimos 7 días</p></div><div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Ingresos</p><p class="text-2xl font-extrabold mt-1">S/ ${revenue.toLocaleString('es-PE')}</p></div><div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Margen medio</p><p class="text-2xl font-extrabold text-ok mt-1">${avgMargin}%</p></div>`;
+  document.getElementById('products-grid').innerHTML=list.length?list.map(productCard).join(''):`<div class="col-span-full text-center py-16 text-ink-faint">No se encontraron productos.</div>`;
+}
+
+document.getElementById('inventory-search').addEventListener('input', renderInventory);
+document.getElementById('products-search').addEventListener('input', renderProducts);
+document.getElementById('products-sort').addEventListener('change', renderProducts);
+
+function stockMatrixHTML(p){
+  const sizes = Object.keys(p.sizes);
+  return `
+    <table class="w-full text-center text-xs border border-line rounded-lg overflow-hidden">
+      <thead><tr class="bg-surface-dim"><th class="p-2 text-left font-bold text-ink-faint">Talla</th>${p.colors.map(c=>`<th class="p-2 font-bold text-ink-faint">${c}</th>`).join('')}</tr></thead>
+      <tbody>${sizes.map(s=>`<tr class="border-t border-line"><td class="p-2 text-left font-semibold">${s}</td>${p.colors.map(()=>`<td class="p-2 tabular ${p.sizes[s]===0?'text-bad font-bold':p.sizes[s]<=2?'text-warn font-bold':'text-ink'}">${p.sizes[s]}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table>`;
+}
+function openProductDetail(sku){
+  const p = PRODUCTS.find(x=>x.sku===sku); if(!p) return;
+  const st = stockStatus(p);
+  const margin = (((p.price-p.cost)/p.price)*100).toFixed(0);
+  const stock = totalStock(p);
+  const daysLeft = Math.max(1, Math.round(stock/Math.max(p.velocity,0.1)));
+  const el = document.getElementById('sheet-product');
+  el.innerHTML = `
+    <div class="relative">
+      <button onclick="closeSheets()" class="absolute top-3 right-3 z-10 bg-white/90 rounded-full p-1.5 shadow"><span class="material-symbols-outlined">close</span></button>
+      <img src="${img(p.img)}" loading="eager" decoding="async" class="w-full aspect-[3/4] object-cover" />
+    </div>
+    <div class="p-5 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wide text-ink-faint">${p.category} · ${p.model}</p>
+        <h2 class="text-xl font-extrabold text-ink">${p.name}</h2>
+        <p class="text-xs text-ink-faint mt-0.5">SKU ${p.sku}</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1 text-xs font-semibold text-${st.color} bg-${st.color}-bg px-2.5 py-1 rounded-full">${st.icon} ${st.label}</span>
+        ${st.label==='Riesgo'||st.label==='Agotado' ? `<span class="text-[11px] text-ink-faint">Probable agotamiento en ${daysLeft} día(s)</span>`:''}
+      </div>
+      <div class="grid grid-cols-3 gap-2 text-center">
+        <div class="bg-surface-dim rounded-lg p-2.5"><p class="text-[10px] uppercase font-semibold text-ink-faint">Precio</p><p class="font-bold tabular">S/ ${p.price}</p></div>
+        <div class="bg-surface-dim rounded-lg p-2.5"><p class="text-[10px] uppercase font-semibold text-ink-faint">Margen</p><p class="font-bold tabular">${margin}%</p></div>
+        <div class="bg-surface-dim rounded-lg p-2.5"><p class="text-[10px] uppercase font-semibold text-ink-faint">Stock</p><p class="font-bold tabular">${stock}</p></div>
+      </div>
+      <div class="grid grid-cols-2 gap-2 text-sm">
+        <div class="flex justify-between border-b border-line py-1.5"><span class="text-ink-faint">Vendidos (7d)</span><span class="font-semibold tabular">${p.sold7}</span></div>
+        <div class="flex justify-between border-b border-line py-1.5"><span class="text-ink-faint">Vendidos (30d)</span><span class="font-semibold tabular">${p.sold30}</span></div>
+        <div class="flex justify-between border-b border-line py-1.5"><span class="text-ink-faint">Rotación</span><span class="font-semibold tabular">${p.velocity}/día</span></div>
+        <div class="flex justify-between border-b border-line py-1.5"><span class="text-ink-faint">Última venta</span><span class="font-semibold">${p.lastSale}</span></div>
+      </div>
+      <div>
+        <p class="text-xs font-bold uppercase text-ink-faint mb-2">Matriz de stock</p>
+        ${stockMatrixHTML(p)}
+      </div>
+      <p class="text-[11px] text-ink-faint pt-2 border-t border-line">Última actualización: ${p.updated} · Sincronizado desde ERP local</p>
+    </div>`;
+  el.classList.remove('hidden'); document.getElementById('scrim').classList.remove('hidden');
+}
+
+/* ======================= RENDER: CLIENTS ======================= */
+function renderClients(){
+  const clientMap = {};
+  SALES.forEach(s=>{
+    if(!clientMap[s.customer]) clientMap[s.customer] = { name:s.customer, orders:0, total:0, channel:{}, last:s.date };
+    const c = clientMap[s.customer];
+    c.orders++; c.total += s.total; c.channel[s.channel] = (c.channel[s.channel]||0)+1;
+  });
+  const clients = Object.values(clientMap).sort((a,b)=>b.total-a.total);
+  document.getElementById('clients-table-body').innerHTML = clients.map(c=>{
+    const pref = Object.entries(c.channel).sort((a,b)=>b[1]-a[1])[0][0];
+    return `<tr class="border-t border-line hover:bg-surface-dim/60">
+      <td class="p-3 font-semibold text-ink">${c.name}</td>
+      <td class="p-3 text-ink-faint hidden sm:table-cell">+51 9${rand(10000000,99999999)}</td>
+      <td class="p-3 tabular">${c.orders}</td>
+      <td class="p-3 text-right font-semibold tabular">S/ ${c.total.toFixed(2)}</td>
+      <td class="p-3 text-ink-soft hidden md:table-cell">${pref}</td>
+      <td class="p-3 text-ink-faint hidden md:table-cell">${c.last}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ======================= RENDER: REPORTS ======================= */
+function renderReports(){
+  const totalRevenue=CHANNELS.reduce((a,c)=>a+c.revenue,0), units=CHANNELS.reduce((a,c)=>a+c.units,0), marginValue=PRODUCTS.reduce((a,p)=>a+p.sold7*(p.price-p.cost),0);
+  document.getElementById('reports-kpis').innerHTML=`<div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Ingresos 7d</p><p class="text-2xl font-extrabold mt-1">S/ ${totalRevenue.toLocaleString('es-PE')}</p></div><div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Unidades</p><p class="text-2xl font-extrabold mt-1">${units.toLocaleString('es-PE')}</p></div><div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Utilidad bruta</p><p class="text-2xl font-extrabold text-ok mt-1">S/ ${marginValue.toLocaleString('es-PE')}</p></div><div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Ticket promedio</p><p class="text-2xl font-extrabold mt-1">S/ ${(totalRevenue/CHANNELS.reduce((a,c)=>a+c.orders,0)).toFixed(2)}</p></div>`;
+  const top=[...PRODUCTS].sort((a,b)=>((b.price-b.cost)*b.sold7)-((a.price-a.cost)*a.sold7)).slice(0,6); document.getElementById('margin-report').innerHTML=top.map(p=>{const m=(p.price-p.cost)/p.price*100;return `<div><div class="flex justify-between text-sm mb-1"><span class="truncate pr-3">${p.name}</span><b>${m.toFixed(0)}%</b></div><div class="h-2 rounded-full bg-surface-dim overflow-hidden"><div class="h-full bg-primary rounded-full" style="width:${Math.min(100,m)}%"></div></div></div>`}).join('');
+  const stockGroups={Disponible:0,'Stock bajo':0,Riesgo:0,Agotado:0}; PRODUCTS.forEach(p=>stockGroups[stockStatus(p).label]++); document.getElementById('stock-report').innerHTML=Object.entries(stockGroups).map(([k,v])=>`<div class="flex items-center justify-between border-b border-line pb-2"><span class="text-sm">${k}</span><span class="font-bold">${v} SKUs</span></div>`).join('');
+  const reports=[['payments','Ventas','Ventas por periodo, canal y producto.'],['inventory_2','Inventario','Stock, valorización y quiebres por talla.'],['trending_up','Rentabilidad','Margen bruto por SKU y categoría.'],['hub','Canales','Participación, ticket y crecimiento.'],['group','Clientes','Clientes activos y recurrencia.'],['warning','Alertas','Riesgos de stock y productos inmovilizados.']];
+  document.getElementById('reports-grid').innerHTML=reports.map(r=>`<div class="border border-line rounded-lg p-4"><span class="material-symbols-outlined text-primary">${r[0]}</span><h3 class="font-bold mt-2">${r[1]}</h3><p class="text-xs text-ink-faint mt-1 mb-3">${r[2]}</p><div class="flex gap-2"><button onclick="exportReport('${r[1]}','Excel')" class="text-[11px] font-bold uppercase border border-line rounded-full px-3 py-1.5">Excel</button><button onclick="exportReport('${r[1]}','PDF')" class="text-[11px] font-bold uppercase border border-line rounded-full px-3 py-1.5">PDF</button></div></div>`).join('');
+}
+function exportReport(name,format){ showToast(`Preparando ${name} en ${format}...`); setTimeout(()=>showToast(`${name} · ${format} listo para descargar`),700); }
+
+/* ======================= RENDER: ALERTS ======================= */
+function renderAlerts(){
+  document.getElementById('alerts-list').innerHTML = ALERTS.map(a=>`
+    <div class="bg-white border border-line rounded-lg p-4 flex gap-3 shadow-card">
+      <span class="text-xl">${a.icon}</span>
+      <div class="flex-1">
+        <p class="text-[10px] font-bold uppercase tracking-wide text-${a.color}">${a.type}</p>
+        <p class="text-sm font-semibold text-ink mt-0.5">${a.title}</p>
+        <p class="text-xs text-ink-faint mt-0.5">${a.desc}</p>
+      </div>
+    </div>`).join('');
+}
+
+/* ======================= SYNC ======================= */
+let syncSeconds = 32;
+function tickSync(){
+  syncSeconds++;
+  ['sync-seconds','sync-seconds-2','sync-seconds-3'].forEach(id=>{ const e=document.getElementById(id); if(e) e.textContent = syncSeconds; });
+}
+setInterval(tickSync, 1000);
+function runSync(){
+  showToast('Sincronizando con el ERP...');
+  setTimeout(()=>{ syncSeconds = 0; tickSync(); showToast('Sincronización completada ✓'); renderSyncHistory(); }, 900);
+}
+function renderSyncHistory(){
+  const rows = [];
+  for(let i=0;i<6;i++){ rows.push({ time:`${rand(8,19)}:${rand(10,59)}`, records: rand(200,600), status: i===0?'Sincronizado':pick(['Sincronizado','Sincronizado','Sincronizado','Pendiente']) }); }
+  document.getElementById('sync-history').innerHTML = rows.map(r=>`
+    <div class="flex items-center justify-between border-b border-line pb-2">
+      <span class="text-ink-soft">${r.time}</span>
+      <span class="text-ink-faint">${r.records} registros</span>
+      <span class="font-semibold ${r.status==='Sincronizado'?'text-ok':'text-warn'}">${r.status}</span>
+    </div>`).join('');
+}
+
+/* ======================= GLOBAL SEARCH ======================= */
+function renderMobileSearch(q){
+  q = q.toLowerCase();
+  const results = q ? PRODUCTS.filter(p=>p.name.toLowerCase().includes(q)||p.sku.toLowerCase().includes(q)||p.colors[0].toLowerCase().includes(q)) : PRODUCTS.slice(0,6);
+  document.getElementById('mobile-search-results').innerHTML = results.map(p=>`
+    <button onclick="openProductDetail('${p.sku}');" class="w-full flex items-center gap-3 p-2 hover:bg-surface-dim rounded-lg text-left">
+      <img src="${img(p.img)}" class="w-12 h-12 rounded object-cover border border-line" />
+      <div><p class="text-sm font-semibold text-ink">${p.name}</p><p class="text-xs text-ink-faint">${p.sku}</p></div>
+    </button>`).join('');
+}
+document.getElementById('mobile-search-input')?.addEventListener('input', e=>renderMobileSearch(e.target.value));
+document.getElementById('global-search')?.addEventListener('input', e=>{
+  const q=e.target.value.trim();
+  if(q.length>1){ navTo('products'); const s=document.getElementById('products-search'); s.value=q; renderProducts(); }
+});
+
+/* ======================= COMMAND PALETTE ======================= */
+const COMMANDS = [
+  ['dashboard','Dashboard','dashboard','Vista ejecutiva y KPIs'],['sales','Ventas','payments','Pedidos e ingresos'],['inventory','Inventario','inventory_2','Stock por talla y SKU'],['products','Productos','checkroom','Catálogo y rentabilidad'],['clients','Clientes','group','Clientes y recompra'],['channels','Canales','hub','Rendimiento omnicanal'],['reports','Reportes','analytics','Análisis y exportación'],['alerts','Alertas','notifications','Riesgos y oportunidades'],['sync','Sincronización','sync_alt','Estado del ERP'],['settings','Configuración','settings','Usuarios y parámetros']
+];
+function openCommandPalette(){
+  const p=document.getElementById('command-palette'); if(!p)return; p.classList.remove('hidden');
+  const input=document.getElementById('command-input'); input.value=''; renderCommandResults(''); setTimeout(()=>input.focus(),30);
+}
+function closeCommandPalette(){document.getElementById('command-palette')?.classList.add('hidden');}
+function renderCommandResults(q){
+  const query=(q||'').toLowerCase();
+  const matches=COMMANDS.filter(c=>c[1].toLowerCase().includes(query)||c[3].toLowerCase().includes(query)||c[0].includes(query));
+  const productMatches=PRODUCTS.filter(p=>query && (p.name.toLowerCase().includes(query)||p.sku.toLowerCase().includes(query))).slice(0,4);
+  const html=[...matches.map(c=>`<button onclick="closeCommandPalette();navTo('${c[0]}')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-surface-dim text-left"><span class="w-9 h-9 rounded-lg bg-primary-tint text-primary flex items-center justify-center"><span class="material-symbols-outlined">${c[2]}</span></span><span class="flex-1"><b class="block text-sm">${c[1]}</b><small class="text-[11px] text-ink-faint">${c[3]}</small></span><span class="material-symbols-outlined text-ink-faint">arrow_forward</span></button>`), ...productMatches.map(p=>`<button onclick="closeCommandPalette();openProductDetail('${p.sku}')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-surface-dim text-left"><img src="${img(p.img)}" class="w-9 h-9 rounded-lg object-cover"/><span class="flex-1"><b class="block text-sm">${p.name}</b><small class="text-[11px] text-ink-faint">${p.sku} · S/ ${p.price}</small></span><span class="material-symbols-outlined text-ink-faint">open_in_new</span></button>`)]
+  document.getElementById('command-results').innerHTML=html.join('')||'<div class="p-8 text-center text-sm text-ink-faint">No encontramos resultados.</div>';
+}
+document.addEventListener('keydown',e=>{ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openCommandPalette();} if(e.key==='Escape')closeCommandPalette(); });
+document.getElementById('command-input')?.addEventListener('input',e=>renderCommandResults(e.target.value));
+
+/* ======================= INIT ======================= */
+function initAll(){
+  renderSmartSummary();
+  renderOpportunities();
+  renderTopProducts();
+  renderStaleProducts();
+  renderSalesChart();
+  renderChannelDonut();
+  renderChannelsPage();
+  renderSales();
+  renderInventory();
+  renderProducts();
+  renderClients();
+  renderReports();
+  renderAlerts();
+  renderSyncHistory();
+}
+document.getElementById('top-sort')?.addEventListener('change', renderTopProducts);
+document.getElementById('stale-days')?.addEventListener('change', renderStaleProducts);
+initAll();
+</script>
+
+<script>
+// Element First — PWA registration + install affordance
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferredInstallPrompt = e;
+  const btn = document.getElementById('install-app-btn');
+  if (btn) btn.classList.remove('hidden');
+});
+async function installElementFirst(){
+  if(!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  try{ await deferredInstallPrompt.userChoice; }catch(e){}
+  deferredInstallPrompt=null;
+  document.getElementById('install-app-btn')?.classList.add('hidden');
+}
+</script>
+
+</body>
+</html>
