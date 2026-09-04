@@ -354,6 +354,237 @@ input:focus,select:focus{border-color:#7C9FF5!important;box-shadow:0 0 0 4px rgb
 }
 </style>
 
+
+<style id="final-layout-fix">
+/* =========================================================
+   FINAL RESPONSIVE FIX
+   Evita que los estilos del sidebar desktop afecten a la
+   navegación inferior móvil. No depende de Tailwind.
+   ========================================================= */
+
+/* Base: app limpia y sin desbordamiento */
+html, body {
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  margin:0;
+  overflow-x:hidden;
+}
+#app-shell {
+  width:100%;
+  min-width:0;
+  overflow:hidden;
+}
+#app-shell > .flex-1 {
+  min-width:0 !important;
+  width:100%;
+}
+
+/* SIDEBAR DESKTOP */
+#desktop-sidebar {
+  position:fixed !important;
+  left:0 !important;
+  top:0 !important;
+  bottom:0 !important;
+  width:256px !important;
+  height:100dvh !important;
+  display:flex;
+  flex-direction:column;
+  box-sizing:border-box;
+  z-index:60 !important;
+  overflow:hidden;
+}
+#desktop-sidebar > div:first-child {
+  flex:0 0 auto;
+}
+#desktop-sidebar > div:nth-child(2) {
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+}
+#app-shell > .flex-1 {
+  margin-left:256px;
+  width:calc(100% - 256px);
+}
+
+/* TOPBAR */
+#app-shell header {
+  position:sticky;
+  top:0;
+  width:100%;
+  z-index:50;
+  box-sizing:border-box;
+}
+
+/* MOBILE BOTTOM NAV */
+#mobile-bottom-nav {
+  position:fixed !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  top:auto !important;
+  width:100% !important;
+  height:auto !important;
+  min-height:64px !important;
+  padding:5px 8px max(5px, env(safe-area-inset-bottom)) !important;
+  display:none;
+  box-sizing:border-box;
+  background:rgba(255,255,255,.97) !important;
+  border-top:1px solid #e6eaf0 !important;
+  border-radius:18px 18px 0 0 !important;
+  box-shadow:0 -10px 30px rgba(15,23,42,.10) !important;
+  z-index:100 !important;
+  color:#454652;
+}
+#mobile-bottom-nav > div {
+  width:100% !important;
+  height:54px !important;
+  display:grid !important;
+  grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+  align-items:stretch !important;
+  gap:3px !important;
+  padding:0 !important;
+}
+#mobile-bottom-nav .bnav-link,
+#mobile-bottom-nav > div > button {
+  position:relative !important;
+  width:100% !important;
+  min-width:0 !important;
+  min-height:50px !important;
+  height:50px !important;
+  padding:6px 3px !important;
+  margin:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:2px !important;
+  border:0 !important;
+  border-radius:12px !important;
+  background:transparent !important;
+  box-sizing:border-box !important;
+  color:#667085 !important;
+}
+#mobile-bottom-nav .bnav-link.text-primary {
+  background:#eef4ff !important;
+  color:#2563eb !important;
+}
+#mobile-bottom-nav .bnav-link .material-symbols-outlined,
+#mobile-bottom-nav > div > button .material-symbols-outlined {
+  display:block !important;
+  font-size:22px !important;
+  line-height:22px !important;
+  height:22px !important;
+}
+#mobile-bottom-nav .bnav-link span:last-child,
+#mobile-bottom-nav > div > button span:last-child {
+  display:block !important;
+  font-size:9px !important;
+  line-height:12px !important;
+  font-weight:700 !important;
+  white-space:nowrap !important;
+}
+#mobile-bottom-nav > div > button:last-child {
+  color:#667085 !important;
+}
+#mobile-bottom-nav > div > button:last-child .material-symbols-outlined {
+  color:inherit !important;
+}
+#mobile-bottom-nav .bg-copper {
+  background:#f97316 !important;
+}
+
+/* SCRIM / SHEETS */
+#scrim {
+  z-index:90 !important;
+}
+#sheet-more, #sheet-filter, #sheet-sync,
+#sheet-search, #sheet-product, #sheet-sale {
+  z-index:110 !important;
+}
+
+/* TABLES */
+.page .overflow-x-auto {
+  max-width:100%;
+}
+.page table {
+  width:max-content;
+  min-width:680px;
+}
+
+/* TABLET + MOBILE */
+@media (max-width:1023px) {
+  #desktop-sidebar {
+    display:none !important;
+  }
+  #mobile-bottom-nav {
+    display:block !important;
+  }
+  #app-shell > .flex-1 {
+    margin-left:0 !important;
+    width:100% !important;
+  }
+  #app-shell main {
+    width:100% !important;
+    max-width:none !important;
+    box-sizing:border-box;
+  }
+}
+
+/* MOBILE */
+@media (max-width:767px) {
+  body {
+    background:#f6f8fc !important;
+  }
+  #app-shell {
+    min-height:100dvh !important;
+    height:100dvh !important;
+  }
+  #app-shell > .flex-1 {
+    height:100dvh !important;
+  }
+  #app-shell header {
+    height:58px !important;
+    min-height:58px !important;
+    flex:0 0 58px !important;
+  }
+  #app-shell header > div {
+    height:58px !important;
+    min-height:58px !important;
+    padding:0 12px !important;
+    box-sizing:border-box;
+  }
+  #app-shell main {
+    padding:12px 12px 86px !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch;
+  }
+  #page-title {
+    font-size:17px !important;
+    max-width:45vw !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+  #mobile-bottom-nav {
+    min-height:64px !important;
+  }
+}
+
+/* Very small phones */
+@media (max-width:380px) {
+  #mobile-bottom-nav {
+    padding-left:4px !important;
+    padding-right:4px !important;
+  }
+  #mobile-bottom-nav .bnav-link span:last-child,
+  #mobile-bottom-nav > div > button span:last-child {
+    font-size:8px !important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-surface text-ink antialiased">
 
@@ -415,7 +646,7 @@ input:focus,select:focus{border-color:#7C9FF5!important;box-shadow:0 0 0 4px rgb
 <div id="app-shell" class="view min-h-screen lg:flex">
 
   <!-- Desktop Sidebar -->
-  <nav class="hidden lg:flex flex-col fixed left-0 top-0 h-full w-64 bg-primary text-white p-5 gap-1 z-40">
+  <nav id="desktop-sidebar" class="hidden lg:flex flex-col fixed left-0 top-0 h-full w-64 bg-primary text-white p-5 gap-1 z-40">
     <div class="mb-8 px-2">
       <div class="flex items-center gap-2">
         <div class="w-8 h-8 rounded bg-copper flex items-center justify-center font-black text-xs">EF</div>
@@ -887,7 +1118,7 @@ input:focus,select:focus{border-color:#7C9FF5!important;box-shadow:0 0 0 4px rgb
   </div>
 
   <!-- Mobile Bottom Nav -->
-  <nav class="lg:hidden fixed bottom-0 left-0 w-full z-40 bg-white border-t border-line shadow-pop rounded-t-2xl">
+  <nav id="mobile-bottom-nav" class="lg:hidden fixed bottom-0 left-0 w-full z-40 bg-white border-t border-line shadow-pop rounded-t-2xl">
     <div class="grid grid-cols-5 px-1 py-2">
       <button data-nav="dashboard" class="bnav-link flex flex-col items-center gap-0.5 py-1 rounded-lg">
         <span class="material-symbols-outlined text-[22px]">home</span><span class="text-[10px] font-semibold">Inicio</span></button>
