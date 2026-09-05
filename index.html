@@ -99,7 +99,7 @@ button,input,select{font-family:inherit}
 #app-shell{background:var(--ef-bg)!important}
 #app-shell > .flex-1{background:var(--ef-bg)}
 /* Sidebar */
-#app-shell > nav{
+#sidebar-nav{
   width:244px!important;
   padding:20px 14px 16px!important;
   background:linear-gradient(180deg,#080d6d 0%,#080b60 58%,#070949 100%)!important;
@@ -107,13 +107,13 @@ button,input,select{font-family:inherit}
   box-shadow:12px 0 30px rgba(7,12,83,.08);
 }
 #app-shell > .flex-1{margin-left:244px!important}
-#app-shell > nav > div:first-child{padding:5px 10px!important;margin-bottom:24px!important}
-#app-shell > nav > div:first-child .w-8{
+#sidebar-nav > div:first-child{padding:5px 10px!important;margin-bottom:24px!important}
+#sidebar-nav > div:first-child .w-8{
   width:38px!important;height:38px!important;border-radius:11px!important;
   background:linear-gradient(135deg,#ee5b20,#b93308)!important;
   box-shadow:0 8px 20px rgba(217,75,18,.28);
 }
-#app-shell > nav > div:first-child span.font-black{
+#sidebar-nav > div:first-child span.font-black{
   font-size:14px!important;letter-spacing:.12em!important
 }
 .nav-section{
@@ -142,8 +142,8 @@ button,input,select{font-family:inherit}
   box-shadow:inset 3px 0 0 #f06b2b, 0 8px 22px rgba(0,0,0,.10);
 }
 .nav-link .material-symbols-outlined{opacity:.92}
-#app-shell > nav .border-t{border-color:rgba(255,255,255,.09)!important}
-#app-shell > nav .bg-copper{background:#ef5b20!important}
+#sidebar-nav .border-t{border-color:rgba(255,255,255,.09)!important}
+#sidebar-nav .bg-copper{background:#ef5b20!important}
 /* Topbar */
 #app-shell header{
   height:72px!important;
@@ -289,7 +289,7 @@ input:focus,select:focus{
 }
 /* Responsive */
 @media(max-width:1023px){
-  #app-shell > nav{display:none!important}
+  #sidebar-nav{display:none!important}
   #app-shell > .flex-1{margin-left:0!important}
   #app-shell header{height:62px!important}
   #app-shell header > div{height:62px!important;padding-left:16px!important;padding-right:16px!important}
@@ -338,7 +338,7 @@ button,select,input{font-family:'Manrope','Inter',sans-serif!important}
 #app-shell main{max-width:1540px!important}
 
 /* Sidebar — cleaner dark glass */
-#app-shell > nav{
+#sidebar-nav{
   width:256px!important;
   padding:18px 12px 14px!important;
   background:
@@ -349,13 +349,13 @@ button,select,input{font-family:'Manrope','Inter',sans-serif!important}
   box-shadow:14px 0 40px rgba(15,23,42,.12)!important;
 }
 #app-shell > .flex-1{margin-left:256px!important}
-#app-shell > nav > div:first-child{padding:7px 10px!important;margin-bottom:26px!important}
-#app-shell > nav > div:first-child .w-8{
+#sidebar-nav > div:first-child{padding:7px 10px!important;margin-bottom:26px!important}
+#sidebar-nav > div:first-child .w-8{
   width:40px!important;height:40px!important;border-radius:12px!important;
   background:linear-gradient(135deg,#F97316,#FB7185)!important;
   box-shadow:0 10px 25px rgba(249,115,22,.26)!important;
 }
-#app-shell > nav > div:first-child span.font-black{
+#sidebar-nav > div:first-child span.font-black{
   font-size:14px!important;letter-spacing:.11em!important
 }
 .nav-section{
@@ -383,7 +383,7 @@ button,select,input{font-family:'Manrope','Inter',sans-serif!important}
 }
 .nav-link .material-symbols-outlined{color:inherit!important;opacity:.9}
 #sidebar-alert-count{background:linear-gradient(135deg,#F97316,#EF4444)!important;box-shadow:0 5px 15px rgba(239,68,68,.22)}
-#app-shell > nav .border-t{border-color:rgba(255,255,255,.08)!important}
+#sidebar-nav .border-t{border-color:rgba(255,255,255,.08)!important}
 
 /* Header */
 #app-shell header{
@@ -689,7 +689,7 @@ html{height:100%;background:#f5f7fb;overscroll-behavior:none}
 body{min-height:100%;margin:0;background:#f5f7fb;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 button,a,input,select{touch-action:manipulation}
 #app-shell{min-height:100dvh!important;height:100dvh;overflow:hidden}
-#app-shell > nav{position:fixed!important;left:0!important;top:0!important;bottom:0!important;height:100dvh!important}
+#sidebar-nav{position:fixed!important;left:0!important;top:0!important;bottom:0!important;height:100dvh!important}
 #app-shell > .flex-1{height:100dvh!important;min-height:0!important;overflow:hidden!important}
 #app-shell header{flex:0 0 68px!important;height:68px!important}
 #app-shell header>div{height:68px!important}
@@ -698,7 +698,7 @@ button,a,input,select{touch-action:manipulation}
 #app-shell main::-webkit-scrollbar-thumb{background:#cbd1df;border-radius:99px}
 /* Desktop: application density, not landing-page spacing */
 @media (min-width:1024px){
-  #app-shell > nav{width:244px!important}
+  #sidebar-nav{width:244px!important}
   #app-shell > .flex-1{margin-left:244px!important}
   #app-shell main{padding:22px 26px 34px!important}
   #app-shell main>section.page{max-width:1480px!important}
@@ -749,7 +749,7 @@ button,a,input,select{touch-action:manipulation}
 /* ===== Responsive repair: phone + iPad/tablet ===== */
 /* Desktop remains >= 1180px. Tablets use the same compact bottom navigation as phones. */
 @media (min-width:1024px) and (max-width:1179px){
-  #app-shell > nav{display:none!important}
+  #sidebar-nav{display:none!important}
   #app-shell > .flex-1{margin-left:0!important;width:100%!important}
   #app-shell header{height:64px!important;flex-basis:64px!important}
   #app-shell header>div{height:64px!important;padding:0 18px!important}
@@ -765,7 +765,7 @@ button,a,input,select{touch-action:manipulation}
 }
 
 @media (min-width:1180px){
-  #app-shell > nav{display:flex!important}
+  #sidebar-nav{display:flex!important}
   #app-shell > .flex-1{margin-left:244px!important;width:calc(100% - 244px)!important}
 }
 
@@ -869,7 +869,7 @@ button,a,input,select{touch-action:manipulation}
 <div id="app-shell" class="view min-h-screen lg:flex">
 
   <!-- Desktop Sidebar -->
-  <nav class="hidden lg:flex flex-col fixed left-0 top-0 h-full w-64 bg-primary text-white p-5 gap-1 z-40">
+  <nav id="sidebar-nav" class="hidden lg:flex flex-col fixed left-0 top-0 h-full w-64 bg-primary text-white p-5 gap-1 z-40">
     <div class="mb-8 px-2">
       <div class="flex items-center gap-2">
         <div class="w-8 h-8 rounded bg-copper flex items-center justify-center font-black text-xs">EF</div>
