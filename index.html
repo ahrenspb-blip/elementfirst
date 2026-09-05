@@ -955,7 +955,7 @@ button,a,input,select{touch-action:manipulation}
       <section id="page-dashboard" class="page fade-in space-y-5">
         <div class="flex items-center justify-between flex-wrap gap-3">
           <div>
-            <p class="text-ink font-semibold text-lg">Buenos días 👋</p>
+            <p id="dashboard-greeting" class="text-ink font-semibold text-lg">Buenos días 👋</p>
             <p class="text-ink-faint text-sm">Resumen de Element First</p>
           </div>
           <select id="period-select" class="text-xs font-semibold uppercase tracking-wide border border-line rounded-full px-4 py-2 bg-white outline-none">
@@ -1165,13 +1165,14 @@ button,a,input,select{touch-action:manipulation}
               <span class="material-symbols-outlined text-ink-faint text-[18px]">search</span>
               <input id="inventory-search" placeholder="Buscar SKU, modelo, color..." class="bg-transparent outline-none text-sm w-full" />
             </div>
+            <select id="inventory-location" onchange="renderInventory()" class="text-xs font-semibold border border-line rounded-full px-3 py-2 bg-white outline-none"></select>
             <button onclick="openFilterSheet('inventory')" class="flex items-center gap-1.5 text-xs font-bold uppercase border border-line rounded-full px-4 py-2 bg-white"><span class="material-symbols-outlined text-[16px]">filter_list</span>Filtros</button>
           </div>
         </div>
         <div id="inventory-filter-chips" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1"></div>
         <div id="inventory-summary" class="grid grid-cols-2 lg:grid-cols-4 gap-3"></div>
         <div class="bg-white border border-line rounded-lg overflow-hidden shadow-card">
-          <div class="px-4 py-3 border-b border-line flex items-center justify-between"><h3 class="font-bold">Existencias por producto</h3><span class="text-xs text-ink-faint">Actualizado en tiempo real</span></div>
+          <div class="px-4 py-3 border-b border-line flex items-center justify-between"><h3 id="inventory-table-title" class="font-bold">Existencias por producto</h3><span class="text-xs text-ink-faint">Actualizado en tiempo real</span></div>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm min-w-[820px]">
               <thead class="bg-surface-dim text-[11px] uppercase font-bold text-ink-faint tracking-wide">
@@ -1234,6 +1235,17 @@ button,a,input,select{touch-action:manipulation}
               <tr><th class="p-3">Canal</th><th class="p-3 text-right">Pedidos</th><th class="p-3 text-right">Unidades</th><th class="p-3 text-right">Ingresos</th><th class="p-3 text-right">Ticket prom.</th><th class="p-3 text-right">Participación</th><th class="p-3 text-right">Crecimiento</th></tr>
             </thead>
             <tbody id="channels-table-body"></tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between pt-2"><div><h3 class="text-lg font-bold text-ink">Ventas por tienda física</h3><p class="text-sm text-ink-faint">Desempeño de cada local, aparte de las ventas por redes y canales digitales.</p></div></div>
+        <div id="store-ranking" class="grid sm:grid-cols-3 gap-3"></div>
+        <div class="bg-white border border-line rounded-lg overflow-hidden shadow-card">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-surface-dim text-[11px] uppercase font-bold text-ink-faint tracking-wide">
+              <tr><th class="p-3">Tienda</th><th class="p-3 text-right">Pedidos</th><th class="p-3 text-right">Unidades</th><th class="p-3 text-right">Ingresos</th><th class="p-3 text-right">Ticket prom.</th><th class="p-3 text-right">Participación</th><th class="p-3 text-right">Crecimiento</th></tr>
+            </thead>
+            <tbody id="stores-table-body"></tbody>
           </table>
         </div>
       </section>
@@ -1478,6 +1490,15 @@ CHANNELS.forEach(c=>{ c.avgTicket = c.revenue/c.orders; });
 const totalRev = CHANNELS.reduce((a,c)=>a+c.revenue,0);
 CHANNELS.forEach(c=>{ c.share = (c.revenue/totalRev*100); });
 
+/* Sales split of the "Tienda física" channel across the 3 physical stores */
+const STORES = [
+  { id:'san-isidro', name:'Tienda San Isidro', icon:'🏬', orders:44, units:108, revenue:6741, growth:4 },
+  { id:'miraflores', name:'Tienda Miraflores', icon:'🏬', orders:32, units:79, revenue:4943, growth:-8 },
+  { id:'surco', name:'Tienda Surco', icon:'🏬', orders:22, units:53, revenue:3296, growth:-9 },
+];
+const totalStoreRevenue = STORES.reduce((a,s)=>a+s.revenue,0);
+STORES.forEach(s=>{ s.avgTicket = s.revenue/s.orders; s.share = (s.revenue/totalStoreRevenue*100); });
+
 const PRODUCTS = [
   { sku:'EF-JC-NG', name:'Jean Cargo Oversize Negro', model:'Cargo Oversize', category:'Jean', img:'productos/producto-01.jpeg', price:189, cost:95, colors:['Negro'], sizes:{28:2,30:5,32:0,34:3,36:1}, sold7:24, sold30:88, lastSale:'hace 2 h', velocity:3.4, updated:'hace 32 s' },
   { sku:'EF-JR-LB', name:'Jean Recto Light Wash', model:'Recto', category:'Jean', img:'productos/producto-02.jpeg', price:159, cost:78, colors:['Azul Claro'], sizes:{28:6,30:8,32:9,34:5,36:2}, sold7:31, sold30:120, lastSale:'hace 40 min', velocity:4.4, updated:'hace 32 s' },
@@ -1495,6 +1516,40 @@ const PRODUCTS = [
   { sku:'EF-JS-GO', name:'Jean Slim Rasgado Gris Oscuro', model:'Slim', category:'Jean', img:'p14', price:165, cost:80, colors:['Gris Oscuro'], sizes:{28:2,30:3,32:0,34:1,36:0}, sold7:16, sold30:58, lastSale:'hace 3 h', velocity:2.3, updated:'hace 32 s' },
   { sku:'EF-JW-PM', name:'Jean Wide Leg Parche Manifiesto', model:'Wide Leg', category:'Jean', img:'p15', price:182, cost:91, colors:['Azul Claro'], sizes:{28:4,30:5,32:6,34:3,36:1}, sold7:11, sold30:37, lastSale:'hace 2 días', velocity:1.6, updated:'hace 32 s' },
 ];
+
+/* Stores hold a minority of each SKU on their sales floor; the rest sits in the main warehouse */
+const STORE_STOCK_SHARE = [
+  { id:'san-isidro', share:0.20 },
+  { id:'miraflores', share:0.15 },
+  { id:'surco', share:0.10 },
+];
+const LOCATIONS = [
+  { id:'all', name:'Todas las ubicaciones' },
+  { id:'almacen', name:'Almacén principal' },
+  { id:'san-isidro', name:'Tienda San Isidro' },
+  { id:'miraflores', name:'Tienda Miraflores' },
+  { id:'surco', name:'Tienda Surco' },
+];
+/* Splits a product's total-per-size stock across locations, keeping the sum exact per size.
+   Whatever the stores don't hold on their floor is assumed to sit in the main warehouse. */
+function splitStockByLocation(sizes){
+  const byLocation = { almacen:{} };
+  STORE_STOCK_SHARE.forEach(l=>{ byLocation[l.id]={}; });
+  Object.entries(sizes).forEach(([size,total])=>{
+    let assigned = 0;
+    STORE_STOCK_SHARE.forEach(l=>{
+      const units = Math.round(total*l.share);
+      byLocation[l.id][size] = units;
+      assigned += units;
+    });
+    byLocation.almacen[size] = Math.max(0, total-assigned);
+  });
+  return byLocation;
+}
+PRODUCTS.forEach(p=>{ p.stockByLocation = splitStockByLocation(p.sizes); });
+function sizesForLocation(p, locationId){
+  return (!locationId || locationId==='all') ? p.sizes : p.stockByLocation[locationId];
+}
 
 function stockStatus(p){
   const total = Object.values(p.sizes).reduce((a,b)=>a+b,0);
@@ -1797,6 +1852,27 @@ function renderChannelsPage(){
       <td class="p-3 text-right font-bold ${c.growth>=0?'text-ok':'text-bad'}">${c.growth>0?'+':''}${c.growth}%</td>
     </tr>`).join('');
   renderChannelBarChart();
+
+  const rankedStores = [...STORES].sort((a,b)=>b.revenue-a.revenue);
+  document.getElementById('store-ranking').innerHTML = rankedStores.map((s,i)=>`
+    <div class="bg-white border border-line rounded-lg p-4 shadow-card hover:border-copper transition-all">
+      <div class="flex justify-between items-start mb-3">
+        <div><p class="text-[11px] font-semibold uppercase text-ink-faint">Rendimiento</p><h3 class="text-lg font-extrabold text-ink">${medals[i]||''} ${s.name}</h3></div>
+        <span class="material-symbols-outlined ${s.growth>=0?'text-ok':'text-bad'}">${s.growth>=0?'trending_up':'trending_down'}</span>
+      </div>
+      <div class="text-sm text-ink-soft flex justify-between"><span>Crecimiento</span><span class="font-bold ${s.growth>=0?'text-ok':'text-bad'}">${s.growth>0?'+':''}${s.growth}%</span></div>
+      <div class="text-sm text-ink-soft flex justify-between mt-1"><span>Ticket promedio</span><span class="font-bold text-ink tabular">S/ ${s.avgTicket.toFixed(2)}</span></div>
+    </div>`).join('');
+  document.getElementById('stores-table-body').innerHTML = rankedStores.map(s=>`
+    <tr class="border-t border-line hover:bg-surface-dim/60">
+      <td class="p-3 font-semibold text-ink">${s.name}</td>
+      <td class="p-3 text-right tabular">${s.orders}</td>
+      <td class="p-3 text-right tabular">${s.units}</td>
+      <td class="p-3 text-right tabular font-semibold">S/ ${s.revenue.toLocaleString('es-PE')}</td>
+      <td class="p-3 text-right tabular">S/ ${s.avgTicket.toFixed(2)}</td>
+      <td class="p-3 text-right tabular">${s.share.toFixed(1)}%</td>
+      <td class="p-3 text-right font-bold ${s.growth>=0?'text-ok':'text-bad'}">${s.growth>0?'+':''}${s.growth}%</td>
+    </tr>`).join('');
 }
 
 /* ======================= RENDER: SALES PAGE ======================= */
@@ -1874,12 +1950,17 @@ function productCard(p){
     </button>`;
 }
 function renderInventory(){
+  const locationEl=document.getElementById('inventory-location');
+  if(locationEl && !locationEl.options.length){ locationEl.innerHTML=LOCATIONS.map(l=>`<option value="${l.id}">${l.name}</option>`).join(''); }
+  const loc = locationEl?.value || 'all';
   const q=(document.getElementById('inventory-search')?.value||'').trim().toLowerCase();
   const list=PRODUCTS.filter(p=>passesFilters(p) && (!q || [p.name,p.sku,p.colors[0],p.model].some(v=>String(v).toLowerCase().includes(q))));
-  const totalUnits=PRODUCTS.reduce((a,p)=>a+totalStock(p),0), low=PRODUCTS.filter(p=>['Stock bajo','Riesgo','Agotado'].includes(stockStatus(p).label)).length, atRisk=PRODUCTS.filter(p=>['Riesgo','Agotado'].includes(stockStatus(p).label)).length;
-  document.getElementById('inventory-summary').innerHTML=`<div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Unidades en stock</p><p class="text-2xl font-extrabold mt-1">${totalUnits}</p><p class="text-xs text-ink-faint">15 SKUs</p></div><div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Stock bajo</p><p class="text-2xl font-extrabold text-warn mt-1">${low}</p><p class="text-xs text-ink-faint">requieren revisión</p></div><div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Riesgo / agotado</p><p class="text-2xl font-extrabold text-bad mt-1">${atRisk}</p><p class="text-xs text-ink-faint">acción prioritaria</p></div><div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Valor inventario</p><p class="text-2xl font-extrabold mt-1">S/ ${PRODUCTS.reduce((a,p)=>a+totalStock(p)*p.cost,0).toLocaleString('es-PE')}</p><p class="text-xs text-ink-faint">a costo</p></div>`;
-  document.getElementById('inventory-table-body').innerHTML=list.length?list.map(p=>{const st=stockStatus(p),t=totalStock(p);return `<tr class="border-t border-line hover:bg-surface-dim/60 cursor-pointer" onclick="openProductDetail('${p.sku}')"><td class="p-3 font-semibold">${p.name}</td><td class="p-3 text-xs text-ink-faint">${p.sku}</td>${['28','30','32','34','36'].map(s=>`<td class="p-3 text-center tabular ${p.sizes[s]===0?'text-bad font-bold':p.sizes[s]<=2?'text-warn font-bold':''}">${p.sizes[s]}</td>`).join('')}<td class="p-3 text-right font-bold tabular">${t}</td><td class="p-3">${statusPill(st.label)}</td></tr>`}).join(''):`<tr><td colspan="9" class="p-10 text-center text-ink-faint">No hay productos que coincidan con la búsqueda o filtros.</td></tr>`;
+  const unitsAt=(p)=>Object.values(sizesForLocation(p,loc)).reduce((a,b)=>a+b,0);
+  const totalUnits=PRODUCTS.reduce((a,p)=>a+unitsAt(p),0), low=PRODUCTS.filter(p=>['Stock bajo','Riesgo','Agotado'].includes(stockStatus(p).label)).length, atRisk=PRODUCTS.filter(p=>['Riesgo','Agotado'].includes(stockStatus(p).label)).length;
+  document.getElementById('inventory-summary').innerHTML=`<div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Unidades en stock</p><p class="text-2xl font-extrabold mt-1">${totalUnits}</p><p class="text-xs text-ink-faint">15 SKUs</p></div><div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Stock bajo</p><p class="text-2xl font-extrabold text-warn mt-1">${low}</p><p class="text-xs text-ink-faint">requieren revisión</p></div><div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Riesgo / agotado</p><p class="text-2xl font-extrabold text-bad mt-1">${atRisk}</p><p class="text-xs text-ink-faint">acción prioritaria</p></div><div class="bg-white border border-line rounded-lg p-4 shadow-card"><p class="text-[10px] uppercase font-bold text-ink-faint">Valor inventario</p><p class="text-2xl font-extrabold mt-1">S/ ${PRODUCTS.reduce((a,p)=>a+unitsAt(p)*p.cost,0).toLocaleString('es-PE')}</p><p class="text-xs text-ink-faint">a costo</p></div>`;
+  document.getElementById('inventory-table-body').innerHTML=list.length?list.map(p=>{const st=stockStatus(p),sizes=sizesForLocation(p,loc),t=Object.values(sizes).reduce((a,b)=>a+b,0);return `<tr class="border-t border-line hover:bg-surface-dim/60 cursor-pointer" onclick="openProductDetail('${p.sku}')"><td class="p-3 font-semibold">${p.name}</td><td class="p-3 text-xs text-ink-faint">${p.sku}</td>${['28','30','32','34','36'].map(s=>`<td class="p-3 text-center tabular ${sizes[s]===0?'text-bad font-bold':sizes[s]<=2?'text-warn font-bold':''}">${sizes[s]}</td>`).join('')}<td class="p-3 text-right font-bold tabular">${t}</td><td class="p-3">${statusPill(st.label)}</td></tr>`}).join(''):`<tr><td colspan="9" class="p-10 text-center text-ink-faint">No hay productos que coincidan con la búsqueda o filtros.</td></tr>`;
   const chipsEl=document.getElementById('inventory-filter-chips'); const active=[...state.filters.status,...state.filters.color,...state.filters.size]; chipsEl.innerHTML=active.map(v=>`<span class="text-xs font-semibold bg-primary-tint text-primary px-3 py-1 rounded-full whitespace-nowrap">${v}</span>`).join('');
+  const titleEl=document.getElementById('inventory-table-title'); if(titleEl) titleEl.textContent = loc==='all' ? 'Existencias por producto' : `Existencias en ${LOCATIONS.find(l=>l.id===loc).name}`;
 }
 function productCard(p){
   const st=stockStatus(p), stock=totalStock(p), margin=Math.round((p.price-p.cost)/p.price*100);
@@ -2050,8 +2131,17 @@ function renderCommandResults(q){
 document.addEventListener('keydown',e=>{ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openCommandPalette();} if(e.key==='Escape')closeCommandPalette(); });
 document.getElementById('command-input')?.addEventListener('input',e=>renderCommandResults(e.target.value));
 
+/* ======================= GREETING ======================= */
+function renderGreeting(){
+  const h = new Date().getHours();
+  const text = h<12 ? 'Buenos días 👋' : h<19 ? 'Buenas tardes 👋' : 'Buenas noches 👋';
+  const el = document.getElementById('dashboard-greeting');
+  if(el) el.textContent = text;
+}
+
 /* ======================= INIT ======================= */
 function initAll(){
+  renderGreeting();
   renderSmartSummary();
   renderOpportunities();
   renderTopProducts();
