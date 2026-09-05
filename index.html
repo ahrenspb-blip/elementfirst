@@ -1492,9 +1492,9 @@ CHANNELS.forEach(c=>{ c.share = (c.revenue/totalRev*100); });
 
 /* Sales split of the "Tienda física" channel across the 3 physical stores */
 const STORES = [
-  { id:'san-isidro', name:'Tienda San Isidro', icon:'🏬', orders:44, units:108, revenue:6741, growth:4 },
-  { id:'miraflores', name:'Tienda Miraflores', icon:'🏬', orders:32, units:79, revenue:4943, growth:-8 },
-  { id:'surco', name:'Tienda Surco', icon:'🏬', orders:22, units:53, revenue:3296, growth:-9 },
+  { id:'tienda-1', name:'Tienda 1', icon:'🏬', orders:44, units:108, revenue:6741, growth:4 },
+  { id:'tienda-2', name:'Tienda 2', icon:'🏬', orders:32, units:79, revenue:4943, growth:-8 },
+  { id:'tienda-3', name:'Tienda 3', icon:'🏬', orders:22, units:53, revenue:3296, growth:-9 },
 ];
 const totalStoreRevenue = STORES.reduce((a,s)=>a+s.revenue,0);
 STORES.forEach(s=>{ s.avgTicket = s.revenue/s.orders; s.share = (s.revenue/totalStoreRevenue*100); });
@@ -1519,16 +1519,16 @@ const PRODUCTS = [
 
 /* Stores hold a minority of each SKU on their sales floor; the rest sits in the main warehouse */
 const STORE_STOCK_SHARE = [
-  { id:'san-isidro', share:0.20 },
-  { id:'miraflores', share:0.15 },
-  { id:'surco', share:0.10 },
+  { id:'tienda-1', share:0.20 },
+  { id:'tienda-2', share:0.15 },
+  { id:'tienda-3', share:0.10 },
 ];
 const LOCATIONS = [
   { id:'all', name:'Todas las ubicaciones' },
   { id:'almacen', name:'Almacén principal' },
-  { id:'san-isidro', name:'Tienda San Isidro' },
-  { id:'miraflores', name:'Tienda Miraflores' },
-  { id:'surco', name:'Tienda Surco' },
+  { id:'tienda-1', name:'Tienda 1' },
+  { id:'tienda-2', name:'Tienda 2' },
+  { id:'tienda-3', name:'Tienda 3' },
 ];
 /* Splits a product's total-per-size stock across locations, keeping the sum exact per size.
    Whatever the stores don't hold on their floor is assumed to sit in the main warehouse. */
