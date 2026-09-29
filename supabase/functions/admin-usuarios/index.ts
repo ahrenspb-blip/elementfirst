@@ -18,7 +18,18 @@ const json = (body: unknown, status = 200) =>
   });
 
 const admin = createClient(URL, SVC, { auth: { persistSession: false } });
-const ROLES = ["administrador", "gerente", "consulta"];
+const ROLES = ["administrador", "gerente", "consulta", "colaborador"];
+const MODULOS = ["ventas", "productos", "proveedores", "almacenes", "ordenes_compra"];
+
+function limpiarPermisos(permisos: unknown): Record<string, boolean> {
+  const out: Record<string, boolean> = {};
+  if (permisos && typeof permisos === "object") {
+    for (const m of MODULOS) {
+      if ((permisos as Record<string, unknown>)[m] === true) out[m] = true;
+    }
+  }
+  return out;
+}
 
 async function quienLlama(req: Request) {
   const auth = req.headers.get("Authorization") ?? "";
@@ -37,7 +48,7 @@ async function hayAdministradores() {
   return (count ?? 0) > 0;
 }
 
-async function crear(email: string, password: string, nombre: string, rol: string) {
+async function crear(email: string, password: string, nombre: string, rol: string, permisos?: unknown) {
   if (!email || !password) return json({ error: "Correo y contraseña son obligatorios" }, 400);
   if (password.length < 8)  return json({ error: "La contraseña debe tener al menos 8 caracteres" }, 400);
   if (!ROLES.includes(rol))  return json({ error: "Rol no válido" }, 400);
@@ -45,7 +56,9 @@ async function crear(email: string, password: string, nombre: string, rol: strin
     email, password, email_confirm: true, user_metadata: { nombre: nombre || email },
   });
   if (error) return json({ error: error.message }, 400);
-  await admin.from("perfiles").update({ nombre: nombre || email, rol }).eq("id", data.user.id);
+  const update: Record<string, unknown> = { nombre: nombre || email, rol };
+  if (rol === "colaborador") update.permisos = limpiarPermisos(permisos);
+  await admin.from("perfiles").update(update).eq("id", data.user.id);
   return json({ ok: true, id: data.user.id });
 }
 
@@ -71,25 +84,34 @@ Deno.serve(async (req) => {
 
   if (accion === "listar") {
     const { data: users } = await admin.auth.admin.listUsers({ perPage: 200 });
-    const { data: perfiles } = await admin.from("perfiles").select("id, nombre, rol");
+    const { data: perfiles } = await admin.from("perfiles").select("id, nombre, rol, permisos");
     const mapa = Object.fromEntries((perfiles ?? []).map((p: any) => [p.id, p]));
     return json({
       usuarios: (users?.users ?? []).map((u: any) => ({
         id: u.id, email: u.email,
         nombre: mapa[u.id]?.nombre ?? u.email,
         rol: mapa[u.id]?.rol ?? "consulta",
+        permisos: mapa[u.id]?.permisos ?? {},
         ultimo_acceso: u.last_sign_in_at, creado: u.created_at,
       })),
     });
   }
 
   if (accion === "crear")
-    return await crear(body.email, body.password, body.nombre, body.rol ?? "consulta");
+    return await crear(body.email, body.password, body.nombre, body.rol ?? "consulta", body.permisos);
 
   if (accion === "cambiar_rol") {
     if (!ROLES.includes(body.rol)) return json({ error: "Rol no válido" }, 400);
     if (body.id === perfil.id)     return json({ error: "No puedes cambiar tu propio rol" }, 400);
-    const { error } = await admin.from("perfiles").update({ rol: body.rol }).eq("id", body.id);
+    const update: Record<string, unknown> = { rol: body.rol };
+    if (body.rol !== "colaborador") update.permisos = {};
+    const { error } = await admin.from("perfiles").update(update).eq("id", body.id);
+    return error ? json({ error: error.message }, 400) : json({ ok: true });
+  }
+
+  if (accion === "cambiar_permisos") {
+    const { error } = await admin
+      .from("perfiles").update({ permisos: limpiarPermisos(body.permisos) }).eq("id", body.id);
     return error ? json({ error: error.message }, 400) : json({ ok: true });
   }
 
