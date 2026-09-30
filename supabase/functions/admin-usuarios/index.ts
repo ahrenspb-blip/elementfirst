@@ -18,17 +18,39 @@ const json = (body: unknown, status = 200) =>
   });
 
 const admin = createClient(URL, SVC, { auth: { persistSession: false } });
-const ROLES = ["administrador", "gerente", "consulta", "colaborador"];
-const MODULOS = ["ventas", "productos", "proveedores", "almacenes", "ordenes_compra"];
 
-function limpiarPermisos(permisos: unknown): Record<string, boolean> {
-  const out: Record<string, boolean> = {};
-  if (permisos && typeof permisos === "object") {
-    for (const m of MODULOS) {
-      if ((permisos as Record<string, unknown>)[m] === true) out[m] = true;
-    }
+// Módulo -> ¿admite "editar"? Los que no, solo pueden ser "ver".
+const MODULOS: Record<string, boolean> = {
+  dashboard: false, ventas: true, inventario: false, productos: true, clientes: false,
+  canales: false, reportes: false, alertas: false, proveedores: true, almacenes: true,
+  ordenes_compra: true,
+};
+const BANEO = "876000h"; // ~100 años: desactivar el acceso sin borrar la cuenta.
+
+type Permisos = Record<string, "ver" | "editar">;
+
+function limpiarPermisos(permisos: unknown): Permisos {
+  const out: Permisos = {};
+  if (!permisos || typeof permisos !== "object") return out;
+  for (const [m, editable] of Object.entries(MODULOS)) {
+    const v = (permisos as Record<string, unknown>)[m];
+    if (v === "editar" || v === true) out[m] = editable ? "editar" : "ver";
+    else if (v === "ver") out[m] = "ver";
   }
   return out;
+}
+
+// Acepta también los roles antiguos (gerente/consulta/colaborador) por si
+// llega una petición de una versión anterior de la página.
+function normalizar(rol: string, permisos: unknown): { rol: string; permisos: Permisos } | null {
+  const todos = (nivel: "ver" | "editar") =>
+    Object.fromEntries(Object.entries(MODULOS).map(([m, ed]) => [m, nivel === "editar" && ed ? "editar" : "ver"])) as Permisos;
+  if (rol === "administrador") return { rol, permisos: {} };
+  if (rol === "usuario") return { rol, permisos: limpiarPermisos(permisos) };
+  if (rol === "gerente") return { rol: "usuario", permisos: todos("editar") };
+  if (rol === "consulta") return { rol: "usuario", permisos: todos("ver") };
+  if (rol === "colaborador") return { rol: "usuario", permisos: limpiarPermisos(permisos) };
+  return null;
 }
 
 async function quienLlama(req: Request) {
@@ -38,27 +60,37 @@ async function quienLlama(req: Request) {
   const { data, error } = await admin.auth.getUser(token);
   if (error || !data.user) return null;
   const { data: perfil } = await admin
-    .from("perfiles").select("id, nombre, rol").eq("id", data.user.id).single();
+    .from("perfiles").select("id, nombre, rol, activo").eq("id", data.user.id).single();
   return perfil ?? null;
 }
 
 async function hayAdministradores() {
   const { count } = await admin
-    .from("perfiles").select("id", { count: "exact", head: true }).eq("rol", "administrador");
+    .from("perfiles").select("id", { count: "exact", head: true })
+    .eq("rol", "administrador").eq("activo", true);
+  return (count ?? 0) > 0;
+}
+
+// ¿Quedaría al menos un administrador activo si "id" deja de serlo?
+async function quedaOtroAdmin(id: string) {
+  const { count } = await admin
+    .from("perfiles").select("id", { count: "exact", head: true })
+    .eq("rol", "administrador").eq("activo", true).neq("id", id);
   return (count ?? 0) > 0;
 }
 
 async function crear(email: string, password: string, nombre: string, rol: string, permisos?: unknown) {
   if (!email || !password) return json({ error: "Correo y contraseña son obligatorios" }, 400);
   if (password.length < 8)  return json({ error: "La contraseña debe tener al menos 8 caracteres" }, 400);
-  if (!ROLES.includes(rol))  return json({ error: "Rol no válido" }, 400);
+  const n = normalizar(rol, permisos);
+  if (!n) return json({ error: "Rol no válido" }, 400);
   const { data, error } = await admin.auth.admin.createUser({
     email, password, email_confirm: true, user_metadata: { nombre: nombre || email },
   });
   if (error) return json({ error: error.message }, 400);
-  const update: Record<string, unknown> = { nombre: nombre || email, rol };
-  if (rol === "colaborador") update.permisos = limpiarPermisos(permisos);
-  await admin.from("perfiles").update(update).eq("id", data.user.id);
+  await admin.from("perfiles")
+    .update({ nombre: nombre || email, rol: n.rol, permisos: n.permisos, activo: true })
+    .eq("id", data.user.id);
   return json({ ok: true, id: data.user.id });
 }
 
@@ -79,33 +111,73 @@ Deno.serve(async (req) => {
   }
 
   const perfil = await quienLlama(req);
-  if (!perfil)                       return json({ error: "No autenticado" }, 401);
-  if (perfil.rol !== "administrador") return json({ error: "Requiere rol administrador" }, 403);
+  if (!perfil)                                         return json({ error: "No autenticado" }, 401);
+  if (perfil.rol !== "administrador" || !perfil.activo) return json({ error: "Requiere rol administrador" }, 403);
 
   if (accion === "listar") {
     const { data: users } = await admin.auth.admin.listUsers({ perPage: 200 });
-    const { data: perfiles } = await admin.from("perfiles").select("id, nombre, rol, permisos");
+    const { data: perfiles } = await admin.from("perfiles").select("id, nombre, rol, permisos, activo");
     const mapa = Object.fromEntries((perfiles ?? []).map((p: any) => [p.id, p]));
     return json({
-      usuarios: (users?.users ?? []).map((u: any) => ({
-        id: u.id, email: u.email,
-        nombre: mapa[u.id]?.nombre ?? u.email,
-        rol: mapa[u.id]?.rol ?? "consulta",
-        permisos: mapa[u.id]?.permisos ?? {},
-        ultimo_acceso: u.last_sign_in_at, creado: u.created_at,
-      })),
+      usuarios: (users?.users ?? []).map((u: any) => {
+        const p = mapa[u.id];
+        const n = normalizar(p?.rol ?? "usuario", p?.permisos) ?? { rol: "usuario", permisos: {} };
+        return {
+          id: u.id, email: u.email,
+          nombre: p?.nombre ?? u.email,
+          rol: n.rol, permisos: n.permisos,
+          activo: p?.activo ?? true,
+          ultimo_acceso: u.last_sign_in_at, creado: u.created_at,
+        };
+      }),
     });
   }
 
   if (accion === "crear")
-    return await crear(body.email, body.password, body.nombre, body.rol ?? "consulta", body.permisos);
+    return await crear(body.email, body.password, body.nombre, body.rol ?? "usuario", body.permisos);
 
+  // Guarda nombre, rol, permisos, estado y (opcional) contraseña nueva.
+  if (accion === "guardar") {
+    const id = body.id;
+    if (!id) return json({ error: "Falta el usuario" }, 400);
+    const { data: actual } = await admin.from("perfiles").select("rol, activo").eq("id", id).single();
+    if (!actual) return json({ error: "Usuario no encontrado" }, 404);
+
+    const n = normalizar(body.rol, body.permisos);
+    if (!n) return json({ error: "Rol no válido" }, 400);
+    const activo = body.activo !== false;
+    const esYo = id === perfil.id;
+
+    if (esYo && n.rol !== "administrador") return json({ error: "No puedes quitarte el rol de administrador" }, 400);
+    if (esYo && !activo)                   return json({ error: "No puedes desactivar tu propia cuenta" }, 400);
+    const dejaDeSerAdminActivo = actual.rol === "administrador" && actual.activo && (n.rol !== "administrador" || !activo);
+    if (dejaDeSerAdminActivo && !(await quedaOtroAdmin(id)))
+      return json({ error: "Debe quedar al menos un administrador activo" }, 400);
+
+    if (body.password) {
+      if (String(body.password).length < 8) return json({ error: "La contraseña debe tener al menos 8 caracteres" }, 400);
+      const { error } = await admin.auth.admin.updateUserById(id, { password: String(body.password) });
+      if (error) return json({ error: error.message }, 400);
+    }
+    if (activo !== actual.activo) {
+      const { error } = await admin.auth.admin.updateUserById(id, { ban_duration: activo ? "none" : BANEO });
+      if (error) return json({ error: error.message }, 400);
+    }
+    const cambios: Record<string, unknown> = { rol: n.rol, permisos: n.permisos, activo };
+    if (typeof body.nombre === "string" && body.nombre.trim()) cambios.nombre = body.nombre.trim();
+    const { error } = await admin.from("perfiles").update(cambios).eq("id", id);
+    return error ? json({ error: error.message }, 400) : json({ ok: true });
+  }
+
+  // Acciones de la versión anterior de la página (se mantienen compatibles).
   if (accion === "cambiar_rol") {
-    if (!ROLES.includes(body.rol)) return json({ error: "Rol no válido" }, 400);
-    if (body.id === perfil.id)     return json({ error: "No puedes cambiar tu propio rol" }, 400);
-    const update: Record<string, unknown> = { rol: body.rol };
-    if (body.rol !== "colaborador") update.permisos = {};
-    const { error } = await admin.from("perfiles").update(update).eq("id", body.id);
+    if (body.id === perfil.id) return json({ error: "No puedes cambiar tu propio rol" }, 400);
+    const n = normalizar(body.rol, body.permisos);
+    if (!n) return json({ error: "Rol no válido" }, 400);
+    const { data: actual } = await admin.from("perfiles").select("rol, activo").eq("id", body.id).single();
+    if (actual?.rol === "administrador" && n.rol !== "administrador" && !(await quedaOtroAdmin(body.id)))
+      return json({ error: "Debe quedar al menos un administrador activo" }, 400);
+    const { error } = await admin.from("perfiles").update({ rol: n.rol, permisos: n.permisos }).eq("id", body.id);
     return error ? json({ error: error.message }, 400) : json({ ok: true });
   }
 
@@ -117,6 +189,9 @@ Deno.serve(async (req) => {
 
   if (accion === "eliminar") {
     if (body.id === perfil.id) return json({ error: "No puedes eliminar tu propia cuenta" }, 400);
+    const { data: actual } = await admin.from("perfiles").select("rol, activo").eq("id", body.id).single();
+    if (actual?.rol === "administrador" && actual.activo && !(await quedaOtroAdmin(body.id)))
+      return json({ error: "Debe quedar al menos un administrador activo" }, 400);
     const { error } = await admin.auth.admin.deleteUser(body.id);
     return error ? json({ error: error.message }, 400) : json({ ok: true });
   }
