@@ -1,5 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "jsr:@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2";
 
 const URL  = Deno.env.get("SUPABASE_URL")!;
 const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -7,7 +7,7 @@ const SVC  = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-transaction-id, x-request-id",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
@@ -80,7 +80,7 @@ async function quedaOtroAdmin(id: string) {
 }
 
 // Contraseña temporal: el usuario deberá cambiarla al iniciar sesión.
-async function crear(email: string, password: string, nombre: string, rol: string, permisos?: unknown, temporal = true) {
+async function crear(bd: SupabaseClient, email: string, password: string, nombre: string, rol: string, permisos?: unknown, temporal = true) {
   if (!email || !password) return json({ error: "Correo y contraseña son obligatorios" }, 400);
   if (password.length < 8)  return json({ error: "La contraseña debe tener al menos 8 caracteres" }, 400);
   const n = normalizar(rol, permisos);
@@ -89,30 +89,74 @@ async function crear(email: string, password: string, nombre: string, rol: strin
     email, password, email_confirm: true, user_metadata: { nombre: nombre || email },
   });
   if (error) return json({ error: error.message }, 400);
-  await admin.from("perfiles")
+  await bd.from("perfiles")
     .update({ nombre: nombre || email, rol: n.rol, permisos: n.permisos, activo: true, debe_cambiar_clave: temporal })
     .eq("id", data.user.id);
   return json({ ok: true, id: data.user.id });
 }
 
+// Traza del servidor: etapas de cada solicitud, unidas a la operación del usuario por x-transaction-id.
+type Ctx = {
+  tx: string | null; rq: string | null; accion: string; usuario: { id: string; nombre: string } | null;
+  bd: SupabaseClient; pasos: Record<string, unknown>[];
+  paso: (etapa: string, estado: string, nivel: string, mensaje: string, detalle?: unknown) => void;
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
-  if (req.method !== "POST")    return json({ error: "Método no permitido" }, 405);
+  const t0 = Date.now();
+  const tx = req.headers.get("x-transaction-id")?.slice(0, 40) ?? null;
+  const rq = req.headers.get("x-request-id")?.slice(0, 40) ?? null;
+  const ctx: Ctx = {
+    tx, rq, accion: "?", usuario: null, pasos: [],
+    // Cliente por solicitud: los cambios auditados en la base de datos llevan el mismo Transaction ID.
+    bd: tx ? createClient(URL, SVC, { auth: { persistSession: false }, global: { headers: { "x-transaction-id": tx, ...(rq ? { "x-request-id": rq } : {}) } } }) : admin,
+    paso(etapa, estado, nivel, mensaje, detalle) {
+      ctx.pasos.push({ tipo: "backend", etapa, estado, nivel, mensaje, detalle: detalle ?? null, modulo: "admin-usuarios",
+        accion: ctx.accion, transaccion_id: tx, solicitud_id: rq, duracion_ms: Date.now() - t0, momento: new Date().toISOString() });
+    },
+  };
+  let res: Response;
+  try {
+    res = await manejar(req, ctx);
+  } catch (e) {
+    ctx.paso("backend", "FAILED", "error", "Error inesperado en el servidor: " + String((e as Error)?.message ?? e));
+    res = json({ error: "Error inesperado en el servidor" }, 500);
+  }
+  let error = "";
+  if (res.status >= 400) { try { error = (await res.clone().json())?.error ?? ""; } catch { /* sin cuerpo */ } }
+  ctx.paso("respuesta", res.status < 400 ? "COMPLETED" : "FAILED", res.status < 400 ? "ok" : "error",
+    `Servidor respondió HTTP ${res.status} en ${Date.now() - t0} ms` + (error ? " · " + error : ""));
+  // hay_admin se consulta en cada carga de la pantalla de inicio: solo se registra si falla.
+  if (ctx.accion !== "hay_admin" || res.status >= 400) {
+    const filas = ctx.pasos.map((p) => ({ ...p, usuario_id: ctx.usuario?.id ?? null, usuario_nombre: ctx.usuario?.nombre ?? null }));
+    const { error: e } = await admin.from("registro_eventos").insert(filas);
+    if (e) console.error("No se pudo registrar la traza", e.message);
+  }
+  return res;
+});
+
+async function manejar(req: Request, ctx: Ctx): Promise<Response> {
+  if (req.method !== "POST") return json({ error: "Método no permitido" }, 405);
 
   let body: any;
   try { body = await req.json(); } catch { return json({ error: "JSON inválido" }, 400); }
   const accion = body?.accion;
+  ctx.accion = String(accion ?? "?").slice(0, 40);
+  ctx.paso("servidor", "RECEIVED", "info", `Servidor recibió la solicitud (acción: ${ctx.accion})`);
 
   if (accion === "hay_admin") return json({ hay: await hayAdministradores() });
 
   if (accion === "bootstrap") {
     if (await hayAdministradores())
       return json({ error: "Ya existe un administrador. Inicia sesión." }, 403);
-    return await crear(body.email, body.password, body.nombre, "administrador", undefined, false);
+    return await crear(ctx.bd, body.email, body.password, body.nombre, "administrador", undefined, false);
   }
 
   const perfil = await quienLlama(req);
   if (!perfil)                                         return json({ error: "No autenticado" }, 401);
+  ctx.usuario = { id: perfil.id, nombre: perfil.nombre };
+  ctx.paso("backend", "PROCESSING", "info", `Usuario verificado: ${perfil.nombre} (${perfil.rol}); procesando`);
 
   // Cualquier usuario activo: cambiar su propia contraseña (p. ej. la temporal).
   if (accion === "cambiar_clave_propia") {
@@ -129,7 +173,7 @@ Deno.serve(async (req) => {
     }
     const { error } = await admin.auth.admin.updateUserById(perfil.id, { password });
     if (error) return json({ error: error.message }, 400);
-    await admin.from("perfiles").update({ debe_cambiar_clave: false }).eq("id", perfil.id);
+    await ctx.bd.from("perfiles").update({ debe_cambiar_clave: false }).eq("id", perfil.id);
     return json({ ok: true });
   }
 
@@ -156,7 +200,7 @@ Deno.serve(async (req) => {
   }
 
   if (accion === "crear")
-    return await crear(body.email, body.password, body.nombre, body.rol ?? "usuario", body.permisos);
+    return await crear(ctx.bd, body.email, body.password, body.nombre, body.rol ?? "usuario", body.permisos);
 
   // Guarda nombre, rol, permisos, estado y (opcional) contraseña nueva.
   if (accion === "guardar") {
@@ -189,7 +233,7 @@ Deno.serve(async (req) => {
     // Si el administrador le puso una contraseña nueva, es temporal (salvo la suya propia).
     if (body.password && !esYo) cambios.debe_cambiar_clave = true;
     if (typeof body.nombre === "string" && body.nombre.trim()) cambios.nombre = body.nombre.trim();
-    const { error } = await admin.from("perfiles").update(cambios).eq("id", id);
+    const { error } = await ctx.bd.from("perfiles").update(cambios).eq("id", id);
     return error ? json({ error: error.message }, 400) : json({ ok: true });
   }
 
@@ -201,12 +245,12 @@ Deno.serve(async (req) => {
     const { data: actual } = await admin.from("perfiles").select("rol, activo").eq("id", body.id).single();
     if (actual?.rol === "administrador" && n.rol !== "administrador" && !(await quedaOtroAdmin(body.id)))
       return json({ error: "Debe quedar al menos un administrador activo" }, 400);
-    const { error } = await admin.from("perfiles").update({ rol: n.rol, permisos: n.permisos }).eq("id", body.id);
+    const { error } = await ctx.bd.from("perfiles").update({ rol: n.rol, permisos: n.permisos }).eq("id", body.id);
     return error ? json({ error: error.message }, 400) : json({ ok: true });
   }
 
   if (accion === "cambiar_permisos") {
-    const { error } = await admin
+    const { error } = await ctx.bd
       .from("perfiles").update({ permisos: limpiarPermisos(body.permisos) }).eq("id", body.id);
     return error ? json({ error: error.message }, 400) : json({ ok: true });
   }
@@ -221,4 +265,4 @@ Deno.serve(async (req) => {
   }
 
   return json({ error: "Acción desconocida" }, 400);
-});
+}
