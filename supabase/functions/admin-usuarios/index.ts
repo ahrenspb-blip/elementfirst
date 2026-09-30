@@ -118,11 +118,13 @@ Deno.serve(async (req) => {
   if (accion === "cambiar_clave_propia") {
     if (!perfil.activo) return json({ error: "Tu cuenta está desactivada" }, 403);
     const password = String(body.password ?? "");
-    if (password.length < 8) return json({ error: "La contraseña debe tener al menos 8 caracteres" }, 400);
+    if (password.length < 8 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/\d/.test(password))
+      return json({ error: "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número" }, 400);
     const prueba = createClient(URL, ANON, { auth: { persistSession: false } });
     const { error: igual } = await prueba.auth.signInWithPassword({ email: perfil.email, password });
     if (!igual) {
-      await prueba.auth.signOut();
+      // Solo cierra esta sesión de prueba ("local"); la global cerraría también la del usuario.
+      await prueba.auth.signOut({ scope: "local" });
       return json({ error: "La nueva contraseña debe ser distinta de la actual" }, 400);
     }
     const { error } = await admin.auth.admin.updateUserById(perfil.id, { password });
