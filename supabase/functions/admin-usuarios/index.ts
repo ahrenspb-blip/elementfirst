@@ -79,19 +79,53 @@ async function quedaOtroAdmin(id: string) {
   return (count ?? 0) > 0;
 }
 
+type Personales = { dni?: string | null; sexo?: string | null };
+
+// DNI (8 dígitos) y sexo (hombre/mujer). Solo se incluyen los campos que llegan en la solicitud.
+function datosPersonales(body: any): Personales | string {
+  const out: Personales = {};
+  if (body && "dni" in body) {
+    const dni = body.dni == null ? "" : String(body.dni).trim();
+    if (dni && !/^\d{8}$/.test(dni)) return "El DNI debe tener 8 dígitos";
+    out.dni = dni || null;
+  }
+  if (body && "sexo" in body) {
+    const sexo = body.sexo == null ? "" : String(body.sexo);
+    if (sexo && sexo !== "hombre" && sexo !== "mujer") return "El sexo debe ser hombre o mujer";
+    out.sexo = sexo || null;
+  }
+  return out;
+}
+
+async function dniOcupado(dni: string | null | undefined, exceptoId?: string) {
+  if (!dni) return false;
+  let q = admin.from("perfiles").select("id", { count: "exact", head: true }).eq("dni", dni);
+  if (exceptoId) q = q.neq("id", exceptoId);
+  const { count } = await q;
+  return (count ?? 0) > 0;
+}
+
+const mensajeBd = (m: string) => /perfiles_dni_unico|duplicate key/.test(m) ? "Ya existe un usuario con ese DNI" : m;
+
 // Contraseña temporal: el usuario deberá cambiarla al iniciar sesión.
-async function crear(bd: SupabaseClient, email: string, password: string, nombre: string, rol: string, permisos?: unknown, temporal = true) {
+async function crear(bd: SupabaseClient, email: string, password: string, nombre: string, rol: string, permisos?: unknown, temporal = true, personales: Personales = {}) {
   if (!email || !password) return json({ error: "Correo y contraseña son obligatorios" }, 400);
   if (password.length < 8)  return json({ error: "La contraseña debe tener al menos 8 caracteres" }, 400);
   const n = normalizar(rol, permisos);
   if (!n) return json({ error: "Rol no válido" }, 400);
+  if (await dniOcupado(personales.dni)) return json({ error: "Ya existe un usuario con ese DNI" }, 400);
   const { data, error } = await admin.auth.admin.createUser({
     email, password, email_confirm: true, user_metadata: { nombre: nombre || email },
   });
   if (error) return json({ error: error.message }, 400);
-  await bd.from("perfiles")
-    .update({ nombre: nombre || email, rol: n.rol, permisos: n.permisos, activo: true, debe_cambiar_clave: temporal })
+  const { error: ePerfil } = await bd.from("perfiles")
+    .update({ nombre: nombre || email, rol: n.rol, permisos: n.permisos, activo: true, debe_cambiar_clave: temporal, ...personales })
     .eq("id", data.user.id);
+  // Si el perfil no se pudo completar (p. ej. DNI repetido al mismo tiempo), no se deja una cuenta a medias.
+  if (ePerfil) {
+    await admin.auth.admin.deleteUser(data.user.id);
+    return json({ error: mensajeBd(ePerfil.message) }, 400);
+  }
   return json({ ok: true, id: data.user.id });
 }
 
@@ -181,7 +215,7 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
 
   if (accion === "listar") {
     const { data: users } = await admin.auth.admin.listUsers({ perPage: 200 });
-    const { data: perfiles } = await admin.from("perfiles").select("id, nombre, rol, permisos, activo, debe_cambiar_clave");
+    const { data: perfiles } = await admin.from("perfiles").select("id, nombre, rol, permisos, activo, debe_cambiar_clave, dni, sexo, foto_url");
     const mapa = Object.fromEntries((perfiles ?? []).map((p: any) => [p.id, p]));
     return json({
       usuarios: (users?.users ?? []).map((u: any) => {
@@ -193,16 +227,20 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
           rol: n.rol, permisos: n.permisos,
           activo: p?.activo ?? true,
           debe_cambiar_clave: p?.debe_cambiar_clave ?? false,
+          dni: p?.dni ?? null, sexo: p?.sexo ?? null, foto_url: p?.foto_url ?? null,
           ultimo_acceso: u.last_sign_in_at, creado: u.created_at,
         };
       }),
     });
   }
 
-  if (accion === "crear")
-    return await crear(ctx.bd, body.email, body.password, body.nombre, body.rol ?? "usuario", body.permisos);
+  if (accion === "crear") {
+    const personales = datosPersonales(body);
+    if (typeof personales === "string") return json({ error: personales }, 400);
+    return await crear(ctx.bd, body.email, body.password, body.nombre, body.rol ?? "usuario", body.permisos, true, personales);
+  }
 
-  // Guarda nombre, rol, permisos, estado y (opcional) contraseña nueva.
+  // Guarda nombre, rol, permisos, estado, DNI, sexo y (opcional) contraseña nueva.
   if (accion === "guardar") {
     const id = body.id;
     if (!id) return json({ error: "Falta el usuario" }, 400);
@@ -219,6 +257,10 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
     const dejaDeSerAdminActivo = actual.rol === "administrador" && actual.activo && (n.rol !== "administrador" || !activo);
     if (dejaDeSerAdminActivo && !(await quedaOtroAdmin(id)))
       return json({ error: "Debe quedar al menos un administrador activo" }, 400);
+    // DNI y sexo se validan antes de tocar la contraseña o el estado, para no aplicar cambios a medias.
+    const personales = datosPersonales(body);
+    if (typeof personales === "string") return json({ error: personales }, 400);
+    if (await dniOcupado(personales.dni, id)) return json({ error: "Ya existe un usuario con ese DNI" }, 400);
 
     if (body.password) {
       if (String(body.password).length < 8) return json({ error: "La contraseña debe tener al menos 8 caracteres" }, 400);
@@ -229,12 +271,12 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
       const { error } = await admin.auth.admin.updateUserById(id, { ban_duration: activo ? "none" : BANEO });
       if (error) return json({ error: error.message }, 400);
     }
-    const cambios: Record<string, unknown> = { rol: n.rol, permisos: n.permisos, activo };
+    const cambios: Record<string, unknown> = { rol: n.rol, permisos: n.permisos, activo, ...personales };
     // Si el administrador le puso una contraseña nueva, es temporal (salvo la suya propia).
     if (body.password && !esYo) cambios.debe_cambiar_clave = true;
     if (typeof body.nombre === "string" && body.nombre.trim()) cambios.nombre = body.nombre.trim();
     const { error } = await ctx.bd.from("perfiles").update(cambios).eq("id", id);
-    return error ? json({ error: error.message }, 400) : json({ ok: true });
+    return error ? json({ error: mensajeBd(error.message) }, 400) : json({ ok: true });
   }
 
   // Acciones de la versión anterior de la página (se mantienen compatibles).
@@ -261,7 +303,11 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
     if (actual?.rol === "administrador" && actual.activo && !(await quedaOtroAdmin(body.id)))
       return json({ error: "Debe quedar al menos un administrador activo" }, 400);
     const { error } = await admin.auth.admin.deleteUser(body.id);
-    return error ? json({ error: error.message }, 400) : json({ ok: true });
+    if (error) return json({ error: error.message }, 400);
+    // Borra también sus fotos de perfil (no bloquea si falla).
+    const { data: fotos } = await admin.storage.from("avatares").list(String(body.id));
+    if (fotos?.length) await admin.storage.from("avatares").remove(fotos.map((f) => `${body.id}/${f.name}`));
+    return json({ ok: true });
   }
 
   return json({ error: "Acción desconocida" }, 400);
