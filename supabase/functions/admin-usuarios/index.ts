@@ -60,7 +60,7 @@ async function quienLlama(req: Request) {
   const { data, error } = await admin.auth.getUser(token);
   if (error || !data.user) return null;
   const { data: perfil } = await admin
-    .from("perfiles").select("id, nombre, rol, activo").eq("id", data.user.id).single();
+    .from("perfiles").select("id, nombre, rol, activo, area").eq("id", data.user.id).single();
   return perfil ? { ...perfil, email: data.user.email ?? "" } : null;
 }
 
@@ -105,10 +105,29 @@ async function dniOcupado(dni: string | null | undefined, exceptoId?: string) {
   return (count ?? 0) > 0;
 }
 
+const AREAS = ["logistica", "tienda", "almacen", "soporte_ti"];
+type AreaUbic = { area?: string | null; almacen_id?: number | null };
+
+// Área de trabajo y ubicación. Tienda y Almacén necesitan una ubicación activa (Tienda: una tienda).
+// Solo se incluye si la solicitud trae "area"; un administrador no tiene área.
+async function datosArea(body: any, rol: string): Promise<AreaUbic | string> {
+  if (!body || !("area" in body)) return {};
+  if (rol === "administrador") return { area: null, almacen_id: null };
+  const area = body.area ? String(body.area) : null;
+  if (area && !AREAS.includes(area)) return "Área no válida";
+  if (area !== "tienda" && area !== "almacen") return { area, almacen_id: null };
+  const id = Number(body.almacen_id);
+  if (!Number.isInteger(id) || id <= 0) return area === "tienda" ? "Elige la tienda donde trabaja" : "Elige el almacén donde trabaja";
+  const { data: alm } = await admin.from("almacenes").select("id, tipo, activo").eq("id", id).maybeSingle();
+  if (!alm || !alm.activo) return "La ubicación elegida no existe o está desactivada";
+  if (area === "tienda" && alm.tipo !== "tienda") return "Para el área Tienda elige una ubicación de tipo tienda";
+  return { area, almacen_id: id };
+}
+
 const mensajeBd = (m: string) => /perfiles_dni_unico|duplicate key/.test(m) ? "Ya existe un usuario con ese DNI" : m;
 
 // Contraseña temporal: el usuario deberá cambiarla al iniciar sesión.
-async function crear(bd: SupabaseClient, email: string, password: string, nombre: string, rol: string, permisos?: unknown, temporal = true, personales: Personales = {}) {
+async function crear(bd: SupabaseClient, email: string, password: string, nombre: string, rol: string, permisos?: unknown, temporal = true, personales: Personales & AreaUbic = {}) {
   if (!email || !password) return json({ error: "Correo y contraseña son obligatorios" }, 400);
   if (password.length < 8)  return json({ error: "La contraseña debe tener al menos 8 caracteres" }, 400);
   const n = normalizar(rol, permisos);
@@ -211,11 +230,15 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
     return json({ ok: true });
   }
 
-  if (perfil.rol !== "administrador" || !perfil.activo) return json({ error: "Requiere rol administrador" }, 403);
+  // Administradores gestionan todo. Soporte TI gestiona usuarios que no son administradores.
+  const esAdmin = perfil.rol === "administrador" && perfil.activo;
+  const esSoporte = perfil.rol !== "administrador" && perfil.activo && perfil.area === "soporte_ti";
+  const soloAdmin = ["cambiar_rol", "cambiar_permisos"].includes(accion);
+  if (!esAdmin && !(esSoporte && !soloAdmin)) return json({ error: "Requiere rol administrador o Soporte TI" }, 403);
 
   if (accion === "listar") {
     const { data: users } = await admin.auth.admin.listUsers({ perPage: 200 });
-    const { data: perfiles } = await admin.from("perfiles").select("id, nombre, rol, permisos, activo, debe_cambiar_clave, dni, sexo, foto_url");
+    const { data: perfiles } = await admin.from("perfiles").select("id, nombre, rol, permisos, activo, debe_cambiar_clave, dni, sexo, foto_url, area, almacen_id");
     const mapa = Object.fromEntries((perfiles ?? []).map((p: any) => [p.id, p]));
     return json({
       usuarios: (users?.users ?? []).map((u: any) => {
@@ -228,6 +251,7 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
           activo: p?.activo ?? true,
           debe_cambiar_clave: p?.debe_cambiar_clave ?? false,
           dni: p?.dni ?? null, sexo: p?.sexo ?? null, foto_url: p?.foto_url ?? null,
+          area: p?.area ?? null, almacen_id: p?.almacen_id ?? null,
           ultimo_acceso: u.last_sign_in_at, creado: u.created_at,
         };
       }),
@@ -235,12 +259,16 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
   }
 
   if (accion === "crear") {
+    const rol = body.rol ?? "usuario";
+    if (!esAdmin && rol === "administrador") return json({ error: "Soporte TI no puede crear administradores" }, 403);
     const personales = datosPersonales(body);
     if (typeof personales === "string") return json({ error: personales }, 400);
-    return await crear(ctx.bd, body.email, body.password, body.nombre, body.rol ?? "usuario", body.permisos, true, personales);
+    const area = await datosArea(body, rol);
+    if (typeof area === "string") return json({ error: area }, 400);
+    return await crear(ctx.bd, body.email, body.password, body.nombre, rol, body.permisos, true, { ...personales, ...area });
   }
 
-  // Guarda nombre, rol, permisos, estado, DNI, sexo y (opcional) contraseña nueva.
+  // Guarda nombre, rol, permisos, estado, DNI, sexo, área, ubicación y (opcional) contraseña nueva.
   if (accion === "guardar") {
     const id = body.id;
     if (!id) return json({ error: "Falta el usuario" }, 400);
@@ -251,6 +279,10 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
     if (!n) return json({ error: "Rol no válido" }, 400);
     const activo = body.activo !== false;
     const esYo = id === perfil.id;
+    if (!esAdmin) {
+      if (actual.rol === "administrador" || n.rol === "administrador") return json({ error: "Soporte TI no puede modificar administradores" }, 403);
+      if (esYo) return json({ error: "Pide a un administrador que cambie tu propio acceso" }, 403);
+    }
 
     if (esYo && n.rol !== "administrador") return json({ error: "No puedes quitarte el rol de administrador" }, 400);
     if (esYo && !activo)                   return json({ error: "No puedes desactivar tu propia cuenta" }, 400);
@@ -261,6 +293,8 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
     const personales = datosPersonales(body);
     if (typeof personales === "string") return json({ error: personales }, 400);
     if (await dniOcupado(personales.dni, id)) return json({ error: "Ya existe un usuario con ese DNI" }, 400);
+    const area = await datosArea(body, n.rol);
+    if (typeof area === "string") return json({ error: area }, 400);
 
     if (body.password) {
       if (String(body.password).length < 8) return json({ error: "La contraseña debe tener al menos 8 caracteres" }, 400);
@@ -271,7 +305,7 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
       const { error } = await admin.auth.admin.updateUserById(id, { ban_duration: activo ? "none" : BANEO });
       if (error) return json({ error: error.message }, 400);
     }
-    const cambios: Record<string, unknown> = { rol: n.rol, permisos: n.permisos, activo, ...personales };
+    const cambios: Record<string, unknown> = { rol: n.rol, permisos: n.permisos, activo, ...personales, ...area };
     // Si el administrador le puso una contraseña nueva, es temporal (salvo la suya propia).
     if (body.password && !esYo) cambios.debe_cambiar_clave = true;
     if (typeof body.nombre === "string" && body.nombre.trim()) cambios.nombre = body.nombre.trim();
@@ -300,6 +334,7 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
   if (accion === "eliminar") {
     if (body.id === perfil.id) return json({ error: "No puedes eliminar tu propia cuenta" }, 400);
     const { data: actual } = await admin.from("perfiles").select("rol, activo").eq("id", body.id).single();
+    if (!esAdmin && actual?.rol === "administrador") return json({ error: "Soporte TI no puede eliminar administradores" }, 403);
     if (actual?.rol === "administrador" && actual.activo && !(await quedaOtroAdmin(body.id)))
       return json({ error: "Debe quedar al menos un administrador activo" }, 400);
     const { error } = await admin.auth.admin.deleteUser(body.id);
