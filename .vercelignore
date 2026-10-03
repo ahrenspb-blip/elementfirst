@@ -1,0 +1,9 @@
+# Publicar en Vercel solo lo que la app necesita.
+# Todo lo demás (skills de Claude, código de Supabase, notas internas, versión antigua) queda solo en GitHub.
+/*
+!/index.html
+!/styles.css
+!/sw.js
+!/manifest.json
+!/icons
+!/img
