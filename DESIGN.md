@@ -24,31 +24,31 @@ colors:
   bad: "#B23B30"
 typography:
   display:
-    fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
     fontSize: "46px"
     fontWeight: 600
     lineHeight: 1.05
     letterSpacing: "-0.04em"
   title:
-    fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
     fontSize: "26px"
     fontWeight: 650
     lineHeight: 1.15
     letterSpacing: "-0.028em"
   metric:
-    fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
     fontSize: "24px"
     fontWeight: 650
     lineHeight: 1.1
     letterSpacing: "-0.025em"
   body:
-    fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
     fontSize: "14px"
     fontWeight: 400
     lineHeight: 1.5
     letterSpacing: "-0.006em"
   label:
-    fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
     fontSize: "12.5px"
     fontWeight: 550
     lineHeight: 1.3
@@ -137,7 +137,7 @@ Pocos colores y bien medidos: neutros cálidos, un índigo que lleva todas las a
 
 ## Typography
 
-Una sola familia, **Geist**, para títulos, etiquetas, botones y datos. Los pesos son contenidos: 400 para el texto, entre 550 y 650 para los títulos y etiquetas, y nunca 800 en la interfaz. Los números van con cifras de ancho fijo (`tabular-nums`) para que las columnas se alineen.
+Una sola familia, **Archivo** (grotesca de origen industrial, como las etiquetas y la ropa de trabajo), para títulos, etiquetas, botones y datos. Los pesos son contenidos: 400 para el texto, entre 550 y 650 para los títulos y etiquetas, y nunca 800 en la interfaz. Los números van con cifras de ancho fijo (`tabular-nums`) para que las columnas se alineen.
 
 ### Hierarchy
 - **Display** (46 px, peso 600): solo para la cifra principal de "Ventas de hoy". En el celular baja a 38 px.
