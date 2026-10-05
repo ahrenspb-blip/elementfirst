@@ -280,10 +280,10 @@ Una sola familia, **Archivo** (grotesca de origen industrial, como las etiquetas
 
 - **Escritorio:** barra lateral índigo fija de 244 px y contenido de hasta 1500 px de ancho.
 - **Celular:**
-  - Barra superior con logo, título, buscar, menú, alertas y perfil.
+  - Barra superior con logo, título, buscar, alertas y perfil. El menú completo se abre desde "Más" en la barra inferior.
   - Barra inferior con Inicio, Ventas, Stock, Alertas y Más.
   - Margen lateral de 16 px.
-- **Menú:** está ordenado por área (General, Tienda, Almacén, Logística, Soporte TI y Cuenta). Las secciones sin pantallas visibles se ocultan.
+- **Menú:** está ordenado por área (General, Tienda, Almacén, Logística, Soporte TI y Cuenta). Las secciones sin pantallas visibles se ocultan. En pantallas bajas los enlaces se compactan, el menú se desplaza con un degradado en el borde y el enlace activo siempre queda a la vista.
 - **Tablas:** en el celular, las tablas anchas se desplazan dentro de su tarjeta y se pueden recorrer con el teclado. La lista de Clientes pasa a tarjetas.
 - **Indicadores:** se ordenan en cuadrícula, cinco columnas en escritorio, tres en tableta y dos en el celular.
 
@@ -311,17 +311,27 @@ Las curvas son moderadas y van de menor a mayor según el tamaño:
 
 ### Buttons
 - **Principal:** índigo con texto blanco, 42 px de alto y sin brillo de color. Al pasar el mouse se oscurece; al presionarlo se encoge un 2 %.
+- **Hover solo con mouse:** todos los efectos de hover van dentro de `@media (hover: hover) and (pointer: fine)`, para que en el celular no queden "pegados" después de tocar.
+- **Movimiento:** las transiciones duran 150 ms o menos, y se apagan con `prefers-reduced-motion`.
 - **Secundario:** blanco con borde fino.
 - **Sobre índigo:** botón blanco ("Nuevo pedido") y botón con borde translúcido ("Ver ventas").
 - **Foco visible:** contorno índigo de 2 px.
 
 ### Chips
-Los filtros y segmentos son píldoras. El activo lleva fondo índigo suave y texto índigo, y el contador va dentro de la píldora.
+Los filtros y segmentos son píldoras. El activo lleva fondo índigo suave y texto índigo, y el contador va dentro de la píldora. Las pestañas y los filtros "Todos" de Registro van en índigo sólido; nunca en negro.
+
+### Estados
+- Las píldoras de estado solo llevan color cuando piden atención: Pendiente (ocre), Devuelta o Cancelada (rojo). "Completada" es el estado normal y va en neutro.
+- Las fotos que faltan muestran un ícono gris centrado, del mismo tamaño en todas las tarjetas.
+- Los gráficos usan líneas rectas (sin curvas que inventen valores) y, si no hay datos, muestran un mensaje en lugar de ejes vacíos.
+
+### Diálogos
+Nunca se usan `confirm()` ni `prompt()` del navegador. Las confirmaciones usan el diálogo propio (`efConfirmar`): título, detalle opcional, botón de acción con verbo ("Eliminar", "Desactivar") en rojo cuando es destructivo y "Cancelar". Se cierra con Escape y devuelve el foco al botón que lo abrió.
 
 ### Cards / Containers
 - **Tarjetas:** blancas, con borde `line`, radio de 14 px y sin sombra.
 - **Bloques dentro de una tarjeta:** van sin borde, con fondo `surface-subtle`. Nunca se anida una tarjeta con borde dentro de otra.
-- **Indicadores:** ícono índigo sin caja, etiqueta, cifra y una línea de contexto ("vs periodo anterior", "Sin ventas").
+- **Indicadores:** ícono índigo sin caja, etiqueta, cifra y una línea de contexto ("vs periodo anterior", "Sin ventas"). Es igual en Inicio, Proveedores y el resto de pantallas. Si no hay comparación, la pastilla de variación no se muestra.
 
 ### Inputs / Fields
 Blancos, con borde `line-strong`, 42 px de alto y radio de 10 px. Al enfocarlos, el borde pasa a índigo con un anillo suave. Los buscadores llevan el ícono a la izquierda, y los placeholders cumplen el contraste AA.
@@ -356,6 +366,7 @@ Para cambiar un color o un tamaño en toda la app basta con cambiar su variable.
 - **Do** mantener el texto secundario en `muted` o `faint` (AA) y el texto funcional en 11 px o más.
 - **Do** dejar en el celular áreas táctiles de 44 px en la barra superior y 40 px en los controles en línea.
 - **Do** dejar que los montos se lean completos: "S/" pegado a la cifra y sin recortar con puntos suspensivos.
+- **Do** usar el diálogo propio para confirmar y avisos `toast` para el resultado de una acción.
 
 ### Don't:
 - **Don't** volver al azul brillante, al naranja con brillo ni a las sombras de colores de la versión anterior.
@@ -363,3 +374,4 @@ Para cambiar un color o un tamaño en toda la app basta con cambiar su variable.
 - **Don't** usar títulos pequeños en mayúsculas espaciadas sobre los títulos (La Regla de la Oración).
 - **Don't** anidar tarjetas con borde ni usar bordes de color de más de 1 px a un lado de tarjetas y alertas.
 - **Don't** poner la sarga ni la costura fuera de las superficies índigo (Reglas de la Sarga y la Costura).
+- **Don't** escribir reglas `:hover` fuera de la consulta de mouse, ni usar `confirm()`, `prompt()` o `alert()` del navegador (la única excepción es el respaldo para copiar un dato cuando el portapapeles no está disponible).
