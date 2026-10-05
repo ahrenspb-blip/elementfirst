@@ -1,14 +1,19 @@
 -- Áreas de personal (Logística, Tienda, Almacén, Soporte TI) y ubicación asignada.
 -- Tienda y Almacén solo ven y operan ventas, stock y órdenes de compra de su ubicación.
--- Aplicada en partes: areas_ubicacion_1_columnas … areas_ubicacion_5_observabilidad_soporte.
+-- Aplicada en partes: areas_ubicacion_1_columnas (20261003213550) … areas_ubicacion_5_observabilidad_soporte (20261003213745).
 
 -- 1) Columnas y validaciones
 alter table public.perfiles
   add column if not exists area text,
   add column if not exists almacen_id bigint references public.almacenes (id) on delete restrict;
-alter table public.perfiles
-  add constraint perfiles_area_valida check (area is null or area in ('logistica', 'tienda', 'almacen', 'soporte_ti')),
-  add constraint perfiles_area_con_ubicacion check (area is null or area not in ('tienda', 'almacen') or almacen_id is not null);
+do $$ begin
+  if not exists (select 1 from pg_constraint where conname = 'perfiles_area_valida') then
+    alter table public.perfiles add constraint perfiles_area_valida check (area is null or area in ('logistica', 'tienda', 'almacen', 'soporte_ti'));
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'perfiles_area_con_ubicacion') then
+    alter table public.perfiles add constraint perfiles_area_con_ubicacion check (area is null or area not in ('tienda', 'almacen') or almacen_id is not null);
+  end if;
+end $$;
 create index if not exists perfiles_almacen_id_idx on public.perfiles (almacen_id);
 
 -- 2) Funciones auxiliares (null = sin límite de ubicación)
