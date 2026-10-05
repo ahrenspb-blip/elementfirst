@@ -6,6 +6,10 @@ colors:
   indigo-hover: "#223868"
   indigo-ink: "#243B6C"
   indigo-soft: "#EDF0F7"
+  indigo-tint: "#DEE3EE"
+  indigo-mist: "#C9D3EC"
+  indigo-light: "#8BA0D6"
+  indigo-bright: "#4264BB"
   indigo-raw-1: "#1D2A4C"
   indigo-raw-2: "#152039"
   copper: "#A65A24"
@@ -15,13 +19,33 @@ colors:
   surface-subtle: "#F8F7F3"
   ink: "#171B29"
   ink-2: "#3D3B37"
+  ink-3: "#4A4740"
+  ink-4: "#58534C"
   muted: "#67625A"
   faint: "#6F6A62"
+  icon: "#8F8A80"
   line: "#E7E3DA"
   line-strong: "#D8D3C8"
   ok: "#2F7A58"
+  ok-deep: "#286A4B"
+  ok-bright: "#3E9468"
+  ok-mist: "#BAE3CE"
+  ok-line: "#D7EFE3"
+  ok-soft: "#F4FAF7"
   warn: "#9C6410"
+  warn-deep: "#855410"
+  warn-bright: "#C98A1E"
+  warn-mist: "#EFD4A4"
+  warn-soft: "#F5E5C8"
   bad: "#B23B30"
+  bad-deep: "#962F26"
+  bad-bright: "#C9493E"
+  bad-mist: "#E9AEA8"
+  bad-line: "#F2CFCB"
+  bad-soft: "#FCF3F2"
+  plum: "#6B4F8E"
+  teal: "#43909B"
+  black: "#000000"
 typography:
   display:
     fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
@@ -53,11 +77,111 @@ typography:
     fontWeight: 550
     lineHeight: 1.3
     letterSpacing: "normal"
+  caption:
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "11px"
+    fontWeight: 550
+    lineHeight: 1.3
+    letterSpacing: "normal"
+  small:
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "12px"
+    fontWeight: 500
+    lineHeight: 1.35
+    letterSpacing: "normal"
+  ui:
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "13px"
+    fontWeight: 500
+    lineHeight: 1.4
+    letterSpacing: "normal"
+  ui-strong:
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "13.5px"
+    fontWeight: 600
+    lineHeight: 1.4
+    letterSpacing: "normal"
+  body-lg:
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "15px"
+    fontWeight: 500
+    lineHeight: 1.45
+    letterSpacing: "normal"
+  lead:
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "16px"
+    fontWeight: 600
+    lineHeight: 1.35
+    letterSpacing: "normal"
+  heading-sm:
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "18px"
+    fontWeight: 650
+    lineHeight: 1.25
+    letterSpacing: "normal"
+  heading:
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "20px"
+    fontWeight: 650
+    lineHeight: 1.2
+    letterSpacing: "normal"
+  title-sm:
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "22px"
+    fontWeight: 650
+    lineHeight: 1.15
+    letterSpacing: "normal"
+  title-lg:
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "28px"
+    fontWeight: 650
+    lineHeight: 1.15
+    letterSpacing: "normal"
+  hero:
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "32px"
+    fontWeight: 650
+    lineHeight: 1.1
+    letterSpacing: "normal"
+  display-md:
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "44px"
+    fontWeight: 600
+    lineHeight: 1.05
+    letterSpacing: "normal"
+  display-sm:
+    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "38px"
+    fontWeight: 600
+    lineHeight: 1.05
+    letterSpacing: "normal"
+  mono:
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace"
+    fontSize: "12px"
+    fontWeight: 400
+    lineHeight: 1.5
+    letterSpacing: "normal"
+  icon:
+    fontFamily: "Material Symbols Outlined"
+    fontSize: "20px"
+    fontWeight: 400
+    lineHeight: 1
+    letterSpacing: "normal"
+  print:
+    fontFamily: "Arial, sans-serif"
+    fontSize: "12px"
+    fontWeight: 400
+    lineHeight: 1.4
+    letterSpacing: "normal"
 rounded:
+  xs: "4px"
   sm: "8px"
   md: "10px"
+  md-lg: "12px"
   lg: "14px"
+  lg-xl: "16px"
   xl: "18px"
+  2xl: "20px"
   pill: "999px"
 spacing:
   xs: "4px"
@@ -126,7 +250,7 @@ Pocos colores y bien medidos: neutros cálidos, un índigo que lleva todas las a
 ### Neutral
 - **Papel** (`paper`): fondo de la app y del login. Es cálido, no blanco.
 - **Superficie** (`surface`) y **superficie suave** (`surface-subtle`): tarjetas y bloques internos.
-- **Tinta** (`ink`, `ink-2`) para el texto principal; **apagado** (`muted`) y **tenue** (`faint`) para el texto secundario y los placeholders. Ambos cumplen AA (≥4.5:1) sobre papel y blanco.
+- **Tinta** (`ink`, `ink-2`, `ink-3`, `ink-4`, de más oscura a más clara) para el texto principal; **apagado** (`muted`) y **tenue** (`faint`) para el texto secundario y los placeholders. Ambos cumplen AA (≥4.5:1) sobre papel y blanco.
 - **Línea** (`line`, `line-strong`): bordes finos y divisiones.
 - **Estados** (`ok`, `warn`, `bad`): verde salvia, ocre y rojo ladrillo, apagados. Son legibles como texto sobre blanco.
 
@@ -146,6 +270,8 @@ Una sola familia, **Archivo** (grotesca de origen industrial, como las etiquetas
 - **Cuerpo** (14 px): texto general y celdas.
 - **Etiqueta** (12.5 px, peso 550, tipo oración): etiquetas de campos, encabezados de tabla y nombres de indicadores.
 - **Mínimo funcional:** 11 px. Nada que el usuario tenga que leer va por debajo.
+- **Escala completa:** 11, 12, 12.5, 13, 13.5, 14, 15, 16, 18, 20, 22, 24, 26, 28, 32, 38, 44 y 46 px. Cualquier tamaño nuevo se elige de esta lista.
+- **Otras familias:** monoespaciada solo para bloques de código o datos técnicos, Material Symbols para los íconos y Arial solo en los documentos impresos (comprobantes y reportes), que tienen su propia escala.
 
 ### Named Rules
 **La Regla de la Oración.** Las etiquetas, encabezados de tabla y títulos de sección se escriben en tipo oración. No se ponen títulos pequeños en mayúsculas espaciadas encima de otros títulos. Solo las píldoras de estado (como "STOCK BAJO") van en mayúsculas.
@@ -178,6 +304,7 @@ Las curvas son moderadas y van de menor a mayor según el tamaño:
 - 14 px en tarjetas.
 - 18 px en la tarjeta índigo y en las ventanas.
 - Las píldoras (filtros, estados, segmentos) son completamente redondas.
+- La escala completa de radios es 4, 8, 10, 12, 14, 16, 18, 20 y 999 px.
 - Los avatares son círculos y muestran la foto o las iniciales.
 
 ## Components
@@ -211,6 +338,15 @@ Blancos, con borde `line-strong`, 42 px de alto y radio de 10 px. Al enfocarlos,
 - La cifra del día va en tamaño display.
 - Lleva los botones "Nuevo pedido" y "Ver ventas".
 - Al lado, "Salud del negocio" agrupa cuatro métricas en bloques translúcidos.
+
+## Tokens en el código
+
+Todos los valores de este documento existen como variables CSS al inicio del bloque de estilos de `index.html`:
+- **Colores:** `--c-<nombre>` (por ejemplo `--c-indigo`, `--c-line`, `--c-bad-soft`). Las transparencias se escriben como `rgba()` con los valores del token.
+- **Tamaños de letra:** `--fs-<px>` (por ejemplo `--fs-14`, `--fs-12_5`).
+- **Radios:** `--r-<px>` (por ejemplo `--r-10`, `--r-999`).
+
+Para cambiar un color o un tamaño en toda la app basta con cambiar su variable. Los colores escritos en el JavaScript (gráficos, estilos en línea e impresión) usan los mismos valores hexadecimales de esta lista. Los tonos `-deep`, `-bright`, `-mist`, `-line` y `-soft` de los estados son para texto oscuro, gráficos, bordes y fondos de aviso. `plum` y `teal` solo se usan en gráficos.
 
 ## Do's and Don'ts
 
