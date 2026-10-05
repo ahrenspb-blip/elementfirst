@@ -60,15 +60,17 @@ async function quienLlama(req: Request) {
   const { data, error } = await admin.auth.getUser(token);
   if (error || !data.user) return null;
   const { data: perfil } = await admin
-    .from("perfiles").select("id, nombre, rol, activo, area").eq("id", data.user.id).single();
+    .from("perfiles").select("id, nombre, rol, activo, area, permisos, super_admin").eq("id", data.user.id).single();
   return perfil ? { ...perfil, email: data.user.email ?? "" } : null;
 }
 
 async function hayAdministradores() {
-  const { count } = await admin
+  const { count, error } = await admin
     .from("perfiles").select("id", { count: "exact", head: true })
     .eq("rol", "administrador").eq("activo", true);
-  return (count ?? 0) > 0;
+  // Si la consulta falla no se puede asumir que no hay administradores: el primer acceso quedaría abierto.
+  if (error || count == null) throw new Error("No se pudo comprobar si hay administradores: " + (error?.message ?? "sin conteo"));
+  return count > 0;
 }
 
 // ¿Quedaría al menos un administrador activo si "id" deja de serlo?
@@ -124,6 +126,18 @@ async function datosArea(body: any, rol: string): Promise<AreaUbic | string> {
   return { area, almacen_id: id };
 }
 
+const NIVEL: Record<string, number> = { ver: 1, editar: 2 };
+// ¿Algún permiso pedido supera al que tiene quien lo asigna?
+function excedePermisos(pedidos: Permisos, propios: unknown): string | null {
+  const mios = limpiarPermisos(propios);
+  for (const [m, nivel] of Object.entries(pedidos)) if ((NIVEL[nivel] ?? 0) > (NIVEL[mios[m] ?? ""] ?? 0)) return m;
+  return null;
+}
+
+// Identificadores de traza que llegan en cabeceras: solo letras, números, guion y guion bajo.
+const idTraza = (v: string | null) => (v && /^[A-Za-z0-9_-]{1,40}$/.test(v) ? v : null);
+const ACCIONES = ["hay_admin", "bootstrap", "cambiar_clave_propia", "listar", "crear", "guardar", "cambiar_rol", "cambiar_permisos", "eliminar"];
+
 const mensajeBd = (m: string) => /perfiles_dni_unico|duplicate key/.test(m) ? "Ya existe un usuario con ese DNI" : m;
 
 // Contraseña temporal: el usuario deberá cambiarla al iniciar sesión.
@@ -158,8 +172,8 @@ type Ctx = {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   const t0 = Date.now();
-  const tx = req.headers.get("x-transaction-id")?.slice(0, 40) ?? null;
-  const rq = req.headers.get("x-request-id")?.slice(0, 40) ?? null;
+  const tx = idTraza(req.headers.get("x-transaction-id"));
+  const rq = idTraza(req.headers.get("x-request-id"));
   const ctx: Ctx = {
     tx, rq, accion: "?", usuario: null, pasos: [],
     // Cliente por solicitud: los cambios auditados en la base de datos llevan el mismo Transaction ID.
@@ -181,7 +195,10 @@ Deno.serve(async (req) => {
   ctx.paso("respuesta", res.status < 400 ? "COMPLETED" : "FAILED", res.status < 400 ? "ok" : "error",
     `Servidor respondió HTTP ${res.status} en ${Date.now() - t0} ms` + (error ? " · " + error : ""));
   // hay_admin se consulta en cada carga de la pantalla de inicio: solo se registra si falla.
-  if (ctx.accion !== "hay_admin" || res.status >= 400) {
+  // Sin sesión verificada no se escribe en el Registro (cualquiera podría llenarlo); queda en el log de la función.
+  const registrable = ctx.usuario !== null || ctx.accion === "bootstrap";
+  if (!registrable) console.log(`Solicitud sin sesión: acción ${ctx.accion}, HTTP ${res.status}`);
+  else if (ctx.accion !== "hay_admin" || res.status >= 400) {
     const filas = ctx.pasos.map((p) => ({ ...p, usuario_id: ctx.usuario?.id ?? null, usuario_nombre: ctx.usuario?.nombre ?? null }));
     const { error: e } = await admin.from("registro_eventos").insert(filas);
     if (e) console.error("No se pudo registrar la traza", e.message);
@@ -195,7 +212,7 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
   let body: any;
   try { body = await req.json(); } catch { return json({ error: "JSON inválido" }, 400); }
   const accion = body?.accion;
-  ctx.accion = String(accion ?? "?").slice(0, 40);
+  ctx.accion = ACCIONES.includes(accion) ? accion : "desconocida";
   ctx.paso("servidor", "RECEIVED", "info", `Servidor recibió la solicitud (acción: ${ctx.accion})`);
 
   if (accion === "hay_admin") return json({ hay: await hayAdministradores() });
@@ -238,7 +255,7 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
 
   if (accion === "listar") {
     const { data: users } = await admin.auth.admin.listUsers({ perPage: 200 });
-    const { data: perfiles } = await admin.from("perfiles").select("id, nombre, rol, permisos, activo, debe_cambiar_clave, dni, sexo, foto_url, area, almacen_id");
+    const { data: perfiles } = await admin.from("perfiles").select("id, nombre, rol, permisos, activo, debe_cambiar_clave, dni, sexo, foto_url, area, almacen_id, super_admin");
     const mapa = Object.fromEntries((perfiles ?? []).map((p: any) => [p.id, p]));
     return json({
       usuarios: (users?.users ?? []).map((u: any) => {
@@ -251,7 +268,7 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
           activo: p?.activo ?? true,
           debe_cambiar_clave: p?.debe_cambiar_clave ?? false,
           dni: p?.dni ?? null, sexo: p?.sexo ?? null, foto_url: p?.foto_url ?? null,
-          area: p?.area ?? null, almacen_id: p?.almacen_id ?? null,
+          area: p?.area ?? null, almacen_id: p?.almacen_id ?? null, super_admin: p?.super_admin === true,
           ultimo_acceso: u.last_sign_in_at, creado: u.created_at,
         };
       }),
@@ -260,7 +277,13 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
 
   if (accion === "crear") {
     const rol = body.rol ?? "usuario";
-    if (!esAdmin && rol === "administrador") return json({ error: "Soporte TI no puede crear administradores" }, 403);
+    if (!esAdmin) {
+      if (rol === "administrador") return json({ error: "Soporte TI no puede crear administradores" }, 403);
+      if (body.area === "soporte_ti") return json({ error: "Solo un administrador puede asignar el área Soporte TI" }, 403);
+      const n = normalizar(rol, body.permisos);
+      const m = n && excedePermisos(n.permisos, perfil.permisos);
+      if (m) return json({ error: `No puedes dar un permiso que tú no tienes (${m})` }, 403);
+    }
     const personales = datosPersonales(body);
     if (typeof personales === "string") return json({ error: personales }, 400);
     const area = await datosArea(body, rol);
@@ -272,8 +295,9 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
   if (accion === "guardar") {
     const id = body.id;
     if (!id) return json({ error: "Falta el usuario" }, 400);
-    const { data: actual } = await admin.from("perfiles").select("rol, activo").eq("id", id).single();
+    const { data: actual } = await admin.from("perfiles").select("rol, activo, area, super_admin").eq("id", id).single();
     if (!actual) return json({ error: "Usuario no encontrado" }, 404);
+    if (actual.super_admin && !perfil.super_admin) return json({ error: "Solo un super admin puede modificar la cuenta de un super admin" }, 403);
 
     const n = normalizar(body.rol, body.permisos);
     if (!n) return json({ error: "Rol no válido" }, 400);
@@ -282,6 +306,10 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
     if (!esAdmin) {
       if (actual.rol === "administrador" || n.rol === "administrador") return json({ error: "Soporte TI no puede modificar administradores" }, 403);
       if (esYo) return json({ error: "Pide a un administrador que cambie tu propio acceso" }, 403);
+      if (actual.area === "soporte_ti") return json({ error: "Solo un administrador puede modificar a otro usuario de Soporte TI" }, 403);
+      if (body.area === "soporte_ti") return json({ error: "Solo un administrador puede asignar el área Soporte TI" }, 403);
+      const m = excedePermisos(n.permisos, perfil.permisos);
+      if (m) return json({ error: `No puedes dar un permiso que tú no tienes (${m})` }, 403);
     }
 
     if (esYo && n.rol !== "administrador") return json({ error: "No puedes quitarte el rol de administrador" }, 400);
@@ -318,7 +346,8 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
     if (body.id === perfil.id) return json({ error: "No puedes cambiar tu propio rol" }, 400);
     const n = normalizar(body.rol, body.permisos);
     if (!n) return json({ error: "Rol no válido" }, 400);
-    const { data: actual } = await admin.from("perfiles").select("rol, activo").eq("id", body.id).single();
+    const { data: actual } = await admin.from("perfiles").select("rol, activo, super_admin").eq("id", body.id).single();
+    if (actual?.super_admin && !perfil.super_admin) return json({ error: "Solo un super admin puede modificar la cuenta de un super admin" }, 403);
     if (actual?.rol === "administrador" && n.rol !== "administrador" && !(await quedaOtroAdmin(body.id)))
       return json({ error: "Debe quedar al menos un administrador activo" }, 400);
     const { error } = await ctx.bd.from("perfiles").update({ rol: n.rol, permisos: n.permisos }).eq("id", body.id);
@@ -326,6 +355,8 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
   }
 
   if (accion === "cambiar_permisos") {
+    const { data: actual } = await admin.from("perfiles").select("super_admin").eq("id", body.id).maybeSingle();
+    if (actual?.super_admin && !perfil.super_admin) return json({ error: "Solo un super admin puede modificar la cuenta de un super admin" }, 403);
     const { error } = await ctx.bd
       .from("perfiles").update({ permisos: limpiarPermisos(body.permisos) }).eq("id", body.id);
     return error ? json({ error: error.message }, 400) : json({ ok: true });
@@ -333,8 +364,10 @@ async function manejar(req: Request, ctx: Ctx): Promise<Response> {
 
   if (accion === "eliminar") {
     if (body.id === perfil.id) return json({ error: "No puedes eliminar tu propia cuenta" }, 400);
-    const { data: actual } = await admin.from("perfiles").select("rol, activo").eq("id", body.id).single();
+    const { data: actual } = await admin.from("perfiles").select("rol, activo, area, super_admin").eq("id", body.id).single();
+    if (actual?.super_admin && !perfil.super_admin) return json({ error: "Solo un super admin puede eliminar la cuenta de un super admin" }, 403);
     if (!esAdmin && actual?.rol === "administrador") return json({ error: "Soporte TI no puede eliminar administradores" }, 403);
+    if (!esAdmin && actual?.area === "soporte_ti") return json({ error: "Solo un administrador puede eliminar a otro usuario de Soporte TI" }, 403);
     if (actual?.rol === "administrador" && actual.activo && !(await quedaOtroAdmin(body.id)))
       return json({ error: "Debe quedar al menos un administrador activo" }, 400);
     const { error } = await admin.auth.admin.deleteUser(body.id);
