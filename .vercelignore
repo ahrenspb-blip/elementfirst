@@ -7,3 +7,5 @@
 !/manifest.json
 !/icons
 !/img
+!/vendor
+!/vercel.json
