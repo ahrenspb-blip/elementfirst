@@ -325,6 +325,11 @@ Los filtros y segmentos son píldoras. El activo lleva fondo índigo suave y tex
 - Las fotos que faltan muestran un ícono gris centrado, del mismo tamaño en todas las tarjetas.
 - Los gráficos usan líneas rectas (sin curvas que inventen valores) y, si no hay datos, muestran un mensaje en lugar de ejes vacíos.
 
+### Fotos de producto
+- **En la ficha:** un carrusel que se desliza con el dedo, una foto por vez. Debajo lleva puntos (el activo en índigo) y, con más de 10 fotos, un contador "3 / 14". Con mouse aparecen flechas al pasar por encima. Con una sola foto no hay puntos ni flechas.
+- **Agregar y borrar:** solo desde "Editar". Las fotos se muestran en miniaturas 3:4 y la primera lleva la etiqueta "Principal". El botón "Añadir" permite elegir varias a la vez.
+- **Producto nuevo:** las fotos elegidas quedan en espera y se suben al guardar.
+
 ### Diálogos
 Nunca se usan `confirm()` ni `prompt()` del navegador. Las confirmaciones usan el diálogo propio (`efConfirmar`): título, detalle opcional, botón de acción con verbo ("Eliminar", "Desactivar") en rojo cuando es destructivo y "Cancelar". Se cierra con Escape y devuelve el foco al botón que lo abrió.
 
