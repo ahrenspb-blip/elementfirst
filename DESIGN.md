@@ -341,7 +341,13 @@ Blancos, con borde `line-strong`, 42 px de alto y radio de 10 px. Al enfocarlos,
   - Barra lateral de índigo crudo con sarga, logo cobre "EF" y el nombre con letras espaciadas.
   - Títulos de sección a 11 px.
   - Enlace activo con fondo translúcido y el ícono en cobre claro.
-- **Celular:** barra inferior blanca con el activo en índigo, y la hoja "Más" con las secciones por área.
+- **Celular:** barra inferior blanca con el activo en índigo, y la hoja "Más" como lista agrupada de app:
+  - Arriba, el perfil con la foto o las iniciales, que lleva a Configuración.
+  - Debajo, un bloque blanco por área con filas de 54 px: ícono en un cuadro índigo suave, nombre en 16 px y flecha. Las filas se separan con una línea fina.
+  - La página actual se marca con el cuadro del ícono en índigo sólido y el nombre en índigo.
+  - Las áreas sin pantallas permitidas se ocultan enteras.
+  - "Cerrar sesión" va al final, en su propio bloque y en rojo.
+  - El fondo de la hoja es papel. La hoja se cierra con la X o deslizando hacia abajo desde la cabecera, o desde la lista cuando ya está arriba del todo.
 
 ### Tarjeta "Ventas de hoy" (componente propio)
 - Índigo crudo con sarga y costura punteada.
