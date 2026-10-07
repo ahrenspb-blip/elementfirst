@@ -47,6 +47,7 @@ No es un ERP genérico adaptado.
 - **Tienda y Almacén:** su personal solo ve y opera su ubicación. Lo aplica la base de datos, no solo la pantalla.
 - **Soporte TI:** revisa el Registro del sistema (errores, operaciones, trazas) y gestiona usuarios que no son administradores.
 - **Idioma:** la app está en español de Perú.
+- **Opciones de la empresa:** el super admin edita en Configuración la razón social, el nombre comercial, el RUC, la dirección, el teléfono, el correo, el logo, los umbrales de las alertas de stock y la lista de tallas. Se guardan en la tabla `empresa` (una sola fila): todos los usuarios la leen y solo el super admin la cambia. Una talla con stock no se puede quitar.
 
 ## Capabilities and Constraints
 
