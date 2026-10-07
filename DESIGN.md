@@ -306,6 +306,7 @@ Las curvas son moderadas y van de menor a mayor según el tamaño:
 - Las píldoras (filtros, estados, segmentos) son completamente redondas.
 - La escala completa de radios es 4, 8, 10, 12, 14, 16, 18, 20 y 999 px.
 - Los avatares son círculos y muestran la foto o las iniciales.
+- La marca "EF" (menú, cabecera del celular, ingreso y Configuración) muestra el logo de la empresa si el super admin subió uno, sobre fondo blanco con borde fino; si no, las iniciales del nombre comercial.
 
 ## Components
 
