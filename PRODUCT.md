@@ -43,6 +43,12 @@ No es un ERP genérico adaptado.
 
 - **Ventas:** cada venta descuenta stock de una ubicación concreta (tienda o almacén) y pertenece a un canal: tienda física, Instagram, WhatsApp, web, etc.
 - **Ventas válidas:** solo cuentan en las métricas las Completadas y las Pendientes. Las Devueltas y Canceladas se muestran aparte.
+- **Cajas:** cada tienda tiene una o varias cajas.
+  - Cada vendedor abre la suya con un fondo inicial, y una venta en tienda solo se registra si hay una caja abierta en esa tienda. Se cobra completa en efectivo (con vuelto), Yape/Plin, tarjeta o transferencia, y se puede dividir entre varios medios.
+  - Se registran entradas y salidas de efectivo con su motivo.
+  - Devolver o anular una venta devuelve el stock y saca de la caja el efectivo cobrado.
+  - Al cerrar, se cuentan billetes y monedas, se calcula la diferencia con lo esperado (si no cuadra se pide una nota) y se imprime el ticket de cierre.
+  - Las ventas desde almacén (redes, web) no usan caja; el pago es opcional y puede ser un adelanto.
 - **Órdenes de compra:** llegan a un almacén destino y suman stock al recibirse.
 - **Tienda y Almacén:** su personal solo ve y opera su ubicación. Lo aplica la base de datos, no solo la pantalla.
 - **Soporte TI:** revisa el Registro del sistema (errores, operaciones, trazas) y gestiona usuarios que no son administradores.

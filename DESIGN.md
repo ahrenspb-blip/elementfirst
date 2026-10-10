@@ -331,6 +331,14 @@ Los filtros y segmentos son píldoras. El activo lleva fondo índigo suave y tex
 - **Agregar y borrar:** solo desde "Editar". Las fotos se muestran en miniaturas 3:4 y la primera lleva la etiqueta "Principal". El botón "Añadir" permite elegir varias a la vez.
 - **Producto nuevo:** las fotos elegidas quedan en espera y se suben al guardar.
 
+### Caja
+- **El número principal es «Efectivo en caja»:** va en grande sobre un bloque índigo suave, con la fórmula debajo (fondo + cobros en efectivo + entradas − salidas − devoluciones).
+- **Cobros:** se muestran en cuatro tarjetas, una por medio de pago.
+- **Movimientos:** van en una lista; las entradas en verde y las salidas en tinta.
+- **Diferencia del cierre:** se marca como «Cuadra» (verde), «Sobran» (ocre) o «Faltan» (rojo).
+- **Conteo de billetes y monedas:** usa botones − y + de 40 px. El resumen esperado / contado / diferencia queda fijo abajo mientras se cuenta.
+- **Pago en el pedido:** los medios se eligen con cuatro botones grandes. Si el pago es en efectivo, el vuelto se muestra en verde.
+
 ### Diálogos
 Nunca se usan `confirm()` ni `prompt()` del navegador. Las confirmaciones usan el diálogo propio (`efConfirmar`): título, detalle opcional, botón de acción con verbo ("Eliminar", "Desactivar") en rojo cuando es destructivo y "Cancelar". Se cierra con Escape y devuelve el foco al botón que lo abrió.
 
